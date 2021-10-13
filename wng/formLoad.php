@@ -156,16 +156,9 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     // Check to make sure the person is logged in, or present them with login/create form
     // FIXME: Currently only support logged in forms
     //
-    if( /*($form['flags']&0x01) == 0x01 &&*/ !isset($request['session']['customer']['id']) ) {
-        return array('stat'=>'noauth');
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'accountLoginProcess');
-        $rc = ciniki_wng_accountLoginProcess($ciniki, $tnid, $request, array(
-//            'create-account' => 'simple',
-            'return-url' => $request['base_url'] . '/' . implode('/', $request['uri_split']),
-            ));
-        if( $rc['stat'] != 'authenticated' ) {
-            return $rc;
-        }
+    /*($form['flags']&0x01) == 0x01 &&*/ 
+    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
+        return array('stat'=>'noauth', 'err'=>array('code'=>'ciniki.forms.83', 'msg'=>'Not signed in'));
     } 
 
     //
