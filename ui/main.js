@@ -259,7 +259,7 @@ function ciniki_forms_main() {
         }
     }
     this.form.listClass = function(s, i, d) {
-        if( i == this.selected ) {
+        if( (s == 'sections' || s == '_guidelines_terms') && i == this.selected ) {
             return 'highlight';
         }
         return '';
@@ -283,7 +283,11 @@ function ciniki_forms_main() {
         this.save('M.ciniki_forms_main.field.open(\'M.ciniki_forms_main.form.open();\',0,' + this.section_id + ',' + this.form_id + ',[]);');
     }
     this.form.open = function(cb, fid, list) {
-        if( fid != null ) { this.form_id = fid; }
+        if( fid != null ) { 
+            this.form_id = fid; 
+            this.selected = 'guidelines'; 
+            this.section_id = 0;
+        }
         if( list != null ) { this.nplist = list; }
         M.api.getJSONCb('ciniki.forms.formGet', {'tnid':M.curTenantID, 'form_id':this.form_id, 'section_id':this.section_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
