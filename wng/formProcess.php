@@ -56,10 +56,9 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
 //            'create-account' => 'simple',
             'return-url' => $request['base_url'] . '/' . implode('/', $request['uri_split']),
             ));
-        return $rc;
-/*        if( $rc['stat'] != 'authenticated' ) {
+        if( $rc['stat'] != 'authenticated' ) {
             return $rc;
-        } */
+        }
     }
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.20', 'msg'=>'Form not found', 'err'=>$rc['err']));
