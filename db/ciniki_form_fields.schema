@@ -1,0 +1,70 @@
+#
+# Description
+# -----------
+# Store the field definitions for forms.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# section_id:               The ID of the section the field is attached to.
+#
+# ftype:                    The type of field.
+#
+#                               text (Text 1 Line)
+#                               date
+#                               number
+#                               phone
+#                               email
+#                               address
+#                               url
+#                               select
+#                               radio
+#                               checkbox (single checkbox, multiple joined together when no label)
+#                               textarea (Text multiline)
+#                               content (label and/or description, no fields)
+#                               image   (stored in ciniki_images, image_id in form_data)
+#                               document (stored in ciniki-storage dir, as uuid from form_data)
+#                               break (setup a new field group within a section)
+#
+# flags:
+#                               0x01 - Required field
+#                               0x02 - Hide responses from Jurers
+#                               0x04 - 
+#                               0x08 - 
+#
+# sequence:                 The order for the field in the form.
+#
+# field_ref:                The reference to another field where the field data can be prefilled or stored.
+#                           format: package.module.object.field,  eg: ciniki.customers.customer.first
+#
+# label:                    The label for the field/content. 
+# description:              The optional description for the field.
+#
+# options:                  JSON encoded options for the field. Used to store select/radio options, checkbox label, etc.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_form_fields (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    section_id int not null,
+    ftype varchar(50) not null,
+    flags smallint unsigned not null,
+    sequence smallint unsigned not null,
+    field_ref varchar(250) not null,
+    label varchar(250) not null,
+    description text not null,
+    options text not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

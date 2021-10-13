@@ -1,0 +1,64 @@
+#
+# Description
+# -----------
+# Th
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# name:                     The name of the form.
+# permalink:                The permalink of the form.
+#
+# type:                     Used initially for internal organization.
+#
+# status:                   The current status of the form.
+#
+#                               10 - Draft
+#                               50 - Active
+#                               90 - Archived
+#
+# flags:                    The options for the form.
+#
+#                               0x01 - Account Required (must create account in ciniki_customers to fill out form)
+#                               0x02 - Display Sectioned
+#                               0x04 -
+#                               0x08 -
+# 
+# fee_amount:               The submission fee to be charged.
+# max_submissions:          The maximum number of submissions allowed, or 0 for unlimited.
+#
+# dt_start:                 The UTC start date and time to be available.
+# dt_end:                   The UTC end date to no longer accept submissions.
+#
+# guidelines:               The submission guidelines for the form. Will be displayed on website.
+# termsofuse:               The terms of use for the form. Submitters have to agree to them.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_forms (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    name varchar(250) not null,
+    permalink varchar(250) not null,
+    type varchar(250) not null,
+    status tinyint unsigned not null,
+    flags smallint unsigned not null,
+    fee_amount decimal(19,6) not null,
+    max_submissions int not null,
+    dt_start datetime not null,
+    dt_end datetime not null,
+    guidelines text,
+    termsofuse text,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

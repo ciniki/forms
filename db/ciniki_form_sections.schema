@@ -1,0 +1,60 @@
+#
+# Description
+# -----------
+# Store the sections to the form.
+#
+# Repeatable sections allow for multiple images to be uploaded, each 
+# with the other fields in the section (image title, image description, medium, etc)
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# form_id:                  The ID of the form the field is on.
+#
+# label:                    The label for the section.
+#
+# sequence:                 The order to display the sequence in.
+#
+# flags:                    The options for the section.
+#
+#                               0x01 - Repeatable
+#                               0x02 - 
+#                               0x04 - 
+#                               0x08 - 
+#
+# repeat_prefix:            The prefix to the repeatable number to be added before fields section.
+#
+# min_repeats:              The minimum number of repeats required for this section.
+#                               eg: must upload 10 images
+#
+# max_repeats:              The maximum number of repeats allowed for this form. 
+#                               eg: max 25 images
+#
+# description:              The description/guidelines for this section of the form.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_form_sections (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    form_id int not null,
+    label varchar(250) not null,
+    sequence smallint unsigned not null,
+    flags smallint unsigned not null,
+    repeat_prefix varchar(150) not null,
+    min_repeats int not null,
+    max_repeats int not null,
+    description text not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
