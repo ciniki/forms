@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
+function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
     //
     // Load tenant settings
     //
@@ -127,26 +127,6 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     } 
 
     //
-    // Check form status
-    //
-    if( $form['status'] != 50 ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.21', 'msg'=>'Form expired'));
-    }
-    $now = new DateTime('now', new DateTimezone('UTC'));
-    if( $form['dt_start'] != '' ) {
-        $dt_start = new DateTime($form['dt_start'], new DateTimezone('UTC'));
-        if( $dt_start > $now ) {
-            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.22', 'msg'=>'Form is not yet available'));
-        }
-    }
-    if( $form['dt_end'] != '' ) {
-        $dt_end = new DateTime($form['dt_end'], new DateTimezone('UTC'));
-        if( $dt_end < $now ) {
-            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.23', 'msg'=>'Form is expired'));
-        }
-    }
-
-    //
     // Setup default submission details
     //
     $form['submission_id'] = 0;
@@ -157,22 +137,6 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     $form['invoice_id'] = 0;
 
     //
-    // Check to make sure the person is logged in, or present them with login/create form
-    // FIXME: Currently only support logged in forms
-    //
-    /*($form['flags']&0x01) == 0x01 &&*/ 
-    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
-        return array('stat'=>'noauth', 'err'=>array('code'=>'ciniki.forms.83', 'msg'=>'Not signed in'));
-    } 
-
-    //
-    // Setup customer id in the form
-    //
-    if( isset($request['session']['customer']['id']) ) {
-        $form['customer_id'] = $request['session']['customer']['id'];
-    }
-
-    //
     // Load the defaults for the form
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formDefaultsLoad');
@@ -180,39 +144,6 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.25', 'msg'=>'Unable to load form defaults', 'err'=>$rc['err']));
     }
-
-    //
-    // Setup the submission/payment/termsofuse section
-    //
-    $form['sections']['submit'] = array(
-        'id' => 'submit',
-        'label' => isset($form['submit_label']) && $form['submit_label'] != '' ? $form['submit_label'] : 'Submit',
-        'fields' => array(),
-        );
-    if( isset($form['termsofuse']) && $form['termsofuse'] != '' ) {
-        $form['sections']['submit']['fields']['termsofuse'] = array(
-            'id' => 'termsofuse',
-            'ftype' => 'termsofuse', 
-            'prefix' => 'I agree to the',
-            'required' => 'yes',
-            'label' => 'Terms of Use',
-            'description' => 'You must check this box before you can submit.',
-            'value' => '',
-            'tou' => $form['termsofuse'],
-            );
-    }
-/*    if( isset($form['fee_amount']) && $form['fee_amount'] > 0 ) {
-        $form['sections']['submit']['fields']['payment'] = array(
-            'id' => 'payment',
-            'ftype' => 'payment', 
-            'label' => 'Submission Fee',
-            'fee_amount' => $form['fee_amount'],
-            );
-    }
-    $form['sections']['submit']['fields']['submit'] = array(
-        'id' => 'submit',
-        'ftype' => 'submit', 
-        ); */
 
     return array('stat'=>'ok', 'form'=>$form);
 }

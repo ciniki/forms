@@ -52,6 +52,33 @@ function ciniki_forms_wng_api(&$ciniki, $tnid, &$request) {
         return ciniki_forms_wng_submissionImage($ciniki, $tnid, $request);
     }
 
+    //
+    // submissionCheck - Check the submission validating all fields and ensuring all required are filled in
+    //
+    elseif( isset($request['uri_split'][$request['cur_uri_pos']]) 
+        && $request['uri_split'][$request['cur_uri_pos']] == 'submissionCheck' 
+        ) {
+        $request['cur_uri_pos']++;
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionCheck');
+        return ciniki_forms_wng_submissionCheck($ciniki, $tnid, $request);
+    }
+
+    //
+    // cartSubmit - Submit the form to the cart
+    //
+    elseif( isset($request['uri_split'][$request['cur_uri_pos']]) 
+        && $request['uri_split'][$request['cur_uri_pos']] == 'cartSubmit' 
+        ) {
+        $request['cur_uri_pos']++;
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionCheck');
+        $rc = ciniki_forms_wng_submissionCheck($ciniki, $tnid, $request);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'cartSubmit');
+        return ciniki_forms_wng_cartSubmit($ciniki, $tnid, $request);
+    }
+
     return array('stat'=>'ok');
 }
 ?>

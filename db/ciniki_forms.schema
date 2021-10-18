@@ -27,14 +27,18 @@
 #                               0x04 -
 #                               0x08 -
 # 
-# fee_amount:               The submission fee to be charged.
 # max_submissions:          The maximum number of submissions allowed, or 0 for unlimited.
+# fee_label:                The label for the fee.
+# fee_amount:               The submission fee to be charged.
+# cartsubmit_label:         The label to use for the submit to cart.
+# submit_label:             The label for the submit section and button
 #
 # dt_start:                 The UTC start date and time to be available.
 # dt_end:                   The UTC end date to no longer accept submissions.
 #
 # guidelines:               The submission guidelines for the form. Will be displayed on website.
 # termsofuse:               The terms of use for the form. Submitters have to agree to them.
+# thankyou:                 The thank you message displayed after the form is submitted.
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -49,12 +53,16 @@ create table ciniki_forms (
     type varchar(250) not null,
     status tinyint unsigned not null,
     flags smallint unsigned not null,
-    fee_amount decimal(19,6) not null,
     max_submissions int not null,
+    fee_label varchar(150) not null,
+    fee_amount decimal(19,6) not null,
+    cartsubmit_label varchar(150) not null,
+    submit_label varchar(150) not null,
     dt_start datetime not null,
     dt_end datetime not null,
     guidelines text,
     termsofuse text,
+    thankyou text,
 
     date_added datetime not null,
     last_updated datetime not null,

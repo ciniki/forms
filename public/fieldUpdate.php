@@ -43,6 +43,16 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
     }
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'maps');
+    $rc = ciniki_forms_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Get existing field info
     //
     $strsql = "SELECT ciniki_form_fields.id, "
@@ -141,6 +151,16 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
     // Check if field list should be returned
     //
     if( isset($args['fieldlist']) && $args['fieldlist'] == 'yes' ) {
+        //
+        // Get the list of field refs
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'fieldRefsAvailable');
+        $rc = ciniki_forms_fieldRefsAvailable($ciniki, $args['tnid']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.101', 'msg'=>'Unable to load field references', 'err'=>$rc['err']));
+        }
+        $refs = $rc['refs'];
+
         //
         // Load the fields
         //

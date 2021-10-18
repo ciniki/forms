@@ -44,8 +44,8 @@ function ciniki_forms_wng_submissionImage(&$ciniki, $tnid, $request) {
     //
     // Load the existing submission
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLoad');
-    $rc = ciniki_forms_submissionLoad($ciniki, $tnid, $form);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionLoad');
+    $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.82', 'msg'=>'', 'err'=>$rc['err']));
     }

@@ -121,8 +121,11 @@ function ciniki_forms_main() {
             'flags':{'label':'Options', 'type':'flags', 'flags':{
                 '1':{'name':'Account Required'},
                 }},
-            'fee_amount':{'label':'Submission Fee', 'type':'text', 'size':'small'},
             'max_submissions':{'label':'Max Submissions', 'type':'text', 'size':'small'},
+            'fee_label':{'label':'Fee Label', 'type':'text'},
+            'fee_amount':{'label':'Submission Fee', 'type':'text', 'size':'small'},
+            'cartsubmit_label':{'label':'Pay Button Label', 'type':'text'},
+            'submit_label':{'label':'Submit Label', 'type':'text'},
             }},
         '_times':{'label':'Dates & Times', 'aside':'yes', 'fields':{
             'dt_start':{'label':'Start', 'type':'datetime'},
@@ -131,6 +134,7 @@ function ciniki_forms_main() {
         '_guidelines_terms':{'label':'', 'aside':'yes', 'list':{
             'guidelines':{'label':'Guidelines', 'fn':'M.ciniki_forms_main.form.showSection("guidelines");'},
             'termsofuse':{'label':'Terms of Use', 'fn':'M.ciniki_forms_main.form.showSection("termsofuse");'},
+            'thankyou':{'label':'Thank You Message', 'fn':'M.ciniki_forms_main.form.showSection("thankyou");'},
             }},
         'sections':{'label':'Sections', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'editFn':function(s, i, d) {
@@ -190,6 +194,11 @@ function ciniki_forms_main() {
             'fields':{
                 'termsofuse':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'}
             }},
+        '_thankyou':{'label':'Thank You Message', 
+            'visible':function() { return M.ciniki_forms_main.form.selected == 'thankyou' ? 'yes' :'hidden'; },
+            'fields':{
+                'thankyou':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'}
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_forms_main.form.save();'},
             'delete':{'label':'Delete', 
@@ -228,7 +237,7 @@ function ciniki_forms_main() {
         this.save("M.ciniki_forms_main.section.open('M.ciniki_forms_main.form.open();',0," + this.form_id + ");");
     }
     this.form.showSection = function(s) {
-        if( s == 'guidelines' || s == 'termsofuse' ) {
+        if( s == 'guidelines' || s == 'termsofuse' || s == 'thankyou' ) {
             this.selected = s;
         } else {
             this.selected = 'section';
@@ -238,7 +247,7 @@ function ciniki_forms_main() {
     }
     this.form.switchTab = function(t) {
         this.sections._tabs.selected = t;
-        this.showHideSections(['fields', '_guidelines', '_termsofuse']);
+        this.showHideSections(['fields', '_guidelines', '_termsofuse', '_thankyou']);
         this.refreshSection('_tabs');
     }
     this.form.cellValue = function(s, i, j, d) {
@@ -501,7 +510,7 @@ function ciniki_forms_main() {
                     'checkbox':'Checkbox',
                     'content':'Information',
                     'image':'Image',
-                    'document':'Document',
+//                    'document':'Document',
                     'break':'Break Between Fields',
                     },
                 'onchange':'M.ciniki_forms_main.field.setupOptions',

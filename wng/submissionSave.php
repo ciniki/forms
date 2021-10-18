@@ -54,8 +54,8 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
     //
     // Load the existing submission
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLoad');
-    $rc = ciniki_forms_submissionLoad($ciniki, $tnid, $form);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionLoad');
+    $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.68', 'msg'=>'', 'err'=>$rc['err']));
     }
@@ -69,12 +69,14 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.69', 'msg'=>'Unable to apply posted updates to form', 'err'=>$rc['err']));
     }
 
+    $dt_now = new DateTime('NOW', new DateTimezone('UTC'));
+
     //
     // Check if submission_id specified
     //
+    $update_args = array();
     if( isset($form['submission_id']) && $form['submission_id'] > 0 ) {
-        error_log("Update Submission");
-        
+        $update_args['dt_last_save'] = $dt_now->format('Y-m-d H:i:s');
     } else {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.submission', array(
@@ -129,7 +131,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
                                     $image_urls["{$field['id']}-{$i}"] = $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . '/' . $form['submission_id'] . '/' . $field['values'][$i];
                                 }
                             }
-                        } elseif( isset($field['values'][$i]) ) {
+                        } elseif( isset($field['values'][$i]) && is_numeric($field['id']) ) {
                             // 
                             // No previous data saved, add new data
                             //
@@ -152,9 +154,21 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
             elseif( isset($section['fields']) ) {
                 foreach($section['fields'] as $fid => $field) {
                     //
+                    // Check terms of use have been checked or unchecked
+                    //
+                    if( $field['id'] == 'termsofuse' ) {
+                        if( isset($field['old_value']) && $field['old_value'] != $field['value'] ) {
+                            if( $field['value'] == 'off' ) {
+                                $update_args['dt_terms_accepted'] = '';
+                            } elseif( $field['value'] == 'on' ) {
+                                $update_args['dt_terms_accepted'] = $dt_now->format('Y-m-d H:i:s');
+                            }
+                        }
+                    }
+                    //
                     // Check if submission field data exists
                     //
-                    if( isset($field['data_id']) && $field['data_id'] > 0 ) {
+                    elseif( isset($field['data_id']) && $field['data_id'] > 0 ) {
                         //
                         // Check for changes in data
                         //
@@ -169,10 +183,11 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
                                 $image_urls["{$field['id']}"] = $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . '/' . $form['submission_id'] . '/' . $field['value'];
                             }
                         }
-                    } elseif( isset($field['value']) ) {
-                        // 
-                        // No previous data saved, add new data
-                        //
+                    } 
+                    // 
+                    // No previous data saved, add new data
+                    //
+                    elseif( isset($field['value']) && is_numeric($field['id']) ) {
                         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.data', array(
                             'submission_id' => $form['submission_id'],
                             'field_id' => $field['id'],
@@ -190,7 +205,17 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
             }
         }
     }
-   
+    
+    if( count($update_args) > 0 ) {
+//        error_log("Update Submission");
+//        error_log(print_r($update_args,true));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission_id'], $update_args, 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.84', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
+        }
+    }
+
     $rsp = array('stat'=>'ok');
     if( isset($api_args) ) {
         $rsp['api_args'] = $api_args;
@@ -199,8 +224,6 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
     if( isset($image_urls) && count($image_urls) > 0 ) {
         $rsp['image_urls'] = $image_urls;
     }
-
-    error_log(print_r($rsp,true));
 
     return $rsp;
 }

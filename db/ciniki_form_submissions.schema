@@ -23,12 +23,15 @@
 # status:                   The current status of the submission.
 #
 #                               10 - Opened
-#                               80 - Pending payment
+#                               70 - Pending payment
+#                               80 - Paid
 #                               90 - Submitted (and paid if fee_amount > 0 for form)
 #
-# terms_accepted_dt:        The UTC date and time the terms of use were accepted.
+# dt_terms_accepted:        The UTC date and time the terms of use were accepted.
 #
-# last_submitted:           The UTC date and time the user last submitted or saved the form.
+# dt_last_save:             The UTC date and time the user last saved the submission.
+#
+# dt_last_submitted:        The UTC date and time the user last submitted or saved the form.
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -44,7 +47,9 @@ create table ciniki_form_submissions (
     customer_id int not null,
     invoice_id int not null,
     status tinyint unsigned not null,
-    last_submitted datetime not null,
+    dt_terms_accepted datetime not null,
+    dt_last_save datetime not null,
+    dt_last_submitted datetime not null,
 
     date_added datetime not null,
     last_updated datetime not null,

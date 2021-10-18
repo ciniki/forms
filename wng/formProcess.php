@@ -30,6 +30,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     }
     $s = $section['settings'];
     $blocks = array();
+    $cur_section_id = '';
 
     //
     // Check for forms item request
@@ -66,12 +67,13 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Check if submissions made, load values
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLoad');
-    $rc = ciniki_forms_submissionLoad($ciniki, $tnid, $form);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionLoad');
+    $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.50', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
     }
 
+/* Javascript loadsaved 
     //
     // Apply the posted values or setup the default values if none posted
     //
@@ -85,7 +87,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Apply the form defaults if no submission
     //
-    elseif( !isset($form['submission_id']) || $form['submission_id'] == 0 ) {
+    else */
+    if( !isset($form['submission_id']) || $form['submission_id'] == 0 ) {
         if( isset($form['sections']) ) {
             foreach($form['sections'] as $sid => $section) {
                 if( isset($section['fields']) ) {
@@ -109,6 +112,71 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     }
 
     //
+    // Check if payment required, but no invoice yet
+    //
+    if( $form['fee_amount'] > 0 && $form['invoice_id'] == 0 ) {
+        //
+        // No invoice, create cart and add form fee
+        //
+        $form['sections']['submit']['fields']['payment'] = array(
+            'id' => 'payment',
+            'ftype' => 'payment', 
+            'label' => $form['fee_label'] != '' ? $form['fee_label'] : 'Fee',
+            'amount' => $form['fee_amount'],
+            'cart-url' => $request['base_url'] . '/cart',
+            'button-label' => $form['cartsubmit_label'] != '' ? $form['cartsubmit_label'] : 'Pay Now',
+            );
+        $request['session']['cart-redirect-success'] = $request['base_url'] . '/' . implode('/', $request['uri_split']);
+    }
+    //
+    // Check if payment required, and invoice exists but not yet paid, redirect them to the cart
+    //
+    elseif( $form['fee_amount'] > 0 && $form['invoice_id'] > 0 && $form['invoice_status'] < 50 ) {
+        // redirect to /cart
+        $form['sections']['submit']['fields']['payment'] = array(
+            'id' => 'payment',
+            'ftype' => 'payment', 
+            'label' => $form['fee_label'] != '' ? $form['fee_label'] : 'Fee',
+            'amount' => $form['fee_amount'],
+            'paid' => 'unpaidcart',
+            'cart-url' => $request['base_url'] . '/cart',
+            'button-label' => $form['cartsubmit_label'] != '' ? $form['cartsubmit_label'] : 'Pay Now',
+            );
+        $request['session']['cart-redirect-success'] = $request['base_url'] . '/' . implode('/', $request['uri_split']);
+    }
+    elseif( $form['fee_amount'] > 0 && $form['invoice_id'] > 0 && $form['invoice_status'] > 50 ) {
+        $form['sections']['submit']['fields']['error'] = array(
+            'id' => 'info',
+            'ftype' => 'content',
+            'label' => '',
+            'description' => '<b>There was a problem with your payment, please contact us for help.</b>',
+            );
+    }
+    //
+    // No payment OR payment completed, display the submit button
+    //
+    else {
+        $form['sections']['submit']['fields']['payment'] = array(
+            'id' => 'payment',
+            'ftype' => 'payment', 
+            'label' => $form['fee_label'] != '' ? $form['fee_label'] : 'Fee',
+            'amount' => $form['fee_amount'],
+            'paid' => 'yes',
+            'button-label' => $form['cartsubmit_label'] != '' ? $form['cartsubmit_label'] : 'Pay Now',
+            );
+        $form['sections']['submit']['fields']['submit'] = array(
+            'id' => 'submit',
+            'ftype' => 'submit', 
+            'label' => (isset($form['submit_label']) && $form['submit_label'] != '' ? $form['submit_label'] : 'Submit'),
+            );
+    }
+    if( isset($request['session']['cart-payment-success']) && $request['session']['cart-payment-success'] == 'yes' ) {
+        $request['session']['cart-payment-success'] = 'no';
+        unset($request['session']['cart-payment-success']);
+        $cur_section_id = 'submit';
+    }
+
+    //
     // Currently only supports sectionedforms
     //
     $blocks[] = array(
@@ -124,6 +192,9 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         'form-sections' => $form['sections'],
         'api-save-url' => $request['api_url'] . "/ciniki/forms/submissionSave",
         'api-image-url' => $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . "/" . $form['submission_id'],
+        'api-formcheck-url' => $request['api_url'] . "/ciniki/forms/submissionCheck",
+        'api-cartsubmit-url' => $request['api_url'] . "/ciniki/forms/cartSubmit",
+        'cur-section-id' => $cur_section_id,
         'api-args' => array(
             'form_id' => $form['id'],
             'submission_id' => $form['submission_id'],

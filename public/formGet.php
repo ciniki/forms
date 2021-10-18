@@ -76,12 +76,16 @@ function ciniki_forms_formGet($ciniki) {
             'type'=>'',
             'status'=>'10',
             'flags'=>'0',
-            'fee_amount'=>'',
             'max_submissions'=>'',
+            'fee_label' => '',
+            'fee_amount'=>'',
+            'fee_label' => '',
+            'submit_label' => '',
             'dt_start'=>'',
             'dt_end'=>'',
             'guidelines'=>'',
             'termsofuse'=>'',
+            'thankyou'=>'',
         );
     }
 
@@ -95,12 +99,16 @@ function ciniki_forms_formGet($ciniki) {
             . "ciniki_forms.type, "
             . "ciniki_forms.status, "
             . "ciniki_forms.flags, "
-            . "ciniki_forms.fee_amount, "
             . "ciniki_forms.max_submissions, "
+            . "ciniki_forms.fee_label, "
+            . "ciniki_forms.fee_amount, "
+            . "ciniki_forms.cartsubmit_label, "
+            . "ciniki_forms.submit_label, "
             . "ciniki_forms.dt_start, "
             . "ciniki_forms.dt_end, "
             . "ciniki_forms.guidelines, "
-            . "ciniki_forms.termsofuse "
+            . "ciniki_forms.termsofuse, "
+            . "ciniki_forms.thankyou "
             . "FROM ciniki_forms "
             . "WHERE ciniki_forms.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_forms.id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
@@ -108,8 +116,9 @@ function ciniki_forms_formGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
             array('container'=>'forms', 'fname'=>'id', 
-                'fields'=>array('name', 'permalink', 'type', 'status', 'flags', 'fee_amount', 'max_submissions', 
-                    'dt_start', 'dt_end', 'guidelines', 'termsofuse',
+                'fields'=>array('name', 'permalink', 'type', 'status', 'flags', 
+                    'max_submissions', 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
+                    'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou',
                     ),
                 'naprices'=>array('fee_amount'),
                 'utctotz'=>array(

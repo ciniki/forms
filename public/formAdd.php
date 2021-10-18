@@ -25,12 +25,16 @@ function ciniki_forms_formAdd(&$ciniki) {
         'type'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Type'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
-        'fee_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'number', 'name'=>'Submission Fee'),
         'max_submissions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'number', 'name'=>'Max Submissions'),
+        'fee_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fee Label'),
+        'fee_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'number', 'name'=>'Submission Fee'),
+        'cartsubmit_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Cart Submit Label'),
+        'submit_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Submit Label'),
         'dt_start'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'trim'=>'yes', 'name'=>'Start Date'),
         'dt_end'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'trim'=>'yes', 'defaulttime'=>'23:59', 'name'=>'End Date'),
         'guidelines'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Guidelines'),
         'termsofuse'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Terms of Use'),
+        'thankyou'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Thank You'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
