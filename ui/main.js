@@ -135,6 +135,7 @@ function ciniki_forms_main() {
             'guidelines':{'label':'Guidelines', 'fn':'M.ciniki_forms_main.form.showSection("guidelines");'},
             'termsofuse':{'label':'Terms of Use', 'fn':'M.ciniki_forms_main.form.showSection("termsofuse");'},
             'thankyou':{'label':'Thank You Message', 'fn':'M.ciniki_forms_main.form.showSection("thankyou");'},
+            'alreadysubmitted':{'label':'Existing Submittion Message', 'fn':'M.ciniki_forms_main.form.showSection("alreadysubmitted");'},
             }},
         'sections':{'label':'Sections', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'editFn':function(s, i, d) {
@@ -199,6 +200,11 @@ function ciniki_forms_main() {
             'fields':{
                 'thankyou':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'}
             }},
+        '_alreadysubmitted':{'label':'Existing Submission Message', 
+            'visible':function() { return M.ciniki_forms_main.form.selected == 'alreadysubmitted' ? 'yes' :'hidden'; },
+            'fields':{
+                'alreadysubmitted':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'}
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_forms_main.form.save();'},
             'delete':{'label':'Delete', 
@@ -237,7 +243,7 @@ function ciniki_forms_main() {
         this.save("M.ciniki_forms_main.section.open('M.ciniki_forms_main.form.open();',0," + this.form_id + ");");
     }
     this.form.showSection = function(s) {
-        if( s == 'guidelines' || s == 'termsofuse' || s == 'thankyou' ) {
+        if( s == 'guidelines' || s == 'termsofuse' || s == 'thankyou' || s == 'alreadysubmitted' ) {
             this.selected = s;
         } else {
             this.selected = 'section';
@@ -247,7 +253,7 @@ function ciniki_forms_main() {
     }
     this.form.switchTab = function(t) {
         this.sections._tabs.selected = t;
-        this.showHideSections(['fields', '_guidelines', '_termsofuse', '_thankyou']);
+        this.showHideSections(['fields', '_guidelines', '_termsofuse', '_thankyou', '_alreadysubmitted']);
         this.refreshSection('_tabs');
     }
     this.form.cellValue = function(s, i, j, d) {

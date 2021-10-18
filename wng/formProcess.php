@@ -73,6 +73,40 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.50', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
     }
 
+    if( $form['submission']['status'] >= 90 ) {
+        $blocks[] = array(
+            'type' => 'title',
+            'title' => $form['name'],
+            );
+        $blocks[] = array(
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'Only 1 submission allowed',
+            );
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    }
+
+    //
+    // Check if submission is to be submitted
+    //
+    if( isset($_POST['action']) && $_POST['action'] == 'submit' ) {
+        if( $form['submission']['status'] < 90 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission']['id'], array(
+                'status' => 90,
+                ), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.117', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
+            }
+        }
+        $blocks[] = array(
+            'type' => 'msg',
+            'level' => 'success',
+            'content' => (isset($form['thankyou']) && $form['thankyou'] != '' ? $form['thankyou'] : 'Thank you for your submission.'),
+            );
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    }
+
 /* Javascript loadsaved 
     //
     // Apply the posted values or setup the default values if none posted

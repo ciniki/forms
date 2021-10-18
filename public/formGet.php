@@ -86,6 +86,7 @@ function ciniki_forms_formGet($ciniki) {
             'guidelines'=>'',
             'termsofuse'=>'',
             'thankyou'=>'',
+            'alreadysubmitted'=>'',
         );
     }
 
@@ -108,7 +109,8 @@ function ciniki_forms_formGet($ciniki) {
             . "ciniki_forms.dt_end, "
             . "ciniki_forms.guidelines, "
             . "ciniki_forms.termsofuse, "
-            . "ciniki_forms.thankyou "
+            . "ciniki_forms.thankyou, "
+            . "ciniki_forms.alreadysubmitted "
             . "FROM ciniki_forms "
             . "WHERE ciniki_forms.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_forms.id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
@@ -118,7 +120,7 @@ function ciniki_forms_formGet($ciniki) {
             array('container'=>'forms', 'fname'=>'id', 
                 'fields'=>array('name', 'permalink', 'type', 'status', 'flags', 
                     'max_submissions', 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
-                    'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou',
+                    'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'alreadysubmitted',
                     ),
                 'naprices'=>array('fee_amount'),
                 'utctotz'=>array(
