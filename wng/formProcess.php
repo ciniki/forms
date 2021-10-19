@@ -54,7 +54,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     if( $rc['stat'] == 'noauth' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'accountLoginProcess');
         $rc = ciniki_wng_accountLoginProcess($ciniki, $tnid, $request, array(
-//            'create-account' => 'simple',
+            'create-account' => 'simple',
             'return-url' => $request['base_url'] . '/' . implode('/', $request['uri_split']),
             ));
         return $rc;
@@ -73,7 +73,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.50', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
     }
 
-    if( $form['submission']['status'] >= 90 ) {
+    if( isset($form['submission']['status']) && $form['submission']['status'] >= 90 ) {
         $blocks[] = array(
             'type' => 'title',
             'title' => $form['name'],
@@ -81,7 +81,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         $blocks[] = array(
             'type' => 'msg',
             'level' => 'error',
-            'content' => 'Only 1 submission allowed',
+            'content' => (isset($form['alreadysubmitted']) && $form['alreadysubmitted'] != '' ? $form['alreadysubmitted'] : 'Only 1 submission allowed'),
             );
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }
