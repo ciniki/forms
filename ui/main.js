@@ -22,7 +22,7 @@ function ciniki_forms_main() {
             },
         'forms':{'label':'Forms', 'type':'simplegrid', 'num_cols':6,
             'headerValues':['Name', 'Status', 'Start', 'End', 'Submissions'],
-            'cellClasses':['', '', 'multiline', 'multiline', ''],
+            'cellClasses':['', '', 'multiline', 'multiline', 'multiline', 'buttons'],
             'noData':'No form',
             'addTxt':'Add Form',
             'addFn':'M.ciniki_forms_main.form.open(\'M.ciniki_forms_main.menu.open();\',0,null);'
@@ -53,7 +53,7 @@ function ciniki_forms_main() {
                 case 1: return d.status_text;
                 case 2: return M.multiline(d.dt_start_date, d.dt_start_time);
                 case 3: return M.multiline(d.dt_end_date, d.dt_end_time);
-                case 4: return d.num_submissions;
+                case 4: return M.multiline(d.num_submissions + ' submitted', d.num_draftsubs + ' in progress');
                 case 5: return M.btn('Duplicate', 'M.ciniki_forms_main.menu.duplicate(' + d.id + ');');
             }
         }

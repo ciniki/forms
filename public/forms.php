@@ -81,12 +81,18 @@ function ciniki_forms_forms($ciniki) {
         . "ciniki_forms.dt_start AS dt_start_time, "
         . "ciniki_forms.dt_end AS dt_end_date, "
         . "ciniki_forms.dt_end AS dt_end_time, "
-        . "COUNT(submissions.id) AS num_submissions "
+        . "COUNT(submissions.id) AS num_submissions, "
+        . "COUNT(draftsubs.id) AS num_draftsubs "
         . "FROM ciniki_forms "
         . "LEFT JOIN ciniki_form_submissions AS submissions ON ("
             . "ciniki_forms.id = submissions.form_id "
             . "AND submissions.status = 90 "
             . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_form_submissions AS draftsubs ON ("
+            . "ciniki_forms.id = draftsubs.form_id "
+            . "AND draftsubs.status < 90 "
+            . "AND draftsubs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE ciniki_forms.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
@@ -103,7 +109,7 @@ function ciniki_forms_forms($ciniki) {
         array('container'=>'forms', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'permalink', 'type', 'status', 'status_text', 'flags', 'fee_amount', 
                 'max_submissions', 'dt_start_date', 'dt_start_time', 'dt_end_date', 'dt_end_time',
-                'num_submissions',
+                'num_submissions', 'num_draftsubs',
                 ),
             'maps'=>array('status_text'=>$maps['form']['status']),
             'utctotz'=>array(
