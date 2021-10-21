@@ -77,7 +77,7 @@ function ciniki_forms_wng_submissionImage(&$ciniki, $tnid, $request) {
                     //
                     // Check if the image matches
                     //
-                    if( $field['ftype'] == 'image' && isset($field['values'][$i]) && $field['values'][$i] == $image_id ) {
+                    if( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] == $image_id ) {
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheOriginal');
                         $rc = ciniki_images_loadCacheOriginal($ciniki, $tnid, $image_id, 600, 600);
                         if( $rc['stat'] == 'ok' ) {
