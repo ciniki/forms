@@ -52,6 +52,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
         . "forms.termsofuse, "
         . "forms.thankyou, "
         . "forms.alreadysubmitted, "
+        . "forms.loginmsg, "
         . "sections.id AS section_id, "
         . "sections.label AS section_label, "
         . "sections.flags AS section_flags, "
@@ -85,7 +86,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
         array('container'=>'forms', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'permalink', 'type', 'status', 'flags', 
                 'max_submissions', 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
-                'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'alreadysubmitted',
+                'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'alreadysubmitted', 'loginmsg', 
                 ),
             'utctotz'=>array(
                 'dt_start'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),
@@ -164,7 +165,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     //
     /*($form['flags']&0x01) == 0x01 &&*/ 
     if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
-        return array('stat'=>'noauth', 'err'=>array('code'=>'ciniki.forms.83', 'msg'=>'Not signed in'));
+        return array('stat'=>'noauth', 'form'=>$form, 'err'=>array('code'=>'ciniki.forms.83', 'msg'=>'Not signed in'));
     } 
 
     //

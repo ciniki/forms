@@ -40,6 +40,7 @@
 # termsofuse:               The terms of use for the form. Submitters have to agree to them.
 # thankyou:                 The thank you message displayed after the form is submitted.
 # alreadysubmitted:         The message to display if the user has already submitted this form.
+# loginmsg:                 The message to when the form requires a login.
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -65,6 +66,7 @@ create table ciniki_forms (
     termsofuse text not null,
     thankyou text not null,
     alreadysubmitted text not null,
+    loginmsg text not null,
 
     date_added datetime not null,
     last_updated datetime not null,

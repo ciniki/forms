@@ -30,6 +30,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     }
     $s = $section['settings'];
     $blocks = array();
+    $error_blocks = array();
     $cur_section_id = '';
 
     //
@@ -52,11 +53,20 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formLoad');
     $rc = ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id);
     if( $rc['stat'] == 'noauth' ) {
+        $form = $rc['form'];
         ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'accountLoginProcess');
         $rc = ciniki_wng_accountLoginProcess($ciniki, $tnid, $request, array(
             'create-account' => 'simple',
             'return-url' => $request['base_url'] . '/' . implode('/', $request['uri_split']),
             ));
+        if( $rc['stat'] == 'ok' ) {
+            array_unshift($rc['blocks'], array(
+                'sequence' => 1,
+                'type' => 'text',
+                'title' => $form['name'],
+                'content' => isset($form['loginmsg']) && $form['loginmsg'] != '' ? $form['loginmsg'] : 'You must login or sign up for an account',
+                ));
+        }
         return $rc;
     }
     if( $rc['stat'] != 'ok' ) {
@@ -90,21 +100,54 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     // Check if submission is to be submitted
     //
     if( isset($_POST['action']) && $_POST['action'] == 'submit' ) {
+        $errors = 'no';
         if( $form['submission']['status'] < 90 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission']['id'], array(
-                'status' => 90,
-                ), 0x04);
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.117', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
+            //
+            // Validate the form
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionValidate');
+            $rc = ciniki_forms_submissionValidate($ciniki, $tnid, $form);
+            if( isset($rc['problems']) ) {
+                $error_blocks[] = array(
+                    'type' => 'msg',
+                    'level' => 'error',
+                    'content' => 'You must complete all the fields in the form',
+                    );
+            }
+            elseif( $rc['stat'] != 'ok' ) {
+                $error_blocks[] = array(
+                    'type' => 'msg',
+                    'level' => 'error',
+                    'content' => 'Error processing your submission, please try again or contact us for assistance.',
+                    );
+            }
+            elseif( $form['fee_amount'] > 0 && $form['invoice_status'] != 50 ) {
+                $blocks[] = array(
+                    'type' => 'msg',
+                    'level' => 'error',
+                    'content' => 'Payment required',
+                    );
+            }
+           
+            if( count($error_blocks) == 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission']['id'], array(
+                    'status' => 90,
+                    ), 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.117', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
+                }
             }
         }
-        $blocks[] = array(
-            'type' => 'msg',
-            'level' => 'success',
-            'content' => (isset($form['thankyou']) && $form['thankyou'] != '' ? $form['thankyou'] : 'Thank you for your submission.'),
-            );
-        return array('stat'=>'ok', 'blocks'=>$blocks);
+
+        if( count($error_blocks) == 0 ) {
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'success',
+                'content' => (isset($form['thankyou']) && $form['thankyou'] != '' ? $form['thankyou'] : 'Thank you for your submission.'),
+                );
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
     }
 
 /* Javascript loadsaved 
@@ -190,14 +233,16 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     // No payment OR payment completed, display the submit button
     //
     else {
-        $form['sections']['submit']['fields']['payment'] = array(
-            'id' => 'payment',
-            'ftype' => 'payment', 
-            'label' => $form['fee_label'] != '' ? $form['fee_label'] : 'Fee',
-            'amount' => $form['fee_amount'],
-            'paid' => 'yes',
-            'button-label' => $form['cartsubmit_label'] != '' ? $form['cartsubmit_label'] : 'Pay Now',
-            );
+        if( $form['fee_amount'] > 0 ) {
+            $form['sections']['submit']['fields']['payment'] = array(
+                'id' => 'payment',
+                'ftype' => 'payment', 
+                'label' => $form['fee_label'] != '' ? $form['fee_label'] : 'Fee',
+                'amount' => $form['fee_amount'],
+                'paid' => 'yes',
+                'button-label' => $form['cartsubmit_label'] != '' ? $form['cartsubmit_label'] : 'Pay Now',
+                );
+        }
         $form['sections']['submit']['fields']['submit'] = array(
             'id' => 'submit',
             'ftype' => 'submit', 
@@ -215,12 +260,23 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     $blocks[] = array(
         'sequence' => 1,
-        'type' => 'form',
+        'type' => 'text',
         'title' => $form['name'],
+        'content' => $form['guidelines'],
+        );
+    if( count($error_blocks) > 0 ) {
+        foreach($error_blocks as $block) {
+            $blocks[] = $block;
+        }
+    }
+
+    $blocks[] = array(
+        'type' => 'form',
+//        'title' => $form['name'],
         'section-selector' => 'yes',
         'form-id' => $form['id'],
 //        'display_sectioned' => ($form['flags']&0x02) == 0 ? 'no' : 'yes',       // Default yes
-        'guidelines' => $form['guidelines'],
+//        'guidelines' => $form['guidelines'],
         'termsofuse' => $form['termsofuse'],
         'fee-amount' => $form['fee_amount'],
         'form-sections' => $form['sections'],
