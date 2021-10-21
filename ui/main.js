@@ -5,7 +5,7 @@ function ciniki_forms_main() {
     //
     // The panel to list the form
     //
-    this.menu = new M.panel('Forms', 'ciniki_forms_main', 'menu', 'mc', 'large narrowaside', 'sectioned', 'ciniki.forms.main.menu');
+    this.menu = new M.panel('Forms', 'ciniki_forms_main', 'menu', 'mc', 'xlarge narrowaside', 'sectioned', 'ciniki.forms.main.menu');
     this.menu.data = {};
     this.menu.nplist = [];
     this.menu.formtype = 'All';
@@ -20,7 +20,7 @@ function ciniki_forms_main() {
             'hint':'Search form',
             'noData':'No form found',
             },
-        'forms':{'label':'Forms', 'type':'simplegrid', 'num_cols':5,
+        'forms':{'label':'Forms', 'type':'simplegrid', 'num_cols':6,
             'headerValues':['Name', 'Status', 'Start', 'End', 'Submissions'],
             'cellClasses':['', '', 'multiline', 'multiline', ''],
             'noData':'No form',
@@ -54,6 +54,7 @@ function ciniki_forms_main() {
                 case 2: return M.multiline(d.dt_start_date, d.dt_start_time);
                 case 3: return M.multiline(d.dt_end_date, d.dt_end_time);
                 case 4: return d.num_submissions;
+                case 5: return M.btn('Duplicate', 'M.ciniki_forms_main.menu.duplicate(' + d.id + ');');
             }
         }
     }
@@ -84,6 +85,20 @@ function ciniki_forms_main() {
     this.menu.switchStatus = function(t) {
         this.status = unescape(t);
         this.open();
+    }
+    this.menu.duplicate = function(id) {
+        M.api.getJSONCb('ciniki.forms.formDup', {'tnid':M.curTenantID, 'form_id':id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            if( rsp.id != null ) {
+                M.ciniki_forms_main.menu.status = 10;
+                M.ciniki_forms_main.form.open('M.ciniki_forms_main.menu.open();', rsp.id, []);
+            } else {
+                M.ciniki_forms_main.menu.open();
+            }
+        });
     }
     this.menu.open = function(cb) {
         M.api.getJSONCb('ciniki.forms.forms', {'tnid':M.curTenantID, 'type':this.formtype, 'status':this.status}, function(rsp) {

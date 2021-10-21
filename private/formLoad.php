@@ -50,8 +50,12 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
         . "forms.dt_end, "
         . "forms.guidelines, "
         . "forms.termsofuse, "
+        . "forms.thankyou, "
+        . "forms.alreadysubmitted, "
+        . "forms.loginmsg, "
         . "sections.id AS section_id, "
         . "sections.label AS section_label, "
+        . "sections.sequence AS section_sequence, "
         . "sections.flags AS section_flags, "
         . "sections.repeat_prefix, "
         . "sections.min_repeats, "
@@ -60,6 +64,7 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
         . "fields.id AS field_id, "
         . "fields.ftype, "
         . "fields.flags AS field_flags, "
+        . "fields.sequence AS field_sequence, "
         . "IF((fields.flags&0x01)=0x01, 'yes', 'no') AS field_required, "
         . "fields.field_ref, "
         . "fields.label AS field_label, "
@@ -83,7 +88,7 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
         array('container'=>'forms', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'permalink', 'type', 'status', 'flags', 
                 'max_submissions', 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
-                'dt_start', 'dt_end', 'guidelines', 'termsofuse',
+                'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'alreadysubmitted', 'loginmsg',
                 ),
             'utctotz'=>array(
                 'dt_start'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),
@@ -91,13 +96,13 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
                 ),
             ),
         array('container'=>'sections', 'fname'=>'section_id',
-            'fields'=>array('id'=>'section_id', 'label'=>'section_label', 'flags'=>'section_flags', 
-                'repeat-prefix'=>'repeat_prefix', 'min_repeats', 'max_repeats', 'description'=>'section_description',
+            'fields'=>array('id'=>'section_id', 'label'=>'section_label', 'flags'=>'section_flags', 'sequence'=>'section_sequence',
+                'repeat_prefix'=>'repeat_prefix', 'min_repeats', 'max_repeats', 'description'=>'section_description',
                 ),
             ),
         array('container'=>'fields', 'fname'=>'field_id',
             'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'field_ref', 'flags'=>'field_flags', 
-                'required'=>'field_required',
+                'sequence'=>'field_sequence', 'required'=>'field_required',
                 'description'=>'field_description', 'options'=>'field_options'),
             ),
         ));
