@@ -23,10 +23,10 @@ function ciniki_forms_fieldAdd(&$ciniki) {
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'ftype'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Type'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
-        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
-        'field_ref'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Field Ref'),
-        'label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Label'),
-        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Order'),
+        'field_ref'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Field Ref'),
+        'label'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Label'),
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Description'),
         'options'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         ));
     if( $rc['stat'] != 'ok' ) {

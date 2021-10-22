@@ -19,36 +19,36 @@ function ciniki_forms_fieldOptionsParse(&$ciniki, $tnid, $ftype, $args, $json_op
 
     if( $ftype == 'text' ) {
         if( isset($args['max-characters']) ) {
-            $options['max-characters'] = $args['max-characters'];
+            $options['max-characters'] = trim($args['max-characters']);
         }
     }
     elseif( $ftype == 'textarea' ) {
         if( isset($args['max-words']) ) {
-            $options['max-words'] = $args['max-words'];
+            $options['max-words'] = trim($args['max-words']);
         }
         if( isset($args['size']) ) {
-            $options['size'] = $args['size'];
+            $options['size'] = trim($args['size']);
         }
     }
     elseif( $ftype == 'select' || $ftype == 'radio' ) {
         for($i = 0; $i < 20; $i++ ) {
             if( isset($args["option-{$i}"]) ) {
-                $options["option-{$i}"] = $args["option-{$i}"];
+                $options["option-{$i}"] = trim($args["option-{$i}"]);
             }
         }
     } 
     elseif( $ftype == 'image' ) {
         if( isset($args['min-width']) ) {
-            $options['min-width'] = $args['min-width'];
+            $options['min-width'] = trim($args['min-width']);
         }
         if( isset($args['max-width']) ) {
-            $options['max-width'] = $args['max-width'];
+            $options['max-width'] = trim($args['max-width']);
         }
         if( isset($args['min-height']) ) {
-            $options['min-height'] = $args['min-height'];
+            $options['min-height'] = trim($args['min-height']);
         }
         if( isset($args['max-height']) ) {
-            $options['max-height'] = $args['max-height'];
+            $options['max-height'] = trim($args['max-height']);
         }
     }
     //

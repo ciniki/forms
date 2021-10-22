@@ -21,13 +21,13 @@ function ciniki_forms_sectionAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'form_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Form'),
-        'label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Label'),
+        'label'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Label'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
-        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
-        'repeat_prefix'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Repeat Label'),
-        'min_repeats'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Min Repeats'),
-        'max_repeats'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Max Repeats'),
-        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Order'),
+        'repeat_prefix'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Repeat Label'),
+        'min_repeats'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Min Repeats'),
+        'max_repeats'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Max Repeats'),
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Description'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
