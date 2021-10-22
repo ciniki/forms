@@ -53,7 +53,7 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                     //
                     if( $field['id'] == 'termsofuse' ) {
                         if( !isset($field['value']) || $field['value'] != 'on' ) {
-                            $problems["{$field['id']}-{$i}"] = 'You must accept the terms of use';
+                            $problems["{$field['id']}"] = 'You must accept the terms of use';
                         }
                     }
                     //
@@ -79,7 +79,7 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
     //
     // If problems are found in the form, return list
     //
-    if( count($problems) > 0 ) {    
+    if( count($problems) > 0 ) {
         return array('stat'=>'fail', 'problems'=>$problems, 'form'=>$form);
     }
 
