@@ -15,7 +15,7 @@ function ciniki_forms_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.104', 'msg'=>'No event specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.131', 'msg'=>'No event specified.'));
     }
 
     //
@@ -28,7 +28,7 @@ function ciniki_forms_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLoad');
         $rc = ciniki_forms_submissionLoad($ciniki, $tnid, $args['object_id']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.108', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.132', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
         }
         $form = $rc['form'];
 

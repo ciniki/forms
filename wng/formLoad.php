@@ -108,7 +108,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.28', 'msg'=>'Form not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['forms'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.9', 'msg'=>'Unable to find Form'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.124', 'msg'=>'Unable to find Form'));
     }
     $form = $rc['forms'][0];
     if( isset($form['sections']) ) {
@@ -181,7 +181,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formDefaultsLoad');
     $rc = ciniki_forms_formDefaultsLoad($ciniki, $tnid, $form);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.25', 'msg'=>'Unable to load form defaults', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.125', 'msg'=>'Unable to load form defaults', 'err'=>$rc['err']));
     }
 
     //

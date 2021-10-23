@@ -40,23 +40,56 @@ function ciniki_forms_formDelete(&$ciniki) {
     //
     // Get the current settings for the form
     //
-    $strsql = "SELECT id, uuid "
-        . "FROM ciniki_forms "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
+    $strsql = "SELECT forms.id, "
+        . "forms.uuid, "
+        . "forms.name, "
+        . "sections.id AS section_id, "
+        . "sections.uuid AS section_uuid, "
+        . "fields.id AS field_id, "
+        . "fields.uuid AS field_uuid "
+        . "FROM ciniki_forms AS forms "
+        . "LEFT JOIN ciniki_form_sections AS sections ON ("
+            . "forms.id = sections.form_id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_form_fields AS fields ON ("
+            . "sections.id = fields.section_id "
+            . "AND fields.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE forms.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND forms.id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
+        . "ORDER BY sections.sequence, sections.label, fields.sequence, fields.label "
         . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'form');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
+        array('container'=>'forms', 'fname'=>'id', 'fields'=>array('id', 'uuid', 'name')),
+        array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'uuid'=>'section_uuid')),
+        array('container'=>'fields', 'fname'=>'field_id', 'fields'=>array('id'=>'field_id', 'uuid'=>'field_uuid')),
+        ));
     if( $rc['stat'] != 'ok' ) {
-        return $rc;
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.5', 'msg'=>'Form not found', 'err'=>$rc['err']));
     }
-    if( !isset($rc['form']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.5', 'msg'=>'Form does not exist.'));
+    if( !isset($rc['forms'][0]) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.121', 'msg'=>'Unable to find Form'));
     }
-    $form = $rc['form'];
+    $form = $rc['forms'][0];
 
     //
     // Check for any dependencies before deleting
     //
+    $strsql = "SELECT COUNT(id) AS num "
+        . "FROM ciniki_form_submissions "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND form_id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.forms', 'num');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.119', 'msg'=>'Unable to check for submissions', 'err'=>$rc['err']));
+    }
+    if( $rc['num'] > 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.120', 'msg'=>'There are submissions for this form'));
+    }
 
     //
     // Check if any modules are currently using this object
@@ -85,10 +118,37 @@ function ciniki_forms_formDelete(&$ciniki) {
     }
 
     //
+    // Remove the fields and sections
+    //
+    if( isset($form['sections']) ) {
+        foreach($form['sections'] as $sid => $section) {
+            if( isset($section['fields']) && isset($section['flags']) && ($section['flags']&0x01) == 0x01 ) {
+                foreach($section['fields'] as $fid => $field) {
+                    //
+                    // Remove the field
+                    //
+                    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.field', $field['id'], $field['uuid'], 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.122', 'msg'=>'Unable to remove field', 'err'=>$rc['err']));
+                    }
+                }
+            }
+            //
+            // Remove the section
+            //
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.section', $section['id'], $section['uuid'], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.123', 'msg'=>'Unable to remove section', 'err'=>$rc['err']));
+            }
+        }
+    }
+    
+    //
     // Remove the form
     //
-    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.form',
-        $args['form_id'], $form['uuid'], 0x04);
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.form', $args['form_id'], $form['uuid'], 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
         return $rc;

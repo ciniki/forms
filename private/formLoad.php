@@ -107,7 +107,7 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.28', 'msg'=>'Form not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.126', 'msg'=>'Form not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['forms'][0]) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.9', 'msg'=>'Unable to find Form'));

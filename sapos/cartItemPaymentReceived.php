@@ -18,7 +18,7 @@ function ciniki_forms_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer, $
     }
 
     if( !isset($args['invoice_id']) || $args['invoice_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.49', 'msg'=>'No event specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.128', 'msg'=>'No event specified.'));
     }
 
     if( $args['object'] == 'ciniki.forms.submission' ) {

@@ -32,15 +32,15 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                         
                         if( isset($field['required']) && $field['required'] == 'yes' ) {
                             if( $field['ftype'] == 'checkbox' && $field['values'][$i] != 'on' ) {
-                                $problems["{$field['id']}-{$i}"] = 'Missing field';
+                                $problems["{$field['id']}-{$i}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                             }
                             elseif( $field['ftype'] == 'image' 
                                 && (!isset($field['values'][$i]) || $field['values'][$i] == '' || $field['values'][$i] <= 0) 
                                 ) {
-                                $problems["{$field['id']}-{$i}"] = 'Missing image';
+                                $problems["{$field['id']}-{$i}"] = $section['label'] . ' - ' . $field['label'] . ': Missing image';
                             }
                             elseif( !isset($field['values'][$i]) || $field['values'][$i] == '' ) {
-                                $problems["{$field['id']}-{$i}"] = 'Missing field';
+                                $problems["{$field['id']}-{$i}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                             }
                         }
                     }
@@ -60,14 +60,16 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                     // Check if other fields are required
                     //
                     elseif( isset($field['required']) && $field['required'] == 'yes' ) {
-                        if( $field['ftype'] == 'checkbox' && $field['value'] != 'on' ) {
-                            $problems["{$field['id']}"] = 'Missing field';
+                        if( $field['ftype'] == 'checkbox' && (!isset($field['value']) || $field['value'] != 'on') ) {
+                            $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                         }
-                        elseif( $field['ftype'] == 'image' && ($field['value'] == '' || $field['value'] <= 0) ) {
-                            $problems["{$field['id']}"] = 'Missing image';
+                        elseif( $field['ftype'] == 'image' 
+                            && (!isset($field['value']) || $field['value'] == '' || $field['value'] <= 0) 
+                            ) {
+                            $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing image';
                         }
                         elseif( !isset($field['value']) || $field['value'] == '' ) {
-                            $problems["{$field['id']}"] = 'Missing field';
+                            $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                         }
 
                     }

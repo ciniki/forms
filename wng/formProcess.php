@@ -101,17 +101,28 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     if( isset($_POST['action']) && $_POST['action'] == 'submit' ) {
         $errors = 'no';
-        if( $form['submission']['status'] < 90 ) {
+        if( !isset($form['submission']) ) {
+            $error_blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => 'You must complete all the fields in the form',
+                );
+        } 
+        elseif( $form['submission']['status'] < 90 ) {
             //
             // Validate the form
             //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionValidate');
             $rc = ciniki_forms_submissionValidate($ciniki, $tnid, $form);
             if( isset($rc['problems']) ) {
+                $problem_list = '';
+                foreach($rc['problems'] as $pid => $problem) {
+                    $problem_list .= $problem . "\n";
+                }
                 $error_blocks[] = array(
                     'type' => 'msg',
                     'level' => 'error',
-                    'content' => 'You must complete all the fields in the form',
+                    'content' => "You must complete all the fields in the form.\n\n" . $problem_list,
                     );
             }
             elseif( $rc['stat'] != 'ok' ) {
@@ -141,6 +152,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
 
         if( count($error_blocks) == 0 ) {
+            $blocks[] = array(
+                'type' => 'title',
+                'title' => $form['name'],
+                );
             $blocks[] = array(
                 'type' => 'msg',
                 'level' => 'success',

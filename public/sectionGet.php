@@ -110,7 +110,7 @@ function ciniki_forms_sectionGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.47', 'msg'=>'Section not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.127', 'msg'=>'Section not found', 'err'=>$rc['err']));
         }
         if( !isset($rc['sections'][0]) ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.48', 'msg'=>'Unable to find Section'));

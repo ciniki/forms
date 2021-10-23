@@ -78,10 +78,10 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceStatus');
         $rc = ciniki_sapos_hooks_invoiceStatus($ciniki, $tnid, array('invoice_id'=>$submission['invoice_id']));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.57', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.130', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
         }
         if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.54', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.129', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
         }
         $form['invoice'] = $rc['invoice'];
         $form['invoice_status'] = $rc['invoice']['status'];
