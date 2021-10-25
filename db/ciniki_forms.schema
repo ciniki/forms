@@ -26,6 +26,10 @@
 #                               0x02 - Display Sectioned
 #                               0x04 -
 #                               0x08 -
+#                               0x10 - Juried
+#                               0x20 - 
+#                               0x40 -
+#                               0x80 -
 # 
 # max_submissions:          The maximum number of submissions allowed, or 0 for unlimited.
 # fee_label:                The label for the fee.

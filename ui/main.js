@@ -139,6 +139,9 @@ function ciniki_forms_main() {
             'flags':{'label':'Options', 'type':'flags', 'flags':{
                 '1':{'name':'Account Required'},
                 }},
+            'flags5':{'label':'Juried', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags',
+                'on_sections':['jurors'],
+                },
             'max_submissions':{'label':'Max Submissions', 'type':'text', 'size':'small'},
             'fee_label':{'label':'Fee Label', 'type':'text'},
             'fee_amount':{'label':'Submission Fee', 'type':'text', 'size':'small'},
@@ -149,13 +152,11 @@ function ciniki_forms_main() {
             'dt_start':{'label':'Start', 'type':'datetime'},
             'dt_end':{'label':'End', 'type':'datetime'},
             }},
-        '_guidelines_terms':{'label':'', 'aside':'yes', 'list':{
-            'guidelines':{'label':'Guidelines', 'fn':'M.ciniki_forms_main.form.showSection("guidelines");'},
-            'termsofuse':{'label':'Terms of Use', 'fn':'M.ciniki_forms_main.form.showSection("termsofuse");'},
-            'thankyou':{'label':'Thank You Message', 'fn':'M.ciniki_forms_main.form.showSection("thankyou");'},
-            'alreadysubmitted':{'label':'Existing Submittion Message', 'fn':'M.ciniki_forms_main.form.showSection("alreadysubmitted");'},
-            'loginmsg':{'label':'Login Required Message', 'fn':'M.ciniki_forms_main.form.showSection("loginmsg");'},
-            }},
+        'jurors':{'label':'Jurors', 'visible':'hidden', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
+            'cellClasses':['', 'fabuttons'],
+            'addTxt':'Add Juror',
+            'addFn':'M.ciniki_forms_main.form.save("M.ciniki_forms_main.form.jurorOpen();");',
+            },
         'sections':{'label':'Sections', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'editFn':function(s, i, d) {
                 return 'M.ciniki_forms_main.form.save("M.ciniki_forms_main.section.open(\'M.ciniki_forms_main.form.open();\',\'' + d.id + '\',M.ciniki_forms_main.form.form_id);");';
@@ -178,6 +179,13 @@ function ciniki_forms_main() {
             'addTxt':'Add Section',
             'addFn':'M.ciniki_forms_main.form.addSection();',
             },
+        '_guidelines_terms':{'label':'', 'aside':'yes', 'list':{
+            'guidelines':{'label':'Guidelines', 'fn':'M.ciniki_forms_main.form.showSection("guidelines");'},
+            'termsofuse':{'label':'Terms of Use', 'fn':'M.ciniki_forms_main.form.showSection("termsofuse");'},
+            'thankyou':{'label':'Thank You Message', 'fn':'M.ciniki_forms_main.form.showSection("thankyou");'},
+            'alreadysubmitted':{'label':'Existing Submittion Message', 'fn':'M.ciniki_forms_main.form.showSection("alreadysubmitted");'},
+            'loginmsg':{'label':'Login Required Message', 'fn':'M.ciniki_forms_main.form.showSection("loginmsg");'},
+            }},
 //        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'fields', 'tabs':{
 //            'fields':{'label':'Fields', 'fn':'M.ciniki_forms_main.form.switchTab("fields");'},
 //            'guidelines':{'label':'Guidelines', 'fn':'M.ciniki_forms_main.form.switchTab("guidelines");'},
@@ -280,12 +288,52 @@ function ciniki_forms_main() {
         this.showHideSections(['fields', '_guidelines', '_termsofuse', '_thankyou', '_alreadysubmitted', '_loginmsg']);
         this.refreshSection('_tabs');
     }
+    this.form.customerOpen = function(cid) {
+        M.startApp('ciniki.customers.edit',null,'M.ciniki_forms_main.form.open();','mc',{'next':'M.ciniki_forms_main.form.jurorAdd','customer_id':cid});
+    }
+    this.form.jurorOpen = function() {
+        M.startApp('ciniki.customers.edit',null,'M.ciniki_forms_main.form.open();','mc',{'next':'M.ciniki_forms_main.form.jurorAdd','customer_id':0});
+    }
+    this.form.jurorAdd = function(cid) {
+        // Check if juror exists and ignore, just reload form
+        for(var i in this.data.jurors) {
+            if( parseInt(this.data.jurors[i].customer_id) == cid ) {
+                M.ciniki_forms_main.form.open();
+                return false;
+            }
+        }
+        // Add new juror
+        M.api.getJSONCb('ciniki.forms.jurorAdd', {'tnid':M.curTenantID, 'form_id':this.form_id, 'customer_id':cid}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.ciniki_forms_main.form.open();
+        });
+    }
+    this.form.jurorDelete = function(id) {
+        if( confirm('Are you sure you want to remove this juror? All votes they submitted will also be removed. This action cannot be undone.') ) {
+            M.api.getJSONCb('ciniki.forms.jurorDelete', {'tnid':M.curTenantID, 'juror_id':id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_forms_main.form.open();
+            });
+        }
+    }
     this.form.cellValue = function(s, i, j, d) {
         if( s == 'sections' ) {
             if( (d.flags&0x01) ) {
                 return d.label + ' ' + M.subdue('(repeat ', d.min_repeats + ' - ' + d.max_repeats, ')');
             }
             return d.label;
+        }
+        if( s == 'jurors' ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return M.faBtn('&#xf014;', 'Remove Juror', 'M.ciniki_forms_main.form.save(\'M.ciniki_forms_main.form.jurorDelete(' + d.id + ');\');');
+            }
         }
         if( s == 'fields' ) {
             switch(j) {
@@ -313,6 +361,9 @@ function ciniki_forms_main() {
     this.form.rowFn = function(s, i, d) {
         if( s == 'sections' ) {
             return 'M.ciniki_forms_main.form.save("M.ciniki_forms_main.form.showSection(' + d.id + ');");';
+        }
+        if( s == 'jurors' ) {
+            return 'M.ciniki_forms_main.form.save("M.ciniki_forms_main.form.customerOpen(' + d.customer_id + ');");';
         }
         if( s == 'fields' ) {
             return 'M.ciniki_forms_main.field.open(\'M.ciniki_forms_main.form.open();\',' + d.id + ',' + d.section_id + ',' + this.form_id + ',M.ciniki_forms_main.form.data.field_ids);';
@@ -716,27 +767,285 @@ function ciniki_forms_main() {
     this.field.addButton('next', 'Next');
     this.field.addLeftButton('prev', 'Prev');
 
+    
+    //
+    // The submissions panel for a form
+    //
+    //
+    // The panel to edit Form
+    //
+    this.submissions = new M.panel('Submissions', 'ciniki_forms_main', 'submissions', 'mc', 'large mediumaside', 'sectioned', 'ciniki.forms.main.submissions');
+    this.submissions.data = null;
+    this.submissions.form_id = 0;
+    this.submissions.status = 90;
+    this.submissions.object = '';
+    this.submissions.object_id = '';
+    this.submissions.nplist = [];
+    this.submissions.sections = {
+        'form_details':{'label':'Form', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
+            'cellClasses':['label', ''],
+            },
+        'statuses':{'label':'Submission Status', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
+            },
+        'objects':{'label':'', 'aside':'yes', 'type':'simplegrid', 'num_cols':1, 'visible':'no',
+            },
+        'submissions':{'label':'Submissions', 'type':'simplegrid', 'num_cols':5,
+            'headerValues':[],
+            'cellClasses':[],
+            'dataMaps':[],
+            'noData':'No Submissions',
+            },
+        }
+    this.submissions.cellValue = function(s, i, j, d) {
+        if( s == 'form_details' ) {
+            switch(j) {
+                case 0: return d.label;
+                case 1: return d.value;
+            }
+        }
+        if( s == 'statuses' ) {
+            return M.textCount(d.label, d.num_submissions);
+        }
+        if( s == 'objects' ) {
+            return M.textCount(d.label, d.num_submissions);
+        }
+        if( s == 'submissions' ) {
+            switch(this.sections.submissions.dataMaps[j]) {
+                case 'name': return d.display_name;
+                case 'status': return d.status_text;
+                case 'object': return d.object_text;
+                case 'submitted': return M.multiline(d.dt_last_submitted_date, d.dt_last_submitted_time);
+                case 'ranking': return M.multiline(d.rank, d.votes);
+            }
+        }
+    }
+    this.submissions.rowClass = function(s, i, d) {
+        if( s == 'statuses' && d.id == this.status ) {
+            return 'highlight';
+        }
+        if( s == 'objects' && d.object == this.object && d.object_id == this.object_id ) {
+            return 'highlight';
+        }
+        return '';
+    }
+    this.submissions.rowFn = function(s, i, d) {
+        if( s == 'statuses' ) {
+            return 'M.ciniki_forms_main.submissions.switchStatus(' + d.id + ');';
+        }
+        if( s == 'objects' ) {
+            return 'M.ciniki_forms_main.submissions.switchObject(\'' + d.object + '\',\'' + d.object_id + '\');';
+        }
+        if( s == 'submissions' ) {
+            return 'M.ciniki_forms_main.submission.open(\'M.ciniki_forms_main.submissions.open();\',\'' + d.id + '\',M.ciniki_forms_main.submissions.data.submission_ids);';
+        }
+        return '';
+    }
+    this.submissions.switchStatus = function(id) {
+        this.status = id;
+        this.open();
+    }
+    this.submissions.switchObject = function(o,id) {
+        this.object = o;
+        this.object_id = id;
+        this.open();
+    }
+    this.submissions.open = function(cb, fid, list) {
+        if( fid != null ) { 
+            this.form_id = fid; 
+            this.status = 90; 
+            this.object = '';
+            this.object_id = '';
+        }
+        if( list != null ) { this.nplist = list; }
+        M.api.getJSONCb('ciniki.forms.submissions', {'tnid':M.curTenantID, 'form_id':this.form_id, 'status':this.status, 'object':this.object, 'object_id':this.object_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_forms_main.submissions;
+            p.data = rsp;
+            p.sections.submissions.num_cols = 2;
+            p.sections.submissions.headerValues = ['Name'];
+            p.sections.submissions.cellClasses = [''];
+            p.sections.submissions.dataMaps = ['name'];
+            if( p.status == 0 ) {
+                p.sections.submissions.num_cols++;
+                p.sections.submissions.headerValues.push('Status');
+                p.sections.submissions.cellClasses.push('');
+                p.sections.submissions.dataMaps.push('status');
+            }
+/*            if( p.object == '' ) {
+                p.sections.submissions.num_cols++;
+                p.sections.submissions.headerValues.push('From');
+                p.sections.submissions.cellClasses.push('');
+                p.sections.submissions.dataMaps.push('object');
+            } */
+            p.sections.submissions.headerValues.push('Submitted');
+            p.sections.submissions.cellClasses.push('multiline aligncenter');
+            p.sections.submissions.dataMaps.push('submitted');
+            // Check if juried form
+            if( (p.data.form.flags&0x10) == 0x10 ) {
+                p.sections.submissions.num_cols += 1;
+                p.sections.submissions.headerValues.push('Ranking');
+                p.sections.submissions.cellClasses.push('multiline');
+                p.sections.submissions.dataMaps.push('ranking');
+            }
+            p.sections.submissions.headerClasses = p.sections.submissions.cellClasses;
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.submissions.nextButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.form_id) < (this.nplist.length - 1) ) {
+            return 'M.ciniki_forms_main.submissions.open(null,' + this.nplist[this.nplist.indexOf('' + this.form_id) + 1] + ');';
+        }
+        return null;
+    }
+    this.submissions.prevButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.form_id) > 0 ) {
+            return 'M.ciniki_forms_main.submissions.open(null,' + this.nplist[this.nplist.indexOf('' + this.form_id) - 1] + ');';
+        }
+        return null;
+    }
+    this.submissions.addClose('Back');
+    this.submissions.addButton('next', 'Next');
+    this.submissions.addLeftButton('prev', 'Prev');
 
+    //
+    // The submission panel to display the details of a submission
+    //
+    this.submission = new M.panel('Submission', 'ciniki_forms_main', 'submission', 'mc', 'xlarge narrowaside', 'sectioned', 'ciniki.forms.main.submission');
+    this.submission.data = null;
+    this.submission.submission_id = 0;
+    this.submission.nplist = [];
+    this.submission.sections = {};
+//    this.submission.fieldHistoryArgs = function(s, i) {
+//        return {'method':'ciniki.forms.submissionHistory', 'args':{'tnid':M.curTenantID, 'submission_id':this.submission_id, 'field':i}};
+//    }
+    this.submission.cellValue = function(s, i, j, d) {
+        if( s == 'submission_details' || s == 'customer_details' ) {
+            switch(j) {
+                case 0: return d.label;
+                case 1: return d.value;
+            }
+        } 
+        else if( j == 0 ) {
+            return d.label;
+        }
+        else if( j == 1 ) {
+            if( d.ftype != null && d.ftype == 'address' ) {
+                return M.formatAddress(d.value);
+            }
+            else if( d.ftype != null && d.ftype == 'checkbox' ) {
+                if( d.value != null && d.value == 'on' ) {
+                    return 'Yes';
+                }
+                return '';
+            }
+            else if( d.ftype != null && d.ftype == 'textarea' ) {
+                return M.formatHtml(d.value);
+            }
+            else if( d.ftype != null && d.ftype == 'image' ) {
+                if( d.value != null && d.value > 0 ) {
+                    return '<div class="image_preview"><img src=\'' + M.api.getBinaryURL('ciniki.images.get', {'tnid':M.curTenantID, 'image_id':d.value, 'version':'original', 'maxheight':600}) + '\'/></div>';
+                }
+            } 
+            else {
+                return d.value;
+            }
+        }
+    }
+    this.submission.open = function(cb, sid, list) {
+        if( sid != null ) { this.submission_id = sid; }
+        if( list != null ) { this.nplist = list; }
+        M.api.getJSONCb('ciniki.forms.submissionGet', {'tnid':M.curTenantID, 'submission_id':this.submission_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            console.log(rsp);
+            var p = M.ciniki_forms_main.submission;
+            p.data = rsp.form;
+            p.sections = {
+                'submission_details':{'label':'Submission', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
+                    'cellClasses':['label', ''],
+                    },
+                'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
+                    'cellClasses':['label', ''],
+                    'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
+                    },
+                };
+            for(var i in rsp.form.sections) {
+                var subsec = 1;
+                var repeats = 1;
+                if( (rsp.form.sections[i].flags&0x01) == 0x01 ) { // Repeatable
+                    repeats = rsp.form.sections[i].max_repeats;
+                }
+                var sid = '';
 
+                for(var repeat = 1; repeat <= repeats; repeat++) {
+                    sid = 's_' + rsp.form.sections[i].id + '_' + subsec;
+                    if( repeats > 1 ) {
+                        sid += '_' + repeat;
+                    }
+                    var label = rsp.form.sections[i].label;
+                    if( repeats > 1 && rsp.form.sections[i].repeat_prefix != '' ) {
+                        label = rsp.form.sections[i].repeat_prefix + ' ' + repeat;
+                    }
+                    p.sections[sid] = {'label':label, 'type':'simplegrid', 'num_cols':2,
+                        'cellClasses':['label', ''],
+                        };
+                    p.data[sid] = [];
 
-/*
-            'type':{'label':'Type', 'type':'toggle', 'toggles':{
-                'text':'Text',
-                'date':'Date',
-                'number':'Number',
-                'phone':'Phone',
-                'email':'Email',
-                'select':'Select',
-                'radio':'Radio Buttons',
-                'checkbox':'Checkbox',
-                'textarea':'Paragraph',
-                'content':'Content',
-                'image':'Image',
-                'document':'Document',
-                'url':'Website',
-                'sbreak':'Section Break',
-                }},
-*/
+                    for(var j in rsp.form.sections[i].fields) {
+                        if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
+                            subsec++;
+                            sid = 's_' + rsp.form.sections[i].id + '_' + subsec;
+                            if( (rsp.form.sections[i].flags&0x01) == 0x01 ) { // Repeatable
+                                sid += '_' + repeat;
+                            }
+                            p.sections[sid] = {'label':rsp.form.sections[i].fields[j].label, 'type':'simplegrid', 'num_cols':2,
+                                'cellClasses':['label', ''],
+                                };
+                            p.data[sid] = [];
+                            continue;
+                        }
+                        if( repeats > 1 ) {
+                            var field = {
+                                'label':rsp.form.sections[i].fields[j].label,
+                                'ftype':rsp.form.sections[i].fields[j].ftype,
+                                'value':'',
+                                };
+                            if( rsp.form.sections[i].fields[j].values[repeat] != null ) {
+                                field.value = rsp.form.sections[i].fields[j].values[repeat];
+                            }
+                            p.data[sid].push(field);
+                        } else {
+                            p.data[sid].push(rsp.form.sections[i].fields[j]);
+                        }
+                    }
+                }
+            }
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.submission.nextButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.submission_id) < (this.nplist.length - 1) ) {
+            return 'M.ciniki_forms_main.submission.save(\'M.ciniki_forms_main.submission.open(null,' + this.nplist[this.nplist.indexOf('' + this.submission_id) + 1] + ');\');';
+        }
+        return null;
+    }
+    this.submission.prevButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.submission_id) > 0 ) {
+            return 'M.ciniki_forms_main.submission.save(\'M.ciniki_forms_main.submission.open(null,' + this.nplist[this.nplist.indexOf('' + this.submission_id) - 1] + ');\');';
+        }
+        return null;
+    }
+    this.submission.addButton('save', 'Save', 'M.ciniki_forms_main.submission.save();');
+    this.submission.addClose('Cancel');
+    this.submission.addButton('next', 'Next');
+    this.submission.addLeftButton('prev', 'Prev');
 
     //
     // Start the app

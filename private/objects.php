@@ -60,7 +60,31 @@ function ciniki_forms_objects(&$ciniki) {
             ),
         'history_table' => 'ciniki_forms_history',
         );
-    
+    $objects['juror'] = array(
+        'name' => 'Juror',
+        'sync' => 'yes',
+        'o_name' => 'juror',
+        'o_container' => 'jurors',
+        'table' => 'ciniki_form_jurors',
+        'fields' => array(
+            'form_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.form'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            ),
+        'history_table' => 'ciniki_forms_history',
+        );
+    $objects['vote'] = array(
+        'name' => 'Vote',
+        'sync' => 'yes',
+        'o_name' => 'vote',
+        'o_container' => 'votes',
+        'table' => 'ciniki_form_votes',
+        'fields' => array(
+            'form_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.form'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'vote' => array('name'=>'Vote', 'default'=>'0'),
+            ),
+        'history_table' => 'ciniki_forms_history',
+        );
     $objects['field'] = array(
         'name' => 'Form Field',
         'sync' => 'yes',

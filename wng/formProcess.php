@@ -34,6 +34,11 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     $cur_section_id = '';
 
     //
+    // Set now date time
+    //
+    $dt_now = new DateTime('now', new DateTimezone('UTC')); 
+
+    //
     // Check for forms item request
     //
     if( isset($s['form-id']) && $s['form-id'] > 0 ) {
@@ -144,6 +149,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission']['id'], array(
                     'status' => 90,
+                    'dt_last_submitted' => $dt_now->format('Y-m-d H:i;s'),
                     ), 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.117', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));

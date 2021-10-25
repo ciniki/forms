@@ -40,6 +40,13 @@ function ciniki_forms_maps(&$ciniki) {
             'document'=>'Document',
         ),
     );
+    $maps['submission'] = array(
+        'status' => array(
+            '10'=>'In Progress',
+            '80'=>'Paid',
+            '90'=>'Submitted',
+        ),
+    );
     //
     return array('stat'=>'ok', 'maps'=>$maps);
 }

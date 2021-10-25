@@ -214,6 +214,30 @@ function ciniki_forms_formGet($ciniki) {
                 $form['field_ids'][] = $field['id'];
             }
         }
+
+        //
+        // Load the jurors
+        //
+        $strsql = "SELECT jurors.id, "
+            . "jurors.customer_id, "
+            . "customers.display_name "
+            . "FROM ciniki_form_jurors AS jurors "
+            . "LEFT JOIN ciniki_customers AS customers ON ("
+                . "jurors.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE jurors.form_id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
+            . "AND jurors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
+            array('container'=>'jurors', 'fname'=>'id', 
+                'fields'=>array('id', 'customer_id', 'display_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.136', 'msg'=>'Unable to load jurors', 'err'=>$rc['err']));
+        }
+        $form['jurors'] = isset($rc['jurors']) ? $rc['jurors'] : array();
     }
 
     return array('stat'=>'ok', 'form'=>$form);

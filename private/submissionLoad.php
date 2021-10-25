@@ -14,6 +14,32 @@
 function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+
+    //
+    // Load the date format strings for the user
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+    $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
+    
+    //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'maps');
+    $rc = ciniki_forms_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Load the submission for the form, object, and customer
     //
     $strsql = "SELECT submissions.id, "
@@ -23,8 +49,11 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
         . "submissions.customer_id, "
         . "submissions.invoice_id, "
         . "submissions.status, "
+        . "submissions.status AS status_text, "
         . "submissions.dt_terms_accepted, "
+        . "submissions.dt_terms_accepted AS dt_terms_accepted_display, "
         . "submissions.dt_last_submitted, "
+        . "submissions.dt_last_submitted AS dt_last_submitted_display, "
         . "data.id AS data_id, "
         . "data.field_id, "
         . "data.repeat_num, "
@@ -41,10 +70,16 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.forms', array(
         array('container'=>'submissions', 'fname'=>'id', 
-            'fields'=>array('id', 'form_id', 'object', 'object_id', 'customer_id', 'invoice_id', 'status', 
-                'dt_terms_accepted', 'dt_last_submitted',
-                )),
-        array('container'=>'fields', 'fname'=>'field_id', 
+            'fields'=>array('id', 'form_id', 'object', 'object_id', 'customer_id', 'invoice_id', 'status', 'status_text',
+                'dt_terms_accepted', 'dt_last_submitted', 'dt_terms_accepted_display', 'dt_last_submitted_display',
+                ),
+            'maps'=>array('status_text'=>$maps['submission']['status']),
+            'utctotz'=>array(
+                'dt_terms_accepted_display'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                'dt_last_submitted_display'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                ),
+            ),
+        array('container'=>'data', 'fname'=>'field_id', 
             'fields'=>array('id'=>'field_id', 'data_id', 'data'),
             ),
         array('container'=>'repeats', 'fname'=>'repeat_num', 
@@ -99,9 +134,9 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
                         //
                         // Check if submission data found for field
                         //
-                        if( isset($form['submission']['fields'][$field['id']]['repeats'][$i]['data']) ) {
-                            $form['sections'][$sid]['fields'][$fid]['data_ids'][$i] = $form['submission']['fields'][$field['id']]['repeats'][$i]['data_id'];
-                            $form['sections'][$sid]['fields'][$fid]['values'][$i] = $form['submission']['fields'][$field['id']]['repeats'][$i]['data'];
+                        if( isset($form['submission']['data'][$field['id']]['repeats'][$i]['data']) ) {
+                            $form['sections'][$sid]['fields'][$fid]['data_ids'][$i] = $form['submission']['data'][$field['id']]['repeats'][$i]['data_id'];
+                            $form['sections'][$sid]['fields'][$fid]['values'][$i] = $form['submission']['data'][$field['id']]['repeats'][$i]['data'];
                         }
                     }
                 }
@@ -111,14 +146,14 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
                     //
                     // Check if submission data found for field
                     //
-                    if( isset($form['submission']['fields'][$field['id']]['data']) ) {
-                        $form['sections'][$sid]['fields'][$fid]['data_id'] = $form['submission']['fields'][$field['id']]['data_id'];
+                    if( isset($form['submission']['data'][$field['id']]['data']) ) {
+                        $form['sections'][$sid]['fields'][$fid]['data_id'] = $form['submission']['data'][$field['id']]['data_id'];
                         // FIXME: Add other field type handlers
                         if( $field['ftype'] == 'address' ) {
-                            $form['sections'][$sid]['fields'][$fid]['value'] = json_decode($form['submission']['fields'][$field['id']]['data'], true);
+                            $form['sections'][$sid]['fields'][$fid]['value'] = json_decode($form['submission']['data'][$field['id']]['data'], true);
 
                         } else {
-                            $form['sections'][$sid]['fields'][$fid]['value'] = $form['submission']['fields'][$field['id']]['data'];
+                            $form['sections'][$sid]['fields'][$fid]['value'] = $form['submission']['data'][$field['id']]['data'];
                         }
                     }
                 }
