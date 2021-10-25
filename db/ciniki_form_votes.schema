@@ -9,7 +9,7 @@
 # uuid:                     The Universal Unique ID.
 # tnid:                     The Tenant ID the record belongs to.
 #
-# form_id:                  The ID of the form to connect the form to.
+# submission_id:            The ID of the submission the vote is for.
 # customer_id:              The ID of the customer account who is the juror for the form.
 # vote:                     The vote placed by the juror.
 #
@@ -25,7 +25,7 @@ create table ciniki_form_votes (
     uuid char(36) not null,
     tnid int not null,
 
-    form_id int not null,
+    submission_id int not null,
     customer_id int not null,
     vote int not null,
 
@@ -33,6 +33,6 @@ create table ciniki_form_votes (
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
-    unique index (form_id, customer_id, vote),
+    unique index (submission_id, customer_id, vote),
     index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

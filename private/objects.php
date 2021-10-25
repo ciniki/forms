@@ -79,7 +79,7 @@ function ciniki_forms_objects(&$ciniki) {
         'o_container' => 'votes',
         'table' => 'ciniki_form_votes',
         'fields' => array(
-            'form_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.form'),
+            'submission_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.submission'),
             'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
             'vote' => array('name'=>'Vote', 'default'=>'0'),
             ),

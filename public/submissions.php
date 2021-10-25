@@ -127,6 +127,31 @@ function ciniki_forms_submissions($ciniki) {
     $form = $rc['forms'][0];
 
     //
+    // Load the jurors
+    //
+    $strsql = "SELECT jurors.id, "
+        . "jurors.customer_id, "
+        . "customers.display_name "
+        . "FROM ciniki_form_jurors AS jurors "
+        . "LEFT JOIN ciniki_customers AS customers ON ("
+            . "jurors.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE jurors.form_id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
+        . "AND jurors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
+        array('container'=>'jurors', 'fname'=>'id', 
+            'fields'=>array('id', 'customer_id', 'display_name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.136', 'msg'=>'Unable to load jurors', 'err'=>$rc['err']));
+    }
+    $form['jurors'] = isset($rc['jurors']) ? $rc['jurors'] : array();
+    $form['num_jurors'] = count($form['jurors']);
+
+    //
     // Get the list of submissions
     //
     $strsql = "SELECT submissions.id, "
@@ -141,16 +166,23 @@ function ciniki_forms_submissions($ciniki) {
         . "submissions.dt_terms_accepted, "
         . "submissions.dt_last_save, "
         . "submissions.dt_last_submitted AS dt_last_submitted_date, "
-        . "submissions.dt_last_submitted AS dt_last_submitted_time "
+        . "submissions.dt_last_submitted AS dt_last_submitted_time, "
+        . "IFNULL(COUNT(votes.vote), 0) AS num_votes, "
+        . "IFNULL(SUM(votes.vote), '-') AS rank "
         . "FROM ciniki_form_submissions AS submissions "
         . "LEFT JOIN ciniki_customers AS customers ON ("
             . "submissions.customer_id = customers.id "
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
+        . "LEFT JOIN ciniki_form_votes AS votes ON ("
+            . "submissions.id = votes.submission_id "
+            . "AND votes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "WHERE submissions.form_id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
         . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . $status_sql
         . $object_sql
+        . "GROUP BY submissions.id "
         . "ORDER BY dt_last_submitted DESC "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -159,6 +191,7 @@ function ciniki_forms_submissions($ciniki) {
             'fields'=>array('id', 'form_id', 'object', 'object_id', 'customer_id', 'display_name', 
                 'invoice_id', 'status', 'status_text', 
                 'dt_terms_accepted', 'dt_last_save', 'dt_last_submitted_date', 'dt_last_submitted_time',
+                'num_votes', 'rank',
                 ),
             'maps'=>array('status_text'=>$maps['submission']['status']),
             'utctotz'=>array(
