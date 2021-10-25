@@ -980,7 +980,7 @@ function ciniki_forms_main() {
                 return '';
             }
             else if( d.ftype != null && d.ftype == 'textarea' ) {
-                return M.formatHtml(d.value);
+                return M.formatHtml(d.value != null ? d.value : '');
             }
             else if( d.ftype != null && d.ftype == 'image' ) {
                 if( d.value != null && d.value > 0 ) {
