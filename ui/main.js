@@ -1053,7 +1053,9 @@ function ciniki_forms_main() {
                                 'ftype':rsp.form.sections[i].fields[j].ftype,
                                 'value':'',
                                 };
-                            if( rsp.form.sections[i].fields[j].values[repeat] != null ) {
+                            if( rsp.form.sections[i].fields[j].values != null 
+                                && rsp.form.sections[i].fields[j].values[repeat] != null 
+                                ) {
                                 field.value = rsp.form.sections[i].fields[j].values[repeat];
                             }
                             p.data[sid].push(field);
