@@ -146,7 +146,7 @@ function ciniki_forms_submissions($ciniki) {
             'fields'=>array('id', 'customer_id', 'display_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.136', 'msg'=>'Unable to load jurors', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.150', 'msg'=>'Unable to load jurors', 'err'=>$rc['err']));
     }
     $form['jurors'] = isset($rc['jurors']) ? $rc['jurors'] : array();
     $form['num_jurors'] = count($form['jurors']);

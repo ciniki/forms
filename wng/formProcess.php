@@ -124,11 +124,6 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 foreach($rc['problems'] as $pid => $problem) {
                     $problem_list .= $problem . "\n";
                 }
-                $error_blocks[] = array(
-                    'type' => 'msg',
-                    'level' => 'error',
-                    'content' => "You must complete all the fields in the form.\n\n" . $problem_list,
-                    );
             }
             elseif( $rc['stat'] != 'ok' ) {
                 $error_blocks[] = array(
@@ -145,7 +140,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                     );
             }
            
-            if( count($error_blocks) == 0 ) {
+            if( !isset($problem_list) && count($error_blocks) == 0 ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission']['id'], array(
                     'status' => 90,
@@ -157,7 +152,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             }
         }
 
-        if( count($error_blocks) == 0 ) {
+        if( !isset($problem_list) && count($error_blocks) == 0 ) {
             $blocks[] = array(
                 'type' => 'title',
                 'title' => $form['name'],
@@ -291,6 +286,14 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
     }
 
+//                $error_blocks[] = array(
+//                    'type' => 'msg',
+//                    'level' => 'error',
+//                    'content' => "You must complete all the fields in the form.\n\n" . $problem_list,
+//                    );
+    if( isset($problem_list) && $problem_list != '' ) {
+        $problem_list = "You must complete all the required fields in the form. The following fields are missing:\n\n" . $problem_list;
+    }
     $blocks[] = array(
         'type' => 'form',
 //        'title' => $form['name'],
@@ -301,6 +304,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         'termsofuse' => $form['termsofuse'],
         'fee-amount' => $form['fee_amount'],
         'form-sections' => $form['sections'],
+        'problem-list' => isset($problem_list) ? $problem_list : '',
         'api-save-url' => $request['api_url'] . "/ciniki/forms/submissionSave",
         'api-image-url' => $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . "/" . $form['submission_id'],
         'api-formcheck-url' => $request['api_url'] . "/ciniki/forms/submissionCheck",

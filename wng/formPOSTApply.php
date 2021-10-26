@@ -42,9 +42,30 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                         }
                         elseif( $field['ftype'] == 'image' && isset($_FILES["f-{$field['id']}-{$i}"]) ) {
                             $file = $_FILES["f-{$field['id']}-{$i}"];
-                            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'insertFromUpload');
-                            $rc = ciniki_images_insertFromUpload($ciniki, $tnid, -2, $file, 1, $file['name'], '', 'no');
-                            if( $rc['stat'] == 'ok' || ($rc['stat'] == 'fail' && $rc['err']['code'] == 'ciniki.images.66') ) {
+                            $image = new Imagick($file['tmp_name']);
+                            //
+                            // Check image size
+                            //
+                            if( (isset($field['min-width']) && $field['min-width'] > 0 
+                                    && $image->getImageWidth() < $field['min-width'])
+                                || (isset($field['min-height']) && $field['min-height'] > 0 
+                                    && $image->getImageHeight() < $field['min-height'])
+                                ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.148', 'problem'=>'tosmall', 'msg'=>'The image you selected does not meet the minimum size requirements. It must be at least ' . $field['min-width'] . ' pixels wide and ' . $field['min-height'] . ' pixels tall.'));
+                            }
+                            if( (isset($field['max-width']) && $field['max-width'] > 0 
+                                    && $image->getImageWidth() > $field['max-width'])
+                                || (isset($field['max-height']) && $field['max-height'] > 0 
+                                    && $image->getImageHeight() > $field['max-height'])
+                                ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.149', 'problem'=>'tolarge', 'msg'=>'The image you selected is too large. It must be at no more than ' . $field['max-width'] . ' pixels wide and ' . $field['max-height'] . ' pixels tall.'));
+                            }
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'insertFromImagick');
+                            $rc = ciniki_images_hooks_insertFromImagick($ciniki, $tnid, array(
+                                'image' => $image,
+                                'original_filename' => $file['name'],
+                                ));
+                            if( $rc['stat'] == 'ok' || $rc['stat'] == 'exists' ) {
                                 $new_value = $rc['id'];
                             } else {
                                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.97', 'msg'=>'Unable to upload image', 'err'=>$rc['err']));
@@ -89,9 +110,30 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                     }
                     elseif( $field['ftype'] == 'image' && isset($_FILES["f-{$field['id']}"]) ) {
                         $file = $_FILES["f-{$field['id']}"];
-                        ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'insertFromUpload');
-                        $rc = ciniki_images_insertFromUpload($ciniki, $tnid, -2, $file, 1, $file['name'], '', 'no');
-                        if( $rc['stat'] == 'ok' || ($rc['stat'] == 'fail' && $rc['err']['code'] == 'ciniki.images.66') ) {
+                        $image = new Imagick($file['tmp_name']);
+                        //
+                        // Check image size
+                        //
+                        if( (isset($field['min-width']) && $field['min-width'] > 0 
+                                && $image->getImageWidth() < $field['min-width'])
+                            || (isset($field['min-height']) && $field['min-height'] > 0 
+                                && $image->getImageHeight() < $field['min-height'])
+                            ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.146', 'problem'=>'tosmall', 'msg'=>'The image you selected does not meet the minimum size requirements. It must be at least ' . $field['min-width'] . ' pixels wide and ' . $field['min-height'] . ' pixels tall.'));
+                        }
+                        if( (isset($field['max-width']) && $field['max-width'] > 0 
+                                && $image->getImageWidth() > $field['max-width'])
+                            || (isset($field['max-height']) && $field['max-height'] > 0 
+                                && $image->getImageHeight() > $field['max-height'])
+                            ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.147', 'problem'=>'tolarge', 'msg'=>'The image you selected is too large. It must be at no more than ' . $field['max-width'] . ' pixels wide and ' . $field['max-height'] . ' pixels tall.'));
+                        }
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'insertFromImagick');
+                        $rc = ciniki_images_hooks_insertFromImagick($ciniki, $tnid, array(
+                            'image' => $image,
+                            'original_filename' => $file['name'],
+                            ));
+                        if( $rc['stat'] == 'ok' || $rc['stat'] == 'exists' ) {
                             $new_value = $rc['id'];
                         } else {
                             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.76', 'msg'=>'Unable to upload image', 'err'=>$rc['err']));

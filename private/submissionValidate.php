@@ -43,6 +43,16 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                                 $problems["{$field['id']}-{$i}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                             }
                         }
+                        //
+                        // Check textareas for number of words
+                        //
+                        elseif( $field['ftype'] == 'textarea' 
+                            && isset($field['max-words']) && $field['max-words'] > 0 
+                            && isset($field['values'][$i]) 
+                            && str_word_count($field['values'][$i]) > $field['max-words']
+                            ) {
+                            $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Limit of ' . $field['max-words'] . ' words exceeded.';
+                        }
                     }
                 }
             }
@@ -71,7 +81,16 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                         elseif( !isset($field['value']) || $field['value'] == '' ) {
                             $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                         }
-
+                    }
+                    //
+                    // Check textareas for number of words
+                    //
+                    elseif( $field['ftype'] == 'textarea' 
+                        && isset($field['max-words']) && $field['max-words'] > 0 
+                        && isset($field['value']) 
+                        && str_word_count($field['value']) > $field['max-words']
+                        ) {
+                        $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Limit of ' . $field['max-words'] . ' words exceeded.';
                     }
                 }
             }
