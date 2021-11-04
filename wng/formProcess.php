@@ -279,6 +279,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         'type' => 'text',
         'title' => $form['name'],
         'content' => $form['guidelines'],
+        'class' => 'form-intro',
         );
     if( count($error_blocks) > 0 ) {
         foreach($error_blocks as $block) {
