@@ -9,4 +9,4 @@ The module is currently setup as private on github buy may be open sourced at a 
 
 License
 -------
-Ciniki is free software, and is released under the terms of the MIT License. See LICENSE.md.
+Copyright 2021 - Andrew Rivett
