@@ -68,6 +68,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             array_unshift($rc['blocks'], array(
                 'sequence' => 1,
                 'type' => 'text',
+                'class' => 'form-intro',
                 'title' => $form['name'],
                 'content' => isset($form['loginmsg']) && $form['loginmsg'] != '' ? $form['loginmsg'] : 'You must login or sign up for an account',
                 ));
