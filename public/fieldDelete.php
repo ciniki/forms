@@ -68,7 +68,7 @@ function ciniki_forms_fieldDelete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.26', 'msg'=>'Unable to check for attached data', 'err'=>$rc['err']));
     }
     if( $rc['num'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.27', 'msg'=>'There is still submission data for this field', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.27', 'msg'=>'There is still submission data for this field'));
     }
 
     //
