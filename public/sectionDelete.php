@@ -68,7 +68,7 @@ function ciniki_forms_sectionDelete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.15', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
     }
     if( $rc['num'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.16', 'msg'=>'There are still fields in this section', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.16', 'msg'=>'There are still fields in this section'));
     }
 
     //
