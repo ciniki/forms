@@ -1,7 +1,7 @@
 #
 # Description
 # -----------
-# Th
+# This table stores the forms for a tenant.
 #
 # Fields
 # ------
@@ -10,7 +10,7 @@
 # tnid:                     The Tenant ID the record belongs to.
 #
 # name:                     The name of the form.
-# permalink:                The permalink of the form.
+# permalink:                The permalink of the form, which must be unique among Active forms.
 #
 # type:                     Used initially for internal organization.
 #
@@ -27,7 +27,7 @@
 #                               0x04 -
 #                               0x08 -
 #                               0x10 - Juried
-#                               0x20 - 
+#                               0x20 - Jurying Enabled (jurors can login and submit votes)
 #                               0x40 -
 #                               0x80 -
 # 
