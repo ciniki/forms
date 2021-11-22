@@ -47,6 +47,14 @@ function ciniki_forms_maps(&$ciniki) {
             '90'=>'Submitted',
         ),
     );
+    $maps['vote'] = array(
+        'vote' => array(
+            '0'=>'',
+            '1'=>'No',
+            '2'=>'Maybe',
+            '3'=>'Yes',
+        ),
+    );
     //
     return array('stat'=>'ok', 'maps'=>$maps);
 }

@@ -138,10 +138,10 @@ function ciniki_forms_main() {
                 }},
             'flags5':{'label':'Juried', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags',
                 'onchange':'M.ciniki_forms_main.form.juryToggle();',
-//                'on_sections':['jurors'],
+                'on_fields':['flags6'],
                 },
-//            }},
-//        '_times':{'label':'Dates & Times', 'aside':'yes', 'fields':{
+            'flags6':{'label':'Voting Open', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags',
+                },
             'dt_start':{'label':'Start', 'type':'datetime'},
             'dt_end':{'label':'End', 'type':'datetime'},
             }},
@@ -150,12 +150,8 @@ function ciniki_forms_main() {
             'guidelines':{'label':'Guidelines', 'fn':'M.ciniki_forms_main.form.showSection("guidelines");'},
             'termsofuse':{'label':'Terms of Use', 'fn':'M.ciniki_forms_main.form.showSection("termsofuse");'},
             'jurors':{'label':'Jurors', 'visible':'no', 
-//                'visible':function() { console.log(M.ciniki_forms_main.form.formValue('flags5')); M.ciniki_forms_main.form.formValue('flags5') == 'on' ? 'yes' : 'no';},
                 'fn':'M.ciniki_forms_main.form.showSection("jurors");',
                 },
-//            'thankyou':{'label':'Thank You Message', 'fn':'M.ciniki_forms_main.form.showSection("thankyou");'},
-//            'alreadysubmitted':{'label':'Existing Submittion Message', 'fn':'M.ciniki_forms_main.form.showSection("alreadysubmitted");'},
-//            'loginmsg':{'label':'Login Required Message', 'fn':'M.ciniki_forms_main.form.showSection("loginmsg");'},
             }},
         'sections':{'label':'Sections', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'editFn':function(s, i, d) {
@@ -179,11 +175,6 @@ function ciniki_forms_main() {
             'addTxt':'Add Section',
             'addFn':'M.ciniki_forms_main.form.addSection();',
             },
-//        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'fields', 'tabs':{
-//            'fields':{'label':'Fields', 'fn':'M.ciniki_forms_main.form.switchTab("fields");'},
-//            'guidelines':{'label':'Guidelines', 'fn':'M.ciniki_forms_main.form.switchTab("guidelines");'},
-//            'termsofuse':{'label':'Terms', 'fn':'M.ciniki_forms_main.form.switchTab("termsofuse");'},
-//            }},
         'fields':{'label':'Form Fields', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return M.ciniki_forms_main.form.selected == 'section' ? 'yes' :'hidden'; },
             'headerValues':['Type', 'Label', 'Req', 'Hide', 'Connection'],
@@ -422,6 +413,7 @@ function ciniki_forms_main() {
             }
             var p = M.ciniki_forms_main.form;
             p.data = rsp.form;
+            p.sections.general.fields.flags6.visible = (rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no';
             p.sections._tabs.list.jurors.visible = (rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no';
             p.refresh();
             p.show(cb);
@@ -873,7 +865,7 @@ function ciniki_forms_main() {
             return 'M.ciniki_forms_main.submissions.switchObject(\'' + d.object + '\',\'' + d.object_id + '\');';
         }
         if( s == 'submissions' ) {
-            return 'M.ciniki_forms_main.submission.open(\'M.ciniki_forms_main.submissions.open();\',\'' + d.id + '\',M.ciniki_forms_main.submissions.data.submission_ids);';
+            return 'M.ciniki_forms_main.submission.open(\'M.ciniki_forms_main.submissions.open();\',\'' + d.id + '\',M.ciniki_forms_main.submissions.data.nplist);';
         }
         return '';
     }
@@ -1000,7 +992,6 @@ function ciniki_forms_main() {
                 M.api.err(rsp);
                 return false;
             }
-            console.log(rsp);
             var p = M.ciniki_forms_main.submission;
             p.data = rsp.form;
             p.sections = {
@@ -1071,13 +1062,13 @@ function ciniki_forms_main() {
     }
     this.submission.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.submission_id) < (this.nplist.length - 1) ) {
-            return 'M.ciniki_forms_main.submission.save(\'M.ciniki_forms_main.submission.open(null,' + this.nplist[this.nplist.indexOf('' + this.submission_id) + 1] + ');\');';
+            return 'M.ciniki_forms_main.submission.open(null,' + this.nplist[this.nplist.indexOf('' + this.submission_id) + 1] + ');';
         }
         return null;
     }
     this.submission.prevButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.submission_id) > 0 ) {
-            return 'M.ciniki_forms_main.submission.save(\'M.ciniki_forms_main.submission.open(null,' + this.nplist[this.nplist.indexOf('' + this.submission_id) - 1] + ');\');';
+            return 'M.ciniki_forms_main.submission.open(null,' + this.nplist[this.nplist.indexOf('' + this.submission_id) - 1] + ');';
         }
         return null;
     }

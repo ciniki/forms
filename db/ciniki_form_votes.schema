@@ -10,7 +10,7 @@
 # tnid:                     The Tenant ID the record belongs to.
 #
 # submission_id:            The ID of the submission the vote is for.
-# customer_id:              The ID of the customer account who is the juror for the form.
+# juror_id:                 The ID of the juror for the form.
 # vote:                     The vote placed by the juror.
 #
 #                               1 - No
@@ -26,13 +26,14 @@ create table ciniki_form_votes (
     tnid int not null,
 
     submission_id int not null,
-    customer_id int not null,
+    juror_id int not null,
     vote int not null,
+    notes text not null,
 
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
-    unique index (submission_id, customer_id, vote),
+    unique index (submission_id, juror_id),
     index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

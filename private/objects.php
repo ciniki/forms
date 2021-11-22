@@ -80,8 +80,9 @@ function ciniki_forms_objects(&$ciniki) {
         'table' => 'ciniki_form_votes',
         'fields' => array(
             'submission_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.submission'),
-            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'juror_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
             'vote' => array('name'=>'Vote', 'default'=>'0'),
+            'notes' => array('name'=>'Notes', 'default'=>''),
             ),
         'history_table' => 'ciniki_forms_history',
         );
