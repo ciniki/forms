@@ -339,7 +339,7 @@ function ciniki_forms_main() {
         });
     }
     this.form.jurorDelete = function(id) {
-        if( confirm('Are you sure you want to remove this juror? All votes they submitted will also be removed. This action cannot be undone.') ) {
+        if( M.confirm('Are you sure you want to remove this juror? All votes they submitted will also be removed. This action cannot be undone.') ) {
             M.api.getJSONCb('ciniki.forms.jurorDelete', {'tnid':M.curTenantID, 'juror_id':id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -448,7 +448,7 @@ function ciniki_forms_main() {
         }
     }
     this.form.remove = function() {
-        if( confirm('Are you sure you want to remove form?') ) {
+        if( M.confirm('Are you sure you want to remove form?') ) {
             M.api.getJSONCb('ciniki.forms.formDelete', {'tnid':M.curTenantID, 'form_id':this.form_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -563,7 +563,7 @@ function ciniki_forms_main() {
         }
     }
     this.section.remove = function() {
-        if( confirm('Are you sure you want to remove section?') ) {
+        if( M.confirm('Are you sure you want to remove section?') ) {
             M.api.getJSONCb('ciniki.forms.sectionDelete', {'tnid':M.curTenantID, 'section_id':this.section_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -769,7 +769,7 @@ function ciniki_forms_main() {
         }
     }
     this.field.remove = function() {
-        if( confirm('Are you sure you want to remove field?') ) {
+        if( M.confirm('Are you sure you want to remove field?') ) {
             M.api.getJSONCb('ciniki.forms.fieldDelete', {'tnid':M.curTenantID, 'field_id':this.field_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -1056,8 +1056,22 @@ function ciniki_forms_main() {
                     }
                 }
             }
+            p.sections['_buttons'] = {'label':'', 'buttons':{
+                'delete':{'label':'Delete', 'fn':'M.ciniki_forms_main.submission.remove();'},
+                }};
             p.refresh();
             p.show(cb);
+        });
+    }
+    this.submission.remove = function() {
+        M.confirm('Are you sure you want to remove this submission?', 'Delete Submission', function(rsp) {
+            M.api.getJSONCb('ciniki.forms.submissionDelete', {'tnid':M.curTenantID, 'submission_id':M.ciniki_forms_main.submission.submission_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_forms_main.submission.close();
+            })
         });
     }
     this.submission.nextButtonFn = function() {
@@ -1072,8 +1086,8 @@ function ciniki_forms_main() {
         }
         return null;
     }
-    this.submission.addButton('save', 'Save', 'M.ciniki_forms_main.submission.save();');
-    this.submission.addClose('Cancel');
+//    this.submission.addButton('save', 'Save', 'M.ciniki_forms_main.submission.save();');
+    this.submission.addClose('Close');
     this.submission.addButton('next', 'Next');
     this.submission.addLeftButton('prev', 'Prev');
 

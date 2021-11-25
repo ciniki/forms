@@ -59,8 +59,8 @@ function ciniki_forms_jurorDelete(&$ciniki) {
     //
     $strsql = "SELECT id, uuid, vote "
         . "FROM ciniki_form_votes "
-        . "WHERE ciniki_form_votes.form_id = '" . ciniki_core_dbQuote($ciniki, $juror['form_id']) . "' "
-        . "AND ciniki_form_votes.customer_id = '" . ciniki_core_dbQuote($ciniki, $juror['customer_id']) . "' "
+        . "WHERE ciniki_form_votes.juror_id = '" . ciniki_core_dbQuote($ciniki, $juror['juror_id']) . "' "
+        . "AND ciniki_form_votes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'vote');
     if( $rc['stat'] != 'ok' ) {

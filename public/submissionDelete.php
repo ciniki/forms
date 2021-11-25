@@ -57,6 +57,19 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     //
     // Check for any dependencies before deleting
     //
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_form_votes "
+        . "WHERE submission_id = '" . ciniki_core_dbQuote($ciniki, $args['submission_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
+        array('container'=>'votes', 'fname'=>'id', 'fields'=>array('id', 'uuid')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.170', 'msg'=>'Unable to load votes', 'err'=>$rc['err']));
+    }
+    $votes = isset($rc['votes']) ? $rc['votes'] : array();
 
     //
     // Check if any modules are currently using this object
@@ -82,6 +95,17 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.forms');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Remove the votes
+    //
+    foreach($votes as $vote) {
+        $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.vote', $vote['id'], $vote['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
+            return $rc;
+        }
     }
 
     //
