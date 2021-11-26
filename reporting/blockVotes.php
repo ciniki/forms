@@ -82,7 +82,7 @@ function ciniki_forms_reporting_blockVotes(&$ciniki, $tnid, $args) {
     // Check if type specified
     //
     $type_sql = '';
-    if( isset($args['type']) && $args['type'] != '' ) {
+    if( isset($args['type']) && $args['type'] != '' && $args['type'] != '0' ) {
         $type_sql = "AND forms.type = '" . ciniki_core_dbQuote($ciniki, $args['type']) . "' ";
     }
 
