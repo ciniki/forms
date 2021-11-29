@@ -163,6 +163,7 @@ function ciniki_forms_submissions($ciniki) {
         . "submissions.invoice_id, "
         . "submissions.status, "
         . "submissions.status AS status_text, "
+        . "submissions.label, "
         . "submissions.dt_terms_accepted, "
         . "submissions.dt_last_save, "
         . "submissions.dt_last_submitted AS dt_last_submitted_date, "
@@ -189,7 +190,7 @@ function ciniki_forms_submissions($ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
         array('container'=>'submissions', 'fname'=>'id', 
             'fields'=>array('id', 'form_id', 'object', 'object_id', 'customer_id', 'display_name', 
-                'invoice_id', 'status', 'status_text', 
+                'invoice_id', 'status', 'status_text', 'label',
                 'dt_terms_accepted', 'dt_last_save', 'dt_last_submitted_date', 'dt_last_submitted_time',
                 'num_votes', 'rank',
                 ),

@@ -28,6 +28,7 @@ function ciniki_forms_objects(&$ciniki) {
             'status' => array('name'=>'Status', 'default'=>'10'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'max_submissions' => array('name'=>'Max Submissions', 'default'=>''),
+            'max_customer_submissions' => array('name'=>'Max Customer Submissions', 'default'=>'1'),
             'fee_label' => array('name'=>'Fee Label', 'default'=>''),
             'fee_amount' => array('name'=>'Submission Fee', 'default'=>''),
             'cartsubmit_label' => array('name'=>'Cart Submit Label', 'default'=>''),
@@ -57,32 +58,6 @@ function ciniki_forms_objects(&$ciniki) {
             'min_repeats' => array('name'=>'Min Repeats', 'default'=>'1'),
             'max_repeats' => array('name'=>'Max Repeats', 'default'=>'0'),
             'description' => array('name'=>'Description', 'default'=>''),
-            ),
-        'history_table' => 'ciniki_forms_history',
-        );
-    $objects['juror'] = array(
-        'name' => 'Juror',
-        'sync' => 'yes',
-        'o_name' => 'juror',
-        'o_container' => 'jurors',
-        'table' => 'ciniki_form_jurors',
-        'fields' => array(
-            'form_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.form'),
-            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
-            ),
-        'history_table' => 'ciniki_forms_history',
-        );
-    $objects['vote'] = array(
-        'name' => 'Vote',
-        'sync' => 'yes',
-        'o_name' => 'vote',
-        'o_container' => 'votes',
-        'table' => 'ciniki_form_votes',
-        'fields' => array(
-            'submission_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.submission'),
-            'juror_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
-            'vote' => array('name'=>'Vote', 'default'=>'0'),
-            'notes' => array('name'=>'Notes', 'default'=>''),
             ),
         'history_table' => 'ciniki_forms_history',
         );
@@ -117,6 +92,7 @@ function ciniki_forms_objects(&$ciniki) {
             'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
             'invoice_id' => array('name'=>'Invoice', 'ref'=>'ciniki.sapos.invoice'),
             'status' => array('name'=>'Status', 'default'=>'10'),
+            'label' => array('name'=>'Label', 'default'=>''),
             'dt_terms_accepted' => array('name'=>'Terms Accepted', 'default'=>''),
             'dt_last_save' => array('name'=>'Last Saved', 'default'=>''),
             'dt_last_submitted' => array('name'=>'Last Submitted', 'default'=>''),
@@ -134,6 +110,32 @@ function ciniki_forms_objects(&$ciniki) {
             'field_id' => array('name'=>'Field', 'ref'=>'ciniki.forms.field'),
             'repeat_num' => array('name'=>'Repeat Number', 'default'=>'1'),
             'data' => array('name'=>'Data', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_forms_history',
+        );
+    $objects['juror'] = array(
+        'name' => 'Juror',
+        'sync' => 'yes',
+        'o_name' => 'juror',
+        'o_container' => 'jurors',
+        'table' => 'ciniki_form_jurors',
+        'fields' => array(
+            'form_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.form'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            ),
+        'history_table' => 'ciniki_forms_history',
+        );
+    $objects['vote'] = array(
+        'name' => 'Vote',
+        'sync' => 'yes',
+        'o_name' => 'vote',
+        'o_container' => 'votes',
+        'table' => 'ciniki_form_votes',
+        'fields' => array(
+            'submission_id' => array('name'=>'Form', 'ref'=>'ciniki.forms.submission'),
+            'juror_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'vote' => array('name'=>'Vote', 'default'=>'0'),
+            'notes' => array('name'=>'Notes', 'default'=>''),
             ),
         'history_table' => 'ciniki_forms_history',
         );

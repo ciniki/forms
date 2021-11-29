@@ -42,7 +42,7 @@ function ciniki_forms_maps(&$ciniki) {
     );
     $maps['submission'] = array(
         'status' => array(
-            '10'=>'In Progress',
+            '10'=>'Draft',
             '80'=>'Paid',
             '90'=>'Submitted',
         ),

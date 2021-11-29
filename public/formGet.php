@@ -102,6 +102,7 @@ function ciniki_forms_formGet($ciniki) {
             . "ciniki_forms.status, "
             . "ciniki_forms.flags, "
             . "ciniki_forms.max_submissions, "
+            . "ciniki_forms.max_customer_submissions, "
             . "ciniki_forms.fee_label, "
             . "ciniki_forms.fee_amount, "
             . "ciniki_forms.cartsubmit_label, "
@@ -121,7 +122,7 @@ function ciniki_forms_formGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
             array('container'=>'forms', 'fname'=>'id', 
                 'fields'=>array('name', 'permalink', 'type', 'status', 'flags', 
-                    'max_submissions', 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
+                    'max_submissions', 'max_customer_submissions', 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
                     'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'alreadysubmitted', 'loginmsg',
                     ),
                 'naprices'=>array('fee_amount'),

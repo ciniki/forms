@@ -78,6 +78,7 @@ function ciniki_forms_wng_submissionLoad(&$ciniki, $tnid, $request, &$form) {
         //
         // No submission yet
         //
+        $form['submission_id'] = 'new';
         return array('stat'=>'ok');
     }
     $form['submission'] = array_shift($rc['submissions']);

@@ -198,7 +198,7 @@ function ciniki_forms_reporting_blockVotes(&$ciniki, $tnid, $args) {
     // No forms 
     //
     else {
-        $chunks[] = array('type'=>'message', 'content'=>'No new submissions in the last ' . $date_text . '.');
+        $chunks[] = array('type'=>'message', 'content'=>'No active forms with voting enabled.');
     }
     
     return array('stat'=>'ok', 'chunks'=>$chunks);

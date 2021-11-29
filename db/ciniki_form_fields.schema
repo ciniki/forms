@@ -32,7 +32,7 @@
 # flags:
 #                               0x01 - Required field
 #                               0x02 - Hide responses from Jurers
-#                               0x04 - 
+#                               0x04 - Submission Label (use this field as the title for this submission).
 #                               0x08 - 
 #
 # sequence:                 The order for the field in the form.

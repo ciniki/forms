@@ -33,6 +33,11 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     $error_blocks = array();
     $cur_section_id = '';
 
+    $base_url = '';
+    for($i = 0; $i <= $request['cur_uri_pos']; $i++) {
+        $base_url .= '/' . $request['uri_split'][$i];
+    }
+
     //
     // Set now date time
     //
@@ -44,12 +49,21 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     if( isset($s['form-id']) && $s['form-id'] > 0 ) {
         $form_id = $s['form-id'];
     }
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+1)])
-        && $request['uri_split'][($request['cur_uri_pos']+1)] != '' 
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+0)])
+        && $request['uri_split'][($request['cur_uri_pos']+0)] != '' 
         ) {
-        $form_id = $request['uri_split'][($request['cur_uri_pos']+1)];
+        $form_id = $request['uri_split'][($request['cur_uri_pos']+0)];
     } else {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.19', 'msg'=>"No forms specified"));
+    }
+
+    //
+    // Check if submission specified
+    //
+    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+        && $request['uri_split'][($request['cur_uri_pos']+1)] != '' 
+        ) {
+        $submission_uuid = $request['uri_split'][($request['cur_uri_pos']+1)];
     }
 
     //
@@ -81,15 +95,185 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     $form = $rc['form'];
 
     //
-    // Check if submissions made, load values
+    // Load all submissions for the customer for the form
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionLoad');
-    $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formSubmissionsLoad');
+    $rc = ciniki_forms_wng_formSubmissionsLoad($ciniki, $tnid, $request, $form);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.50', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
+        $blocks[] = array(
+            'type' => 'title',
+            'title' => $form['name'],
+            );
+        $blocks[] = array(
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'Unable to load submissions',
+            );
+        return array('stat'=>'ok', 'blocks'=>$blocks);
     }
 
-    if( isset($form['submission']['status']) && $form['submission']['status'] >= 90 ) {
+    //
+    // Check if a submission already exists
+    //
+    if( isset($form['submissions']) && count($form['submissions']) > 0 ) {
+        foreach($form['submissions'] as $sid => $sub) {
+            if( isset($submission_uuid) && $submission_uuid == $sub['uuid'] ) {
+                $form['submission_id'] = $sub['id'];
+            }
+            if( $sub['status'] < 90 ) {
+                $form['submissions'][$sid]['url'] = "<a class='button' href='{$request['base_url']}{$base_url}/{$sub['uuid']}'>Continue</a>";
+            } else {
+                $form['submissions'][$sid]['url'] = "<a class='button' href='{$request['base_url']}{$base_url}/{$sub['uuid']}'>Update</a>";
+            }
+        }
+    }
+
+    //
+    // Setup the list of submissions
+    //
+    $block_submission_list = array(
+        'type' => 'table',
+        'class' => 'limit-width center limit-width-40',
+        'columns' => array(
+                array(
+                    'label' => 'Submissions',
+                    'field' => 'label',
+                ),
+                array(
+                    'label' => 'Status',
+                    'field' => 'status_text',
+                ),
+                array(
+                    'label' => '',
+                    'class' => 'alignright',
+                    'field' => 'url',
+                ),
+            ),
+        'rows' => $form['submissions'],
+        );
+
+    //
+    // Check if form allows multiple submissions and none specified, then show the list
+    //
+    if( isset($form['max_customer_submissions']) 
+        && $form['max_customer_submissions'] > 1
+        && count($form['submissions']) > 0
+        && !isset($submission_uuid)
+        ) {
+        $blocks[] = array(
+            'type' => 'title',
+            'title' => $form['name'],
+            );
+        $blocks[] = $block_submission_list;
+        if( count($form['submissions']) < $form['max_customer_submissions'] ) {
+            $blocks[] = array(
+                'type' => 'buttons',
+                'list' => array(
+                    array(
+                        'text' => 'Start New Submission',
+                        'page' => 0,
+                        'url' => $base_url . '/new',
+                        ),
+                    ),
+                );
+        }
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    } 
+
+    //
+    // Check if this is a new submission, then create the submission and redirect to full url
+    //
+    if( ($form['submission_id'] == 'new' || $form['submission_id'] == 0) ) {
+        if( count($form['submissions']) >= $form['max_customer_submissions'] ) {
+            $blocks[] = array(
+                'type' => 'title',
+                'title' => $form['name'],
+                );
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => 'You have already submitted the maximum number allowed.',
+                );
+            $blocks[] = $block_submission_list;
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
+        //
+        // Create a new submission and redirect
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.submission', array(
+            'form_id' => $form['id'],
+            'object' => $form['object'],
+            'object_id' => $form['object_id'],
+            'customer_id' => $form['customer_id'],
+            'invoice_id' => 0,
+            'status' => 10,
+            'label' => 'New Submission',
+            ), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.71', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
+        }
+        $form['submission_id'] = $rc['id'];
+        $form['submission_uuid'] = $rc['uuid'];
+
+        //
+        // Save the defaults for the form fields
+        //
+        if( isset($form['sections']) ) {
+            foreach($form['sections'] as $sid => $section) {
+                if( isset($section['fields']) ) {
+                    foreach($section['fields'] as $fid => $field) {
+                        //
+                        // Check if default value exists
+                        //
+                        if( isset($field['default']) ) {
+                            if( ($section['flags']&0x01) == 0x01 ) {
+                                for($i = 1; $i < $section['max_repeats']; $i++ ) {
+                                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.data', array(
+                                        'submission_id' => $form['submission_id'],
+                                        'field_id' => $field['id'],
+                                        'repeat_num' => $i,
+                                        'data' => is_array($field['default']) ? json_encode($field['default']) : $field['default'],
+                                        ), 0x04);
+                                    if( $rc['stat'] != 'ok' ) {
+                                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.178', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                                    }
+                                }
+                            } else {
+                                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.data', array(
+                                    'submission_id' => $form['submission_id'],
+                                    'field_id' => $field['id'],
+                                    'repeat_num' => 1,
+                                    'data' => is_array($field['default']) ? json_encode($field['default']) : $field['default'],
+                                    ), 0x04);
+                                if( $rc['stat'] != 'ok' ) {
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.179', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } 
+
+        header("Location: {$request['base_url']}{$base_url}/{$form['submission_uuid']}");
+        return array('stat'=>'exit');
+    }
+    //
+    // Existing submission and submission is specified, Load the submission
+    //
+    else { 
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionLoad');
+        $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.50', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
+        }
+    }
+
+    //
+    // Check if single submission form and if already submitted
+    //
+    if( isset($form['submission']['status']) && $form['submission']['status'] >= 90 && $form['max_customer_submissions'] <= 1 ) {
         $blocks[] = array(
             'type' => 'title',
             'title' => $form['name'],
@@ -167,44 +351,6 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
     }
 
-/* Javascript loadsaved 
-    //
-    // Apply the posted values or setup the default values if none posted
-    //
-    if( isset($_POST['action']) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formPOSTApply');
-        $rc = ciniki_forms_wng_formPOSTApply($ciniki, $tnid, $request, $form);
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.70', 'msg'=>'Unable to update form', 'err'=>$rc['err']));
-        }
-    } 
-    //
-    // Apply the form defaults if no submission
-    //
-    else */
-    if( !isset($form['submission_id']) || $form['submission_id'] == 0 ) {
-        if( isset($form['sections']) ) {
-            foreach($form['sections'] as $sid => $section) {
-                if( isset($section['fields']) ) {
-                    foreach($section['fields'] as $fid => $field) {
-                        //
-                        // Add the default
-                        //
-                        if( isset($field['default']) ) {
-                            if( ($section['flags']&0x01) == 0x01 ) {
-                                for($i = 1; $i < $section['max_repeats']; $i++ ) {
-                                    $form['sections'][$sid]['fields'][$fid]['values'][$i] = $field['default'];
-                                }
-                            } else {
-                                $form['sections'][$sid]['fields'][$fid]['value'] = $field['default'];
-                            }
-                        }
-                    }
-                }
-            }
-        } 
-    }
-
     //
     // Check if payment required, but no invoice yet
     //
@@ -277,7 +423,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     $blocks[] = array(
         'sequence' => 1,
-        'type' => 'text',
+        'type' => ($form['guidelines'] != '' ? 'text' : 'title'),
         'title' => $form['name'],
         'content' => $form['guidelines'],
         'class' => 'form-intro',
@@ -288,21 +434,13 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
     }
 
-//                $error_blocks[] = array(
-//                    'type' => 'msg',
-//                    'level' => 'error',
-//                    'content' => "You must complete all the fields in the form.\n\n" . $problem_list,
-//                    );
     if( isset($problem_list) && $problem_list != '' ) {
         $problem_list = "You must complete all the required fields in the form. The following fields are missing:\n\n" . $problem_list;
     }
     $blocks[] = array(
         'type' => 'form',
-//        'title' => $form['name'],
         'section-selector' => 'yes',
         'form-id' => $form['id'],
-//        'display_sectioned' => ($form['flags']&0x02) == 0 ? 'no' : 'yes',       // Default yes
-//        'guidelines' => $form['guidelines'],
         'termsofuse' => $form['termsofuse'],
         'fee-amount' => $form['fee_amount'],
         'form-sections' => $form['sections'],
@@ -320,11 +458,6 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             'customer_id' => $form['customer_id'],
             ),
         );
-
-//    $blocks[] = array(
-//        'type' => 'content',
-//        'content' => '<pre>' . print_r($request, true) . '</pre>',
-//        );
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

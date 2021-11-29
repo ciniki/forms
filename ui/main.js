@@ -202,6 +202,7 @@ function ciniki_forms_main() {
                 'flags1':{'label':'Account Required', 'type':'flagtoggle', 'default':'on', 'bit':0x01, 'field':'flags',
                     },
                 'max_submissions':{'label':'Max Submissions', 'type':'text', 'size':'small'},
+                'max_customer_submissions':{'label':'Max Submissions/Customer', 'type':'text', 'size':'small'},
                 'fee_label':{'label':'Fee Label', 'type':'text'},
                 'fee_amount':{'label':'Submission Fee', 'type':'text', 'size':'small'},
                 'cartsubmit_label':{'label':'Pay Button Label', 'type':'text'},
@@ -629,6 +630,7 @@ function ciniki_forms_main() {
             'label':{'label':'Label', 'type':'text'},
             'flags1':{'label':'Required', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'no'},
             'flags2':{'label':'Hide from Jurors', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'no'},
+            'flags3':{'label':'Submission Label', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'no'},
             'field_ref':{'label':'Connect To', 'type':'select', 'options':{}},
             }},
         '_options':{'label':'Options', 'visible':'hidden', 'fields':{

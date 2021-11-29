@@ -32,6 +32,8 @@
 #                               0x80 -
 # 
 # max_submissions:          The maximum number of submissions allowed, or 0 for unlimited.
+# max_customer_submissions: The maximum number of submissions allowed per customer.
+#
 # fee_label:                The label for the fee.
 # fee_amount:               The submission fee to be charged.
 # cartsubmit_label:         The label to use for the submit to cart.
@@ -60,6 +62,7 @@ create table ciniki_forms (
     status tinyint unsigned not null,
     flags smallint unsigned not null,
     max_submissions int not null,
+    max_customer_submissions int not null,
     fee_label varchar(150) not null,
     fee_amount decimal(19,6) not null,
     cartsubmit_label varchar(150) not null,

@@ -48,7 +48,7 @@ function ciniki_forms_sapos_cartItemLookup($ciniki, $tnid, $customer, $args) {
             'code' => '',
             'description' => $form['name'],
             'quantity' => 1,
-            'flags' => 0x08 | 0x80,
+            'flags' => 0x08 | 0x20 | 0x80,
             'object' => 'ciniki.forms.submission',
             'object_id' => $args['object_id'],
             'price_id' => 0,

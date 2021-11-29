@@ -32,5 +32,6 @@ create table ciniki_form_data (
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
+    unique index (submission_id, field_id, repeat_num),
     index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

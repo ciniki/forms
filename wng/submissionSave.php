@@ -50,6 +50,13 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.67', 'msg'=>'Unable to load form', 'err'=>$rc['err']));
     }
     $form = $rc['form'];
+
+    //
+    // Check if submission id specified
+    //
+    if( isset($request['args']['submission_id']) ) {
+        $form['submission_id'] = $request['args']['submission_id'];
+    }
         
     //
     // Load the existing submission
@@ -207,13 +214,20 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request) {
     }
     
     if( count($update_args) > 0 ) {
-//        error_log("Update Submission");
-//        error_log(print_r($update_args,true));
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission_id'], $update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.84', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
         }
+    }
+
+    //
+    // Check for any updates to submission label
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLabelUpdate');
+    $rc = ciniki_forms_submissionLabelUpdate($ciniki, $tnid, $form['submission_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.175', 'msg'=>'Unable to update label', 'err'=>$rc['err']));
     }
 
     $rsp = array('stat'=>'ok');
