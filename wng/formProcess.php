@@ -129,7 +129,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     }
 
     //
-    // Setup the list of submissions
+    // Setup the list of submissions. This block could be used multiple times in the following code.
     //
     $block_submission_list = array(
         'type' => 'table',
@@ -151,6 +151,16 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             ),
         'rows' => $form['submissions'],
         );
+    $block_submission_new = array(
+        'type' => 'buttons',
+        'list' => array(
+            array(
+                'text' => 'Start New Submission',
+                'page' => 0,
+                'url' => $base_url . '/new',
+                ),
+            ),
+        );
 
     //
     // Check if form allows multiple submissions and none specified, then show the list
@@ -166,16 +176,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             );
         $blocks[] = $block_submission_list;
         if( count($form['submissions']) < $form['max_customer_submissions'] ) {
-            $blocks[] = array(
-                'type' => 'buttons',
-                'list' => array(
-                    array(
-                        'text' => 'Start New Submission',
-                        'page' => 0,
-                        'url' => $base_url . '/new',
-                        ),
-                    ),
-                );
+            $blocks[] = $block_submission_new;
         }
         return array('stat'=>'ok', 'blocks'=>$blocks);
     } 
@@ -336,6 +337,16 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.117', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
                 }
+                //
+                // Update the status in the submission list 
+                //
+                foreach($block_submission_list['rows'] as $sid => $s) {
+                    if( $s['id'] == $form['submission']['id'] ) {
+                        $block_submission_list['rows'][$sid]['status'] = 90;
+                        $block_submission_list['rows'][$sid]['status_text'] = 'Submitted';
+                        $block_submission_list['rows'][$sid]['url'] = "<a class='button' href='{$request['base_url']}{$base_url}/{$s['uuid']}'>Update</a>";
+                    }
+                }
             }
         }
 
@@ -349,6 +360,12 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 'level' => 'success',
                 'content' => (isset($form['thankyou']) && $form['thankyou'] != '' ? $form['thankyou'] : 'Thank you for your submission.'),
                 );
+            if( $form['max_customer_submissions'] > 1 ) {
+                $blocks[] = $block_submission_list;
+                if( count($form['submissions']) < $form['max_customer_submissions'] ) {
+                    $blocks[] = $block_submission_new;
+                }
+            }
             return array('stat'=>'ok', 'blocks'=>$blocks);
         }
     }

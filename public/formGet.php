@@ -77,6 +77,7 @@ function ciniki_forms_formGet($ciniki) {
             'status'=>'10',
             'flags'=>'0',
             'max_submissions'=>'',
+            'max_customer_submissions'=>'1',
             'fee_label' => '',
             'fee_amount'=>'',
             'fee_label' => '',
