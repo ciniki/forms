@@ -100,10 +100,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formSubmissionsLoad');
     $rc = ciniki_forms_wng_formSubmissionsLoad($ciniki, $tnid, $request, $form);
     if( $rc['stat'] != 'ok' ) {
-        $blocks[] = array(
-            'type' => 'title',
-            'title' => $form['name'],
-            );
+        $blocks[] = $block_title;
         $blocks[] = array(
             'type' => 'msg',
             'level' => 'error',
@@ -131,6 +128,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Setup the list of submissions. This block could be used multiple times in the following code.
     //
+    $block_title = array(
+        'type' => 'title',
+        'title' => $form['name'],
+        );
     $block_submission_list = array(
         'type' => 'table',
         'class' => 'limit-width center limit-width-40',
@@ -151,16 +152,20 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             ),
         'rows' => $form['submissions'],
         );
-    $block_submission_new = array(
-        'type' => 'buttons',
-        'list' => array(
-            array(
-                'text' => 'Start New Submission',
-                'page' => 0,
-                'url' => $base_url . '/new',
+    if( count($form['submissions']) < $form['max_customer_submissions'] 
+        && ($form['max_submissions'] <= 0 || ($form['num_submissions'] < $form['max_submissions']))
+        ) {
+        $block_submission_new = array(
+            'type' => 'buttons',
+            'list' => array(
+                array(
+                    'text' => 'Start New Submission',
+                    'page' => 0,
+                    'url' => $base_url . '/new',
+                    ),
                 ),
-            ),
-        );
+            );
+    }
 
     //
     // Check if form allows multiple submissions and none specified, then show the list
@@ -170,12 +175,9 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         && count($form['submissions']) > 0
         && !isset($submission_uuid)
         ) {
-        $blocks[] = array(
-            'type' => 'title',
-            'title' => $form['name'],
-            );
+        $blocks[] = $block_title;
         $blocks[] = $block_submission_list;
-        if( count($form['submissions']) < $form['max_customer_submissions'] ) {
+        if( isset($block_submission_new) ) {
             $blocks[] = $block_submission_new;
         }
         return array('stat'=>'ok', 'blocks'=>$blocks);
@@ -186,14 +188,26 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     if( ($form['submission_id'] == 'new' || $form['submission_id'] == 0) ) {
         if( count($form['submissions']) >= $form['max_customer_submissions'] ) {
-            $blocks[] = array(
-                'type' => 'title',
-                'title' => $form['name'],
-                );
+            $blocks[] = $block_title;
             $blocks[] = array(
                 'type' => 'msg',
                 'level' => 'error',
                 'content' => 'You have already submitted the maximum number allowed.',
+                );
+            if( $form['max_customer_submissions'] > 1 ) {
+                $blocks[] = $block_submission_list;
+            }
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
+        if( $form['max_submissions'] > 0 
+            && isset($form['num_submissions']) 
+            && $form['num_submissions'] >= $form['max_submissions'] 
+            ) {
+            $blocks[] = $block_title;
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => "We are sorry but we've reached the maximum number of submissions.",
                 );
             if( $form['max_customer_submissions'] > 1 ) {
                 $blocks[] = $block_submission_list;
@@ -277,10 +291,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     // Check if single submission form and if already submitted
     //
     if( isset($form['submission']['status']) && $form['submission']['status'] >= 90 && $form['max_customer_submissions'] <= 1 ) {
-        $blocks[] = array(
-            'type' => 'title',
-            'title' => $form['name'],
-            );
+        $blocks[] = $block_title;
         $blocks[] = array(
             'type' => 'msg',
             'level' => 'error',
@@ -301,6 +312,21 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 'content' => 'You must complete all the fields in the form',
                 );
         } 
+        //
+        // Check to make sure we haven't reached the maximum allowed submissions
+        // The form can be resubmitted if it was already submitted (status = 90).
+        //
+        elseif( $form['max_submissions'] > 0 
+            && isset($form['num_submissions']) 
+            && $form['num_submissions'] >= $form['max_submissions'] 
+            && $form['submission']['status'] < 90
+            ) {
+            $error_blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => "We are sorry but we've reached the maximum allowed number of submissions.",
+                );
+        }
         elseif( $form['submission']['status'] < 90 ) {
             //
             // Validate the form
@@ -351,10 +377,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
 
         if( !isset($problem_list) && count($error_blocks) == 0 ) {
-            $blocks[] = array(
-                'type' => 'title',
-                'title' => $form['name'],
-                );
+            $blocks[] = $block_title;
             $blocks[] = array(
                 'type' => 'msg',
                 'level' => 'success',
@@ -362,7 +385,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 );
             if( $form['max_customer_submissions'] > 1 ) {
                 $blocks[] = $block_submission_list;
-                if( count($form['submissions']) < $form['max_customer_submissions'] ) {
+                if( isset($block_submission_new) ) {
                     $blocks[] = $block_submission_new;
                 }
             }

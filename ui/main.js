@@ -960,6 +960,12 @@ function ciniki_forms_main() {
                 case 1: return d.value;
             }
         } 
+        else if( s == 'votes' ) {
+            switch(j) {
+                case 0: return d.display_name;
+                case 1: return M.multiline(d.vote_text, d.notes);
+            }
+        }
         else if( j == 0 ) {
             return d.label;
         }
@@ -1001,8 +1007,13 @@ function ciniki_forms_main() {
                     'cellClasses':['label', ''],
                     },
                 'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
-                    'cellClasses':['label', ''],
                     'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
+                    'cellClasses':['label', ''],
+                    },
+                'votes':{'label':'Votes', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
+                    'visible':((rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no'),
+                    'cellClasses':['flexlabel', 'multiline'],
+                    'noData':'No Votes',
                     },
                 };
             for(var i in rsp.form.sections) {

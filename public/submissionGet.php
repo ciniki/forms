@@ -74,6 +74,18 @@ function ciniki_forms_submissionGet($ciniki) {
         $form['customer_details'] = $rc['details'];
     }
 
+    //
+    // Load the votes
+    //
+    if( ($form['flags']&0x10) == 0x10 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionVotesLoad');
+        $rc = ciniki_forms_submissionVotesLoad($ciniki, $args['tnid'], $form['id'], $submission['id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $form['votes'] = isset($rc['votes']) ? $rc['votes'] : array();
+    }
+
     return array('stat'=>'ok', 'form'=>$form);
 }
 ?>

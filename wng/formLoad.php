@@ -131,6 +131,24 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     } 
 
     //
+    // Get the total number of submissions for this form
+    //
+    if( $form['max_submissions'] > 0 ) {
+        $strsql = "SELECT COUNT(*) AS num "
+            . "FROM ciniki_form_submissions "
+            . "WHERE form_id = '" . ciniki_core_dbQuote($ciniki, $form['id']) . "' "
+            . "AND status = 90 "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+        $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.forms', 'num');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.70', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+        }
+        $form['num_submissions'] = isset($rc['num']) ? $rc['num'] : 0;
+    }
+
+    //
     // Check form status
     //
     if( $form['status'] != 50 ) {
