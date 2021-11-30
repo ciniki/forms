@@ -182,6 +182,16 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
         return array('stat'=>'ok', 'blocks'=>$blocks);
     } 
+    //
+    // Existing submission and submission is specified, Load the submission
+    //
+    elseif( $form['max_customer_submissions'] <= 1 || $form['submission_id'] > 0 ) { 
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionLoad');
+        $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.50', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
+        }
+    }
 
     //
     // Check if this is a new submission, then create the submission and redirect to full url
@@ -276,22 +286,12 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         header("Location: {$request['base_url']}{$base_url}/{$form['submission_uuid']}");
         return array('stat'=>'exit');
     }
-    //
-    // Existing submission and submission is specified, Load the submission
-    //
-    else { 
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionLoad');
-        $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.50', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
-        }
-    }
 
     //
     // Check if single submission form and if already submitted
     //
     if( isset($form['submission']['status']) && $form['submission']['status'] >= 90 && $form['max_customer_submissions'] <= 1 ) {
-        $blocks[] = $block_title;
+//        $blocks[] = $block_title;
         $blocks[] = array(
             'type' => 'msg',
             'level' => 'error',
