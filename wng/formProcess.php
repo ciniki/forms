@@ -194,7 +194,9 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 'level' => 'error',
                 'content' => 'You have already submitted the maximum number allowed.',
                 );
-            $blocks[] = $block_submission_list;
+            if( $form['max_customer_submissions'] > 1 ) {
+                $blocks[] = $block_submission_list;
+            }
             return array('stat'=>'ok', 'blocks'=>$blocks);
         }
         //
