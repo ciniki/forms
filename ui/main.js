@@ -780,7 +780,7 @@ function ciniki_forms_main() {
                 }
                 M.ciniki_forms_main.field.close();
             });
-        }
+        });
     }
     this.field.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.field_id) < (this.nplist.length - 1) ) {
