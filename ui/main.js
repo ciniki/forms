@@ -771,7 +771,8 @@ function ciniki_forms_main() {
         }
     }
     this.field.remove = function() {
-        if( M.confirm('Are you sure you want to remove field?') ) {
+//        if( M.confirm('Are you sure you want to remove field?') ) {
+        M.confirm('Are you sure you want to remove this field?', 'Delete Field', function(rsp) {
             M.api.getJSONCb('ciniki.forms.fieldDelete', {'tnid':M.curTenantID, 'field_id':this.field_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
