@@ -340,7 +340,7 @@ function ciniki_forms_main() {
         });
     }
     this.form.jurorDelete = function(id) {
-        if( M.confirm('Are you sure you want to remove this juror? All votes they submitted will also be removed. This action cannot be undone.') ) {
+        M.confirm('Are you sure you want to remove this juror? All votes they submitted will also be removed. This action cannot be undone.', 'Delete Juror', function(rsp) {
             M.api.getJSONCb('ciniki.forms.jurorDelete', {'tnid':M.curTenantID, 'juror_id':id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -348,7 +348,7 @@ function ciniki_forms_main() {
                 }
                 M.ciniki_forms_main.form.open();
             });
-        }
+        });
     }
     this.form.cellValue = function(s, i, j, d) {
         if( s == 'sections' ) {
@@ -449,15 +449,16 @@ function ciniki_forms_main() {
         }
     }
     this.form.remove = function() {
-        if( M.confirm('Are you sure you want to remove form?') ) {
-            M.api.getJSONCb('ciniki.forms.formDelete', {'tnid':M.curTenantID, 'form_id':this.form_id}, function(rsp) {
+//        if( M.confirm('Are you sure you want to remove form?') ) {
+        M.confirm('Are you sure you want to remove this form?', 'Delete Form', function(rsp) {
+            M.api.getJSONCb('ciniki.forms.formDelete', {'tnid':M.curTenantID, 'form_id':M.ciniki_forms_main.form.form_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_forms_main.form.close();
             });
-        }
+        });
     }
     this.form.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.form_id) < (this.nplist.length - 1) ) {
@@ -771,7 +772,6 @@ function ciniki_forms_main() {
         }
     }
     this.field.remove = function() {
-//        if( M.confirm('Are you sure you want to remove field?') ) {
         M.confirm('Are you sure you want to remove this field?', 'Delete Field', function(rsp) {
             M.api.getJSONCb('ciniki.forms.fieldDelete', {'tnid':M.curTenantID, 'field_id':M.ciniki_forms_main.field.field_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
