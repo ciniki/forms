@@ -564,7 +564,7 @@ function ciniki_forms_main() {
         }
     }
     this.section.remove = function() {
-        if( M.confirm('Are you sure you want to remove section?') ) {
+        M.confirm('Are you sure you want to remove this section?', 'Delete Section', function(rsp) {
             M.api.getJSONCb('ciniki.forms.sectionDelete', {'tnid':M.curTenantID, 'section_id':this.section_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -572,7 +572,7 @@ function ciniki_forms_main() {
                 }
                 M.ciniki_forms_main.section.close();
             });
-        }
+        });
     }
     this.section.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.section_id) < (this.nplist.length - 1) ) {
