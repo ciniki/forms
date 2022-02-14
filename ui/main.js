@@ -565,7 +565,7 @@ function ciniki_forms_main() {
     }
     this.section.remove = function() {
         M.confirm('Are you sure you want to remove this section?', 'Delete Section', function(rsp) {
-            M.api.getJSONCb('ciniki.forms.sectionDelete', {'tnid':M.curTenantID, 'section_id':this.section_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.forms.sectionDelete', {'tnid':M.curTenantID, 'section_id':M.ciniki_forms_main.section.section_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
