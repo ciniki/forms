@@ -138,7 +138,6 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
     //
     // Load the list of submissions
     //
-    error_log(print_r($form['juror_id'],true));
     $strsql = "SELECT submissions.id, "
         . "submissions.uuid, "
         . "IFNULL(votes.id, 0) AS vote_id, "

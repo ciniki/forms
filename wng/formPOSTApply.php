@@ -51,7 +51,6 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                             } catch(exception $e) {
                                 error_log($e->getMessage());
                                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.164', 'problem'=>'other', 'msg'=>'There was an error uploading your image, please try again or contact us for help.'));
-                            
                             }
                             //
                             // Check image size
