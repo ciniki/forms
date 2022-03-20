@@ -253,9 +253,28 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                         //
                         // Check if default value exists
                         //
-                        if( isset($field['default']) ) {
+                        if( isset($field['defaults']) && ($section['flags']&0x01) == 0x01 ) {
+                            // 
+                            // Apply the repeat defaults
+                            //
+                            for($i = 1; $i <= $section['max_repeats']; $i++ ) {
+                                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.data', array(
+                                    'submission_id' => $form['submission_id'],
+                                    'field_id' => $field['id'],
+                                    'repeat_num' => $i,
+                                    'data' => isset($field['defaults'][$i]) ? (is_array($field['defaults'][$i]) ? json_encode($field['defaults'][$i]) : $field['defaults'][$i]) : '',
+                                    ), 0x04);
+                                if( $rc['stat'] != 'ok' ) {
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.183', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                                }
+                            }
+                        }
+                        elseif( isset($field['default']) ) {
                             if( ($section['flags']&0x01) == 0x01 ) {
-                                for($i = 1; $i < $section['max_repeats']; $i++ ) {
+                                // 
+                                // Apply the default to each repeat
+                                //
+                                for($i = 1; $i <= $section['max_repeats']; $i++ ) {
                                     $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.data', array(
                                         'submission_id' => $form['submission_id'],
                                         'field_id' => $field['id'],
