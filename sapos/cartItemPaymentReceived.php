@@ -42,6 +42,8 @@ function ciniki_forms_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer, $
         if( !isset($form['invoice_id']) || $form['invoice_id'] != $args['invoice_id'] ) {
             $update_args['invoice_id'] = $args['invoice_id'];
         }
+        $dt_now = new DateTime('now', new DateTimezone('UTC'));
+        $update_args['dt_last_submitted'] = $dt_now->format('Y-m-d H:i:s');
 
         if( count($update_args) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');

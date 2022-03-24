@@ -310,6 +310,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     // Check if single submission form and if already submitted
     //
     if( isset($form['submission']['status']) && $form['submission']['status'] >= 90 && $form['max_customer_submissions'] <= 1 ) {
+        
 //        $blocks[] = $block_title;
         $blocks[] = array(
             'type' => 'msg',
@@ -322,8 +323,19 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Check if submission is to be submitted
     //
-    if( isset($_POST['action']) && $_POST['action'] == 'submit' ) {
+    if( (isset($_POST['action']) && $_POST['action'] == 'submit')
+        || (isset($request['session']['cart-payment-success']) && $request['session']['cart-payment-success'] == 'yes')
+        ) {
         $errors = 'no';
+        //
+        // If submitted after payment, remove so a refresh doesn't resubmit
+        //
+        if( isset($request['session']['cart-payment-success']) && $request['session']['cart-payment-success'] == 'yes' ) {
+            $request['session']['cart-payment-success'] = 'no';
+            unset($request['session']['cart-payment-success']);
+            $cur_section_id = 'submit';
+        }
+
         if( !isset($form['submission']) ) {
             $error_blocks[] = array(
                 'type' => 'msg',
@@ -377,7 +389,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission']['id'], array(
                     'status' => 90,
-                    'dt_last_submitted' => $dt_now->format('Y-m-d H:i;s'),
+                    'dt_last_submitted' => $dt_now->format('Y-m-d H:i:s'),
                     ), 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.117', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));

@@ -635,6 +635,7 @@ function ciniki_forms_main() {
             'field_ref':{'label':'Connect To', 'type':'select', 'options':{}},
             }},
         '_options':{'label':'Options', 'visible':'hidden', 'fields':{
+            'price':{'label':'Option Price', 'type':'text', 'size':'small', 'active':'no'},
             'max-characters':{'label':'Maximum Characters', 'type':'text', 'size':'small', 'active':'no'},
             'max-words':{'label':'Word Limit', 'type':'text', 'size':'small', 'active':'no'},
             'size':{'label':'Size', 'type':'toggle', 'toggles':{'tiny':'Tiny', 'small':'Small', 'medium':'Medium', 'large':'Large', 'xlarge':'X-Large'}, 'active':'no'},
@@ -688,6 +689,10 @@ function ciniki_forms_main() {
             this.sections._options.visible = 'yes';
             this.sections._options.fields['max-words'].active = 'yes';
             this.sections._options.fields['size'].active = 'yes';
+        } else if( t == 'checkbox' ) {
+// FIXME: Work in progress, remove when checkbox prices working
+//            this.sections._options.visible = 'yes';
+//            this.sections._options.fields['price'].active = 'yes';
         } else if( t == 'select' || t == 'radio' ) {
             this.sections._options.visible = 'yes';
             this.sections._options.fields['option-1'].active = 'yes';
