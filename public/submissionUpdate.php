@@ -176,7 +176,6 @@ function ciniki_forms_submissionUpdate(&$ciniki) {
                         elseif( isset($submission['data'][$field['id']]['repeats'][$repeat]['data_id']) 
                             && $submission['data'][$field['id']]['repeats'][$repeat]['data'] != $new_data
                             ) {
-                            error_log('UPDATE: ' . $submission['data'][$field['id']]['repeats'][$repeat]['data_id']);
                             $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.forms.data', 
                                 $submission['data'][$field['id']]['repeats'][$repeat]['data_id'], 
                                 array('data' => $new_data), 

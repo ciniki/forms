@@ -1100,10 +1100,19 @@ function ciniki_forms_main() {
             }
             var p = M.ciniki_forms_main.submission;
             p.data = rsp.form;
+            p.data.status = rsp.form.submission.status;
             p.sections = {
                 'submission_details':{'label':'Submission', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
                     'cellClasses':['label', ''],
                     },
+                '_details':{'label':'', 'aside':'yes', 'fields':{
+                    'status':{'label':'Status', 'type':'select', 'options':{
+                        '10':'Draft',
+                        '70':'Pending Payment',
+                        '80':'Paid',
+                        '90':'Submitted',
+                        }},
+                    }},
                 'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
                     'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
                     'cellClasses':['label', ''],
@@ -1114,6 +1123,7 @@ function ciniki_forms_main() {
                     'noData':'No Votes',
                     },
                 };
+            delete p.data.submission_details[3];
             for(var i in rsp.form.sections) {
                 var subsec = 1;
                 var repeats = 1;
