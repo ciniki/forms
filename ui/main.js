@@ -1045,6 +1045,9 @@ function ciniki_forms_main() {
                     p.data[sid] = [];
 
                     for(var j in rsp.form.sections[i].fields) {
+                        if( rsp.form.sections[i].fields[j].ftype == 'content' ){
+                            continue;
+                        }
                         if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
                             subsec++;
                             sid = 's_' + rsp.form.sections[i].id + '_' + subsec;
@@ -1078,9 +1081,220 @@ function ciniki_forms_main() {
             p.sections['_buttons'] = {'label':'', 'buttons':{
                 'delete':{'label':'Delete', 'fn':'M.ciniki_forms_main.submission.remove();'},
                 }};
+            p.delButton('close');
+            p.delButton('save');
+            p.addLeftButton('close', 'Close', 'M.ciniki_forms_main.submission.close();');
+            p.delButton('edit');
+            p.addButton('edit', 'Edit', 'M.ciniki_forms_main.submission.edit(null,M.ciniki_forms_main.submission.submission_id);');
             p.refresh();
             p.show(cb);
         });
+    }
+    this.submission.edit = function(cb, sid, list) {
+        if( sid != null ) { this.submission_id = sid; }
+        if( list != null ) { this.nplist = list; }
+        M.api.getJSONCb('ciniki.forms.submissionGet', {'tnid':M.curTenantID, 'submission_id':this.submission_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_forms_main.submission;
+            p.data = rsp.form;
+            p.sections = {
+                'submission_details':{'label':'Submission', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
+                    'cellClasses':['label', ''],
+                    },
+                'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
+                    'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
+                    'cellClasses':['label', ''],
+                    },
+                'votes':{'label':'Votes', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
+                    'visible':((rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no'),
+                    'cellClasses':['flexlabel', 'multiline'],
+                    'noData':'No Votes',
+                    },
+                };
+            for(var i in rsp.form.sections) {
+                var subsec = 1;
+                var repeats = 1;
+                if( (rsp.form.sections[i].flags&0x01) == 0x01 ) { // Repeatable
+                    repeats = rsp.form.sections[i].max_repeats;
+                }
+                var sid = '';
+
+                for(var repeat = 1; repeat <= repeats; repeat++) {
+                    sid = 's_' + rsp.form.sections[i].id + '_' + subsec;
+                    if( repeats > 1 ) {
+                        sid += '_' + repeat;
+                    }
+                    var label = rsp.form.sections[i].label;
+                    if( repeats > 1 && rsp.form.sections[i].repeat_prefix != '' ) {
+                        label = rsp.form.sections[i].repeat_prefix + ' ' + repeat;
+                    }
+                    p.sections[sid] = {'label':label, 
+                        'fields':{},
+                        };
+                    p.data[sid] = [];
+
+                    for(var j in rsp.form.sections[i].fields) {
+                        if( rsp.form.sections[i].fields[j].ftype == 'content' ){
+                            continue;
+                        }
+                        if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
+                            subsec++;
+                            sid = 's_' + rsp.form.sections[i].id + '_' + subsec;
+                            if( (rsp.form.sections[i].flags&0x01) == 0x01 ) { // Repeatable
+                                sid += '_' + repeat;
+                            }
+                            p.sections[sid] = {'label':rsp.form.sections[i].fields[j].label, 
+                                'fields':{},
+                                };
+                            p.data[sid] = [];
+                            continue;
+                        }
+                        var data_id = 'd_' + rsp.form.sections[i].fields[j].id;
+                        var label = rsp.form.sections[i].fields[j].label;
+                        if( repeats > 1 ) {
+                            data_id += '-' + repeat;
+                            if( rsp.form.sections[i].fields[j].values != null && rsp.form.sections[i].fields[j].values[repeat] != null ) {
+                                p.data[data_id] = rsp.form.sections[i].fields[j].values[repeat];
+                            }
+                        } else {
+                            p.data[data_id] = rsp.form.sections[i].fields[j].value;
+                        }
+                        if( rsp.form.sections[i].fields[j].ftype == 'text'
+                            || rsp.form.sections[i].fields[j].ftype == 'date'
+                            || rsp.form.sections[i].fields[j].ftype == 'number'
+                            || rsp.form.sections[i].fields[j].ftype == 'phone'
+                            || rsp.form.sections[i].fields[j].ftype == 'email'
+                            || rsp.form.sections[i].fields[j].ftype == 'url'
+                            ) {
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'text',
+                                };
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'address' ) {
+                            p.data[data_id + '-address1'] = p.data[data_id].address1;
+                            p.data[data_id + '-address2'] = p.data[data_id].address2;
+                            p.data[data_id + '-city'] = p.data[data_id].city;
+                            p.data[data_id + '-province'] = p.data[data_id].province;
+                            p.data[data_id + '-postal'] = p.data[data_id].postal;
+                            p.data[data_id + '-country'] = p.data[data_id].country;
+                            p.sections[sid].fields[data_id + '-address1'] = {
+                                'label':label + ' Line 1',
+                                'type':'text',
+                                };
+                            p.sections[sid].fields[data_id + '-address2'] = {
+                                'label':label + ' Line 2',
+                                'type':'text',
+                                };
+                            p.sections[sid].fields[data_id + '-city'] = {
+                                'label':label + ' City',
+                                'type':'text',
+                                };
+                            p.sections[sid].fields[data_id + '-province'] = {
+                                'label':label + ' Province',
+                                'type':'text',
+                                };
+                            p.sections[sid].fields[data_id + '-postal'] = {
+                                'label':label + ' Postal',
+                                'type':'text',
+                                };
+                            p.sections[sid].fields[data_id + '-country'] = {
+                                'label':label + ' Country',
+                                'type':'text',
+                                };
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'textarea' ) {
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'textarea',
+                                'size':'medium',
+                                };
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'select' ) {
+                            var options = {'':''};
+                            for(var k = 1;k < 20;k++) {
+                                if( rsp.form.sections[i].fields[j]['option-'+k] != null ) {
+                                    options[rsp.form.sections[i].fields[j]['option-'+k]] = rsp.form.sections[i].fields[j]['option-'+k];
+                                }
+                            }
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'select',
+                                'options':options,
+                                };
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'radio' ) {
+                            var toggles = {};
+                            for(var k = 1;k < 20;k++) {
+                                if( rsp.form.sections[i].fields[j]['option-'+k] != null ) {
+                                    toggles[rsp.form.sections[i].fields[j]['option-'+k]] = rsp.form.sections[i].fields[j]['option-'+k];
+                                }
+                            }
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'toggle',
+                                'none':'yes',
+                                'toggles':toggles,
+                                };
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'checkbox' ) {
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'toggle',
+                                'toggles':{'off':'Unchecked', 'on':'Checked'},
+                                };
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'image' ) {
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'image_id',
+                                'controls':'all',
+                                };
+
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'document' ) {
+                        }
+                    }
+                }
+            }
+            p.sections['_buttons'] = {'label':'', 'buttons':{
+                'save':{'label':'Save', 'fn':'M.ciniki_forms_main.submission.save();'},
+                'delete':{'label':'Delete', 'fn':'M.ciniki_forms_main.submission.remove();'},
+                }};
+            p.delButton('close');
+            p.delButton('edit');
+            p.delButton('save');
+            p.addLeftButton('close', 'Cancel', 'M.ciniki_forms_main.submission.open();');
+            p.addButton('save', 'Save', 'M.ciniki_forms_main.submission.save();');
+            p.nplist = null;
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.submission.addDropImage = function(iid, fid) {
+        M.ciniki_forms_main.submission.setFieldValue(fid, iid);
+        return true;
+    }
+    this.submission.deleteImage = function(fid) {
+        this.setFieldValue(fid, 0);
+    }
+    this.submission.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_forms_main.submission.open();'; }
+        var c = this.serializeForm('no');
+        if( c != '' ) {
+            M.api.postJSONCb('ciniki.forms.submissionUpdate', {'tnid':M.curTenantID, 'submission_id':this.submission_id}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                eval(cb);
+            });
+        } else {
+            eval(cb);
+        }
     }
     this.submission.remove = function() {
         M.confirm('Are you sure you want to remove this submission?', 'Delete Submission', function(rsp) {
@@ -1106,7 +1320,6 @@ function ciniki_forms_main() {
         return null;
     }
 //    this.submission.addButton('save', 'Save', 'M.ciniki_forms_main.submission.save();');
-    this.submission.addClose('Close');
     this.submission.addButton('next', 'Next');
     this.submission.addLeftButton('prev', 'Prev');
 
