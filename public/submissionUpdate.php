@@ -144,7 +144,10 @@ function ciniki_forms_submissionUpdate(&$ciniki) {
                             $ciniki['request']['args'][$arg] = json_encode($address);
                         }
                     }
-                    elseif( $field['ftype'] == 'radio' && $ciniki['request']['args'][$arg] == '0' ) {
+                    elseif( $field['ftype'] == 'radio' 
+                        && isset($ciniki['request']['args'][$arg]) 
+                        && $ciniki['request']['args'][$arg] == '0' 
+                        ) {
                         $ciniki['request']['args'][$arg] = '';
                     }
 

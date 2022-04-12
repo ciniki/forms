@@ -1226,7 +1226,9 @@ function ciniki_forms_main() {
                         else if( rsp.form.sections[i].fields[j].ftype == 'select' ) {
                             var options = {'':''};
                             for(var k = 1;k < 20;k++) {
-                                if( rsp.form.sections[i].fields[j]['option-'+k] != null ) {
+                                if( rsp.form.sections[i].fields[j]['option-'+k] != null 
+                                    && rsp.form.sections[i].fields[j]['option-'+k] != '' 
+                                    ) {
                                     options[rsp.form.sections[i].fields[j]['option-'+k]] = rsp.form.sections[i].fields[j]['option-'+k];
                                 }
                             }
@@ -1239,7 +1241,9 @@ function ciniki_forms_main() {
                         else if( rsp.form.sections[i].fields[j].ftype == 'radio' ) {
                             var toggles = {};
                             for(var k = 1;k < 20;k++) {
-                                if( rsp.form.sections[i].fields[j]['option-'+k] != null ) {
+                                if( rsp.form.sections[i].fields[j]['option-'+k] != null 
+                                    && rsp.form.sections[i].fields[j]['option-'+k] != '' 
+                                    ) {
                                     toggles[rsp.form.sections[i].fields[j]['option-'+k]] = rsp.form.sections[i].fields[j]['option-'+k];
                                 }
                             }
