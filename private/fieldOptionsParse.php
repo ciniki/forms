@@ -14,7 +14,7 @@
 // 
 function ciniki_forms_fieldOptionsParse(&$ciniki, $tnid, $ftype, $args, $json_options) {
 
-   
+
     $options = json_decode($json_options, true);
 
     if( $ftype == 'text' ) {
@@ -30,11 +30,11 @@ function ciniki_forms_fieldOptionsParse(&$ciniki, $tnid, $ftype, $args, $json_op
             $options['size'] = trim($args['size']);
         }
     }
-    elseif( $ftype == 'checkbox' ) {
-        if( isset($args['price']) ) {
-            $options['price'] = preg_replace("/[^0-9\.]/", "", $args['price']);
-        }
-    }
+//    elseif( $ftype == 'checkbox' ) {
+//        if( isset($args['price']) ) {
+//            $options['price'] = preg_replace("/[^0-9\.]/", "", $args['price']);
+//        }
+//    }
     elseif( $ftype == 'select' || $ftype == 'radio' ) {
         for($i = 0; $i < 20; $i++ ) {
             if( isset($args["option-{$i}"]) ) {

@@ -51,7 +51,7 @@ function ciniki_forms_fieldAdd(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.49', 'msg'=>'Unable to parse field options', 'err'=>$rc['err']));
     }
-    $args['options'] = $rc['options'];
+    $args['options'] = isset($rc['options']) ? $rc['options'] : '';
 
     //
     // Start transaction

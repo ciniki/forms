@@ -691,6 +691,7 @@ function ciniki_forms_main() {
             this.sections._options.fields['size'].active = 'yes';
         } else if( t == 'checkbox' ) {
 // FIXME: Work in progress, remove when checkbox prices working
+// FIXME: When re-enabled, fix private/fieldOptionsParse.php
 //            this.sections._options.visible = 'yes';
 //            this.sections._options.fields['price'].active = 'yes';
         } else if( t == 'select' || t == 'radio' ) {
@@ -1182,6 +1183,13 @@ function ciniki_forms_main() {
                             p.sections[sid].fields[data_id] = {
                                 'label':label,
                                 'type':'text',
+                                };
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'price' ) {
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'text',
+                                'size':'small',
                                 };
                         }
                         else if( rsp.form.sections[i].fields[j].ftype == 'address' ) {
