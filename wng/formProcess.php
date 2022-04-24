@@ -25,7 +25,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Make sure a valid section was passed
     //
-    if( !isset($section['ref']) || !isset($section['settings']) ) {
+    if( !isset($section['settings']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.18', 'msg'=>"No forms specified"));
     }
     $s = $section['settings'];

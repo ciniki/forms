@@ -23,6 +23,9 @@ function ciniki_forms_wng_accountRequestProcess(&$ciniki, $tnid, &$request, $ite
     if( $item['ref'] == 'ciniki.forms.juror' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'accountJurorProcess');
         return ciniki_forms_wng_accountJurorProcess($ciniki, $tnid, $request, $item);
+    } elseif( $item['ref'] == 'ciniki.forms.submission' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'accountSubmissionProcess');
+        return ciniki_forms_wng_accountSubmissionProcess($ciniki, $tnid, $request, $item);
     }
     
 
