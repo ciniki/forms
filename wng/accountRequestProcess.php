@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function will check for an existing cart to load into the session
+// This function will process the account request presented in accountMenuItems
 //
 // Arguments
 // ---------

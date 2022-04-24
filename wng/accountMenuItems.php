@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function will check for an existing cart to load into the session
+// This function will check for juried forms for the logged in customer or in progress form submissions
 //
 // Arguments
 // ---------
