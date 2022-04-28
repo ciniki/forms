@@ -978,7 +978,10 @@ function ciniki_forms_main() {
         }
         else if( j == 1 ) {
             if( d.ftype != null && d.ftype == 'address' ) {
-                return M.formatAddress(d.value);
+                if( d.value != null ) {
+                    return M.formatAddress(d.value);
+                }
+                return '';
             }
             else if( d.ftype != null && d.ftype == 'checkbox' ) {
                 if( d.value != null && d.value == 'on' ) {
