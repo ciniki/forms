@@ -830,6 +830,8 @@ function ciniki_forms_main() {
         'submissions':{'label':'Submissions', 'type':'simplegrid', 'num_cols':5,
             'headerValues':[],
             'cellClasses':[],
+            'sortable':'yes',
+            'sortTypes':[],
             'dataMaps':[],
             'noData':'No Submissions',
             },
@@ -905,11 +907,13 @@ function ciniki_forms_main() {
             p.sections.submissions.num_cols = 2;
             p.sections.submissions.headerValues = ['Name'];
             p.sections.submissions.cellClasses = [''];
+            p.sections.submissions.sortTypes = ['text'];
             p.sections.submissions.dataMaps = ['name'];
             if( p.status == 0 ) {
                 p.sections.submissions.num_cols++;
                 p.sections.submissions.headerValues.push('Status');
                 p.sections.submissions.cellClasses.push('');
+                p.sections.submissions.sortTypes.push('text');
                 p.sections.submissions.dataMaps.push('status');
             }
 /*            if( p.object == '' ) {
@@ -920,12 +924,14 @@ function ciniki_forms_main() {
             } */
             p.sections.submissions.headerValues.push('Submitted');
             p.sections.submissions.cellClasses.push('multiline aligncenter');
+            p.sections.submissions.sortTypes.push('date');
             p.sections.submissions.dataMaps.push('submitted');
             // Check if juried form
             if( (p.data.form.flags&0x10) == 0x10 ) {
                 p.sections.submissions.num_cols += 1;
                 p.sections.submissions.headerValues.push('Ranking');
                 p.sections.submissions.cellClasses.push('multiline aligncenter');
+                p.sections.submissions.sortTypes.push('number');
                 p.sections.submissions.dataMaps.push('ranking');
             }
             p.sections.submissions.headerClasses = p.sections.submissions.cellClasses;
@@ -1115,6 +1121,8 @@ function ciniki_forms_main() {
                         '70':'Pending Payment',
                         '80':'Paid',
                         '90':'Submitted',
+                        '100':'Accepted',
+                        '110':'Declined',
                         }},
                     }},
                 'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
