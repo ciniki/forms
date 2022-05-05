@@ -90,7 +90,7 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.109', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
     }
     if( !isset($rc['submissions']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.110', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.110', 'msg'=>'Unable to load submission'));
     }
     $submission = array_shift($rc['submissions']);
 

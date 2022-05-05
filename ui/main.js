@@ -1031,6 +1031,7 @@ function ciniki_forms_main() {
                     'cellClasses':['flexlabel', 'multiline'],
                     'noData':'No Votes',
                     },
+                '_actions':{'label':'', 'aside':'yes', 'buttons':{}},
                 };
             for(var i in rsp.form.sections) {
                 var subsec = 1;
@@ -1057,6 +1058,29 @@ function ciniki_forms_main() {
                     for(var j in rsp.form.sections[i].fields) {
                         if( rsp.form.sections[i].fields[j].ftype == 'content' ){
                             continue;
+                        }
+                        if( rsp.form.sections[i].fields[j].field_ref != '' ) {
+                            if( rsp.form.sections[i].fields[j].field_ref.match(/ciniki.courses.course/)
+                                && p.sections._actions.buttons.addcourse == null ) {
+                                p.sections._actions.buttons['addcourse'] = {
+                                    'label':'Create Program',
+                                    'fn':'M.ciniki_forms_main.submission.createProgram();',
+                                    };
+                            }
+                            if( rsp.form.sections[i].fields[j].field_ref.match(/ciniki.courses.instructor/)
+                                && p.sections._actions.buttons.instructor == null ) {
+                                if( rsp.form.instructor != null && rsp.form.instructor.id != null && rsp.form.instructor.id > 0 ) {
+                                    p.sections._actions.buttons['instructor'] = {
+                                        'label':'Update Instructor',
+                                        'fn':'M.ciniki_forms_main.submission.updateInstructor();',
+                                        };
+                                } else {
+                                    p.sections._actions.buttons['instructor'] = {
+                                        'label':'Create Instructor',
+                                        'fn':'M.ciniki_forms_main.submission.createInstructor();',
+                                        };
+                                }
+                            }
                         }
                         if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
                             subsec++;
@@ -1306,6 +1330,16 @@ function ciniki_forms_main() {
             p.refresh();
             p.show(cb);
         });
+    }
+    this.submission.createProgram = function() {
+        M.startApp('ciniki.courses.main',null,'M.ciniki_forms_main.submission.open();','mc',{'form_submission_id':this.submission_id});
+    }
+    this.submission.createInstructor = function() {
+        M.startApp('ciniki.courses.main',null,'M.ciniki_forms_main.submission.open();','mc',{'instructor_id':0, 'form_submission_id':this.submission_id});
+    }
+    this.submission.updateInstructor = function() {
+        console.log(this.data);
+        M.startApp('ciniki.courses.main',null,'M.ciniki_forms_main.submission.open();','mc',{'instructor_id':this.data.instructor.id, 'form_submission_id':this.submission_id});
     }
     this.submission.addDropImage = function(iid, fid) {
         M.ciniki_forms_main.submission.setFieldValue(fid, iid);

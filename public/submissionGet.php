@@ -72,6 +72,28 @@ function ciniki_forms_submissionGet($ciniki) {
         }
         $form['customer'] = $rc['customer'];
         $form['customer_details'] = $rc['details'];
+
+        //
+        // Check if course instructor
+        //
+        if( ciniki_core_checkModuleActive($ciniki, 'ciniki.courses') ) {
+            $strsql = "SELECT instructors.id, "
+                . "instructors.primary_image_id, "
+                . "instructors.short_bio, "
+                . "instructors.full_bio, "
+                . "instructors.url "
+                . "FROM ciniki_course_instructors AS instructors "
+                . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $submission['customer_id']) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'instructor');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.186', 'msg'=>'Unable to load instructor', 'err'=>$rc['err']));
+            }
+            if( isset($rc['instructor']) ) {
+                $form['instructor'] = $rc['instructor'];
+            }
+        }
     }
 
     //
