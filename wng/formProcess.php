@@ -117,6 +117,9 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             if( isset($submission_uuid) && $submission_uuid == $sub['uuid'] ) {
                 $form['submission_id'] = $sub['id'];
             }
+            if( $sub['label'] == 'New Submission' ) {  
+                $new_submission_exists = 'yes';
+            }
             if( $sub['status'] < 90 ) {
                 $form['submissions'][$sid]['url'] = "<a class='button' href='{$request['base_url']}{$base_url}/{$sub['uuid']}'>Continue</a>";
             } else {
@@ -154,6 +157,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         );
     if( count($form['submissions']) < $form['max_customer_submissions'] 
         && ($form['max_submissions'] <= 0 || ($form['num_submissions'] < $form['max_submissions']))
+        && !isset($new_submission_exists)
         ) {
         $block_submission_new = array(
             'type' => 'buttons',
