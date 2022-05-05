@@ -225,6 +225,27 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             return array('stat'=>'ok', 'blocks'=>$blocks);
         }
         //
+        // Check if a "New Submission" already exists
+        //
+        $strsql = "SELECT submissions.id, "
+            . "submissions.uuid "
+            . "FROM ciniki_form_submissions AS submissions "
+            . "WHERE submissions.customer_id = '" . ciniki_core_dbQuote($ciniki, $form['customer_id']) . "' "
+            . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND submissions.label = 'New Submission' "
+            . "AND submissions.form_id = '" . ciniki_core_dbQuote($ciniki, $form['id']) . "' "
+            . "LIMIT 1 "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'submission');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.187', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
+        }
+        if( isset($rc['submission']) ) {
+            header("Location: {$request['base_url']}{$base_url}/{$rc['submission']['uuid']}");
+            return array('stat'=>'exit');
+        }
+
+        //
         // Create a new submission and redirect
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
