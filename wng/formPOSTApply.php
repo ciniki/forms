@@ -37,13 +37,12 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                                 }
                             }
                         } 
-                        elseif( $field['ftype'] == 'checkbox' ) {
+                        elseif( $field['ftype'] == 'checkbox' && isset($request['args']["f-{$field['id']}-{$i}"]) ) {
                             $new_value = $request['args']["f-{$field['id']}-{$i}"] == 'on' ? 'on' : 'off';
                         }
                         elseif( $field['ftype'] == 'image' && isset($_FILES["f-{$field['id']}-{$i}"]) ) {
                             $file = $_FILES["f-{$field['id']}-{$i}"];
                             if( !isset($file['tmp_name']) || $file['tmp_name'] == '' ) {
-                                error_log(print_r($file,true));
                                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.163', 'problem'=>'other', 'msg'=>'There was an error uploading your image, please try again or contact us for help.'));
                             }
                             try {
