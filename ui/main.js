@@ -1067,7 +1067,7 @@ function ciniki_forms_main() {
                                     'fn':'M.ciniki_forms_main.submission.createProgram();',
                                     };
                             }
-                            if( rsp.form.sections[i].fields[j].field_ref.match(/ciniki.courses.instructor/)
+                            else if( rsp.form.sections[i].fields[j].field_ref.match(/ciniki.courses.instructor/)
                                 && p.sections._actions.buttons.instructor == null ) {
                                 if( rsp.form.instructor != null && rsp.form.instructor.id != null && rsp.form.instructor.id > 0 ) {
                                     p.sections._actions.buttons['instructor'] = {
@@ -1080,6 +1080,13 @@ function ciniki_forms_main() {
                                         'fn':'M.ciniki_forms_main.submission.createInstructor();',
                                         };
                                 }
+                            }
+                            else if( rsp.form.sections[i].fields[j].field_ref.match(/ciniki\.ags\.item\./)
+                                && p.sections._actions.buttons.addagsparticipant == null ) {
+                                p.sections._actions.buttons['addagsparticipant'] = {
+                                    'label':'Add Exhibit Participant',
+                                    'fn':'M.ciniki_forms_main.submission.createParticipant();',
+                                    };
                             }
                         }
                         if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
@@ -1338,8 +1345,10 @@ function ciniki_forms_main() {
         M.startApp('ciniki.courses.main',null,'M.ciniki_forms_main.submission.open();','mc',{'instructor_id':0, 'form_submission_id':this.submission_id});
     }
     this.submission.updateInstructor = function() {
-        console.log(this.data);
         M.startApp('ciniki.courses.main',null,'M.ciniki_forms_main.submission.open();','mc',{'instructor_id':this.data.instructor.id, 'form_submission_id':this.submission_id});
+    }
+    this.submission.createParticipant = function() {
+        M.startApp('ciniki.ags.main',null,'M.ciniki_forms_main.submission.open();','mc',{'customer_id':this.data.customer.id, 'participant_submission_id':this.submission_id});
     }
     this.submission.addDropImage = function(iid, fid) {
         M.ciniki_forms_main.submission.setFieldValue(fid, iid);
