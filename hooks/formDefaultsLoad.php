@@ -75,7 +75,7 @@ function ciniki_forms_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
                             ) {
                             if( isset($section['flags']) && ($section['flags']&0x01) == 0x01 ) {
                                 $form['sections'][$sid]['fields'][$fid]['defaults'] = array(); 
-                                for($i = 1; $i < $section['max_repeats']; $i++ ) {
+                                for($i = 1; $i <= $section['max_repeats']; $i++ ) {
                                     if( isset($data[$m[1]]['fields'][$m[2]]['repeats'][$i]) ) {
                                         $form['sections'][$sid]['fields'][$fid]['defaults'][$i] = $data[$m[1]]['fields'][$m[2]]['repeats'][$i]['data'];
                                     }
