@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
+function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer_id) {
     //
     // Load tenant settings
     //
@@ -65,7 +65,9 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
         . "fields.ftype, "
         . "fields.flags AS field_flags, "
         . "IF((fields.flags&0x01)=0x01, 'yes', 'no') AS field_required, "
+        . "IF((fields.flags&0x08)=0x08, 'no', 'yes') AS field_editable, "
         . "fields.field_ref, "
+        . "fields.field_size, "
         . "fields.label AS field_label, "
         . "fields.description AS field_description, "
         . "fields.options AS field_options "
@@ -100,8 +102,8 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
                 ),
             ),
         array('container'=>'fields', 'fname'=>'field_id',
-            'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'field_ref', 'flags'=>'field_flags', 
-                'required'=>'field_required',
+            'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'field_ref', 'size'=>'field_size', 'flags'=>'field_flags', 
+                'required'=>'field_required', 'editable'=>'field_editable',
                 'description'=>'field_description', 'options'=>'field_options'),
             ),
         ));
@@ -174,7 +176,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     $form['submission_id'] = 0;
     $form['object'] = '';
     $form['object_id'] = '';
-    $form['customer_id'] = 0;
+    $form['customer_id'] = $customer_id;
     $form['submission_id'] = 0;
     $form['invoice_id'] = 0;
 
@@ -182,8 +184,9 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     // Check to make sure the person is logged in, or present them with login/create form
     // FIXME: Currently only support logged in forms
     //
+    /* Old code use to rely on request for customer id, changed so customer id passed as argument to formLoad */
     /*($form['flags']&0x01) == 0x01 &&*/ 
-    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
+/*    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
         return array('stat'=>'noauth', 'form'=>$form, 'err'=>array('code'=>'ciniki.forms.83', 'msg'=>'Not signed in'));
     } 
 
@@ -192,7 +195,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id) {
     //
     if( isset($request['session']['customer']['id']) ) {
         $form['customer_id'] = $request['session']['customer']['id'];
-    }
+    } */
 
     //
     // Load the defaults for the form

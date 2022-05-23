@@ -31,7 +31,7 @@ function ciniki_forms_wng_submissionImage(&$ciniki, $tnid, $request) {
     // Load the form
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formLoad');
-    $rc = ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id);
+    $rc = ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $request['session']['customer']['id']);
     if( $rc['stat'] == 'noauth' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.80', 'msg'=>'Not signed in'));
     }

@@ -27,18 +27,33 @@
 #                               content (label and/or description, no fields)
 #                               image   (stored in ciniki_images, image_id in form_data)
 #                               document (stored in ciniki-storage dir, as uuid from form_data)
+#                               newline (setup a new line within a section in layout)
 #                               break (setup a new field group within a section)
 #
-# flags:
+# flags:                    The options for the field.
+#
 #                               0x01 - Required field
 #                               0x02 - Hide responses from Jurers
 #                               0x04 - Submission Label (use this field as the title for this submission).
-#                               0x08 - 
+#                               0x08 - Locked (no edits by customer allowed, pulled from default values).
+#                               0x10 - 
+#                               0x20 - 
+#                               0x40 - 
+#                               0x80 - 
 #
 # sequence:                 The order for the field in the form.
 #
 # field_ref:                The reference to another field where the field data can be prefilled or stored.
 #                           format: package.module.object.field,  eg: ciniki.customers.customer.first
+#
+# field_size:               The size of the field, used to scale fields in forms online and print pdf.
+#
+#                               tiny - future
+#                               small - 20 rem
+#                               small-medium - 20-40 rem
+#                               medium - 40 rem
+#                               medium - 40 rem
+#                               large - 80 rem
 #
 # label:                    The label for the field/content. 
 # description:              The optional description for the field.
@@ -58,6 +73,7 @@ create table ciniki_form_fields (
     flags smallint unsigned not null,
     sequence smallint unsigned not null,
     field_ref varchar(250) not null,
+    field_size varchar(50) not null,
     label varchar(250) not null,
     description text not null,
     options text not null,
@@ -67,4 +83,4 @@ create table ciniki_form_fields (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

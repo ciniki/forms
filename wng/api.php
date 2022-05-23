@@ -37,8 +37,8 @@ function ciniki_forms_wng_api(&$ciniki, $tnid, &$request) {
     if( isset($request['uri_split'][$request['cur_uri_pos']]) 
         && $request['uri_split'][$request['cur_uri_pos']] == 'submissionSave' 
         ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionSave');
-        return ciniki_forms_wng_submissionSave($ciniki, $tnid, $request);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'apiSubmissionSave');
+        return ciniki_forms_wng_apiSubmissionSave($ciniki, $tnid, $request);
     }
 
     //

@@ -37,7 +37,6 @@ function ciniki_forms_hooks_formFieldRefs(&$ciniki, $tnid, $args) {
             . ") "
         . "WHERE forms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' " 
         . "AND forms.status = 50 "  // Active forms
-        . "AND forms.id = 21 "
         . "ORDER BY forms.name, sections.sequence, sections.label, fields.sequence, fields.label "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');

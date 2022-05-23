@@ -42,7 +42,7 @@ function ciniki_forms_wng_submissionValidate(&$ciniki, $tnid, $request, $form=nu
     // Load the form
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formLoad');
-    $rc = ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $request['args']['form_id']);
+    $rc = ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $request['args']['form_id'], $request['session']['customer']['id']);
     if( $rc['stat'] == 'noauth' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.89', 'msg'=>'Not signed in'));
     }

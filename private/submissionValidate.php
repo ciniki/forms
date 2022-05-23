@@ -39,6 +39,24 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                                 ) {
                                 $problems["{$field['id']}-{$i}"] = $section['label'] . ' - ' . $field['label'] . ': Missing image';
                             }
+                            elseif( $field['ftype'] == 'address' ) {
+                                $missing = '';
+                                if( !isset($field['values'][$i]['address1']) || $field['values'][$i]['address1'] == '' ) {
+                                    $missing .= ($missing != '' ? ', ' : '') . 'Line 1';
+                                }
+                                if( !isset($field['values'][$i]['city']) || $field['values'][$i]['city'] == '' ) {
+                                    $missing .= ($missing != '' ? ', ' : '') . 'City';
+                                }
+                                if( !isset($field['values'][$i]['province']) || $field['values'][$i]['province'] == '' ) {
+                                    $missing .= ($missing != '' ? ', ' : '') . 'Province/State';
+                                }
+                                if( !isset($field['values'][$i]['postal']) || $field['values'][$i]['postal'] == '' ) {
+                                    $missing .= ($missing != '' ? ', ' : '') . 'Postal/Zip Code';
+                                }
+                                if( $missing != '' ) {
+                                    $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing ' . $missing;
+                                }
+                            }
                             elseif( !isset($field['values'][$i]) || $field['values'][$i] == '' ) {
                                 $problems["{$field['id']}-{$i}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                             }
@@ -77,6 +95,24 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                             && (!isset($field['value']) || $field['value'] == '' || $field['value'] <= 0) 
                             ) {
                             $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing image';
+                        }
+                        elseif( $field['ftype'] == 'address' ) {
+                            $missing = '';
+                            if( !isset($field['value']['address1']) || $field['value']['address1'] == '' ) {
+                                $missing .= ($missing != '' ? ', ' : '') . 'Line 1';
+                            }
+                            if( !isset($field['value']['city']) || $field['value']['city'] == '' ) {
+                                $missing .= ($missing != '' ? ', ' : '') . 'City';
+                            }
+                            if( !isset($field['value']['province']) || $field['value']['province'] == '' ) {
+                                $missing .= ($missing != '' ? ', ' : '') . 'Province/State';
+                            }
+                            if( !isset($field['value']['postal']) || $field['value']['postal'] == '' ) {
+                                $missing .= ($missing != '' ? ', ' : '') . 'Postal/Zip Code';
+                            }
+                            if( $missing != '' ) {
+                                $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing ' . $missing;
+                            }
                         }
                         elseif( !isset($field['value']) || $field['value'] == '' ) {
                             $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';

@@ -12,10 +12,69 @@
 // Returns
 // ---------
 // 
-function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
+function ciniki_forms_wng_apiSubmissionSave(&$ciniki, $tnid, $request) {
     
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+
+    //
+    // Make sure customer is logged in
+    //
+    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.62', 'msg'=>'Not signed in'));
+    }
+    
+    if( !isset($request['args']['customer_id']) || $request['args']['customer_id'] <= 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.63', 'msg'=>'Not signed in'));
+    }
+    if( $request['args']['customer_id'] != $request['args']['customer_id'] ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.64', 'msg'=>'Incorrect account'));
+    }
+
+    //
+    // Make sure the form id is specified
+    //
+    if( !isset($request['args']['form_id']) || $request['args']['form_id'] <= 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.65', 'msg'=>'No form specified'));
+    }
+
+    //
+    // Load the form
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formLoad');
+    $rc = ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $request['args']['form_id'], $request['session']['customer']['id']);
+    if( $rc['stat'] == 'noauth' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.66', 'msg'=>'Not signed in'));
+    }
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.67', 'msg'=>'Unable to load form', 'err'=>$rc['err']));
+    }
+    $form = $rc['form'];
+
+    //
+    // Check if submission id specified
+    //
+    if( isset($request['args']['submission_id']) ) {
+        $form['submission_id'] = $request['args']['submission_id'];
+    }
+        
+    //
+    // Load the existing submission
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionLoad');
+    $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.68', 'msg'=>'', 'err'=>$rc['err']));
+    }
+
+    //
+    // Apply any posted updates to the form
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formPOSTApply');
+    $rc = ciniki_forms_wng_formPOSTApply($ciniki, $tnid, $request, $form);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.69', 'msg'=>'Unable to apply posted updates to form', 'err'=>$rc['err']));
+    }
 
     $dt_now = new DateTime('NOW', new DateTimezone('UTC'));
 

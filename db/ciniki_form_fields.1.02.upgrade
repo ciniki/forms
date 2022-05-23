@@ -1,0 +1,6 @@
+#
+# Add field_size column to form fields
+#
+ALTER TABLE ciniki_form_fields ADD COLUMN field_size varchar(50) not null AFTER field_ref;
+UPDATE ciniki_form_fields SET field_size = 'large' where field_size = '';
+ALTER TABLE ciniki_form_fields COMMENT='v1.02';

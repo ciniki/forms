@@ -73,6 +73,7 @@ function ciniki_forms_objects(&$ciniki) {
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'sequence' => array('name'=>'Order', 'default'=>'1'),
             'field_ref' => array('name'=>'Linked Field', 'default'=>''),
+            'field_size' => array('name'=>'Size', 'default'=>'large'),
             'label' => array('name'=>'Label', 'default'=>''),
             'description' => array('name'=>'Description', 'default'=>''),
             'options' => array('name'=>'Options', 'default'=>''),

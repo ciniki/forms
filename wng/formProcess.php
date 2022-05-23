@@ -67,10 +67,22 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     }
 
     //
+    // Check to make sure logged in
+    //
+    if( !isset($request['session']['customer']['id']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'accountLoginProcess');
+        $rc = ciniki_wng_accountLoginProcess($ciniki, $tnid, $request, array(
+            'create-account' => 'simple',
+            'return-url' => $request['base_url'] . '/' . implode('/', $request['uri_split']),
+            ));
+        return $rc;
+    }
+
+    //
     // Load the form
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formLoad');
-    $rc = ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id);
+    $rc = ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $request['session']['customer']['id']);
     if( $rc['stat'] == 'noauth' ) {
         $form = $rc['form'];
         ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'accountLoginProcess');
@@ -271,61 +283,11 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         //
         // Save the defaults for the form fields
         //
-        if( isset($form['sections']) ) {
-            foreach($form['sections'] as $sid => $section) {
-                if( isset($section['fields']) ) {
-                    foreach($section['fields'] as $fid => $field) {
-                        //
-                        // Check if default value exists
-                        //
-                        if( isset($field['defaults']) && ($section['flags']&0x01) == 0x01 ) {
-                            // 
-                            // Apply the repeat defaults
-                            //
-                            for($i = 1; $i <= $section['max_repeats']; $i++ ) {
-                                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.data', array(
-                                    'submission_id' => $form['submission_id'],
-                                    'field_id' => $field['id'],
-                                    'repeat_num' => $i,
-                                    'data' => isset($field['defaults'][$i]) ? (is_array($field['defaults'][$i]) ? json_encode($field['defaults'][$i]) : $field['defaults'][$i]) : '',
-                                    ), 0x04);
-                                if( $rc['stat'] != 'ok' ) {
-                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.183', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
-                                }
-                            }
-                        }
-                        elseif( isset($field['default']) ) {
-                            if( ($section['flags']&0x01) == 0x01 ) {
-                                // 
-                                // Apply the default to each repeat
-                                //
-                                for($i = 1; $i <= $section['max_repeats']; $i++ ) {
-                                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.data', array(
-                                        'submission_id' => $form['submission_id'],
-                                        'field_id' => $field['id'],
-                                        'repeat_num' => $i,
-                                        'data' => is_array($field['default']) ? json_encode($field['default']) : $field['default'],
-                                        ), 0x04);
-                                    if( $rc['stat'] != 'ok' ) {
-                                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.178', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
-                                    }
-                                }
-                            } else {
-                                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.forms.data', array(
-                                    'submission_id' => $form['submission_id'],
-                                    'field_id' => $field['id'],
-                                    'repeat_num' => 1,
-                                    'data' => is_array($field['default']) ? json_encode($field['default']) : $field['default'],
-                                    ), 0x04);
-                                if( $rc['stat'] != 'ok' ) {
-                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.179', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } 
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formDefaultsApply');
+        $rc = ciniki_forms_wng_formDefaultsApply($ciniki, $tnid, $request, $form);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.188', 'msg'=>'Unable to apply default values', 'err'=>$rc['err']));
+        }
 
         header("Location: {$request['base_url']}{$base_url}/{$form['submission_uuid']}");
         return array('stat'=>'exit');

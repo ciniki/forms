@@ -623,6 +623,7 @@ function ciniki_forms_main() {
                     'content':'Information',
                     'image':'Image',
 //                    'document':'Document',
+                    'newline':'Start New Line',
                     'break':'Break Between Fields',
                     },
                 'onchange':'M.ciniki_forms_main.field.setupOptions',
@@ -630,8 +631,17 @@ function ciniki_forms_main() {
             'sequence':{'label':'Order', 'type':'text', 'size':'small'},
             'label':{'label':'Label', 'type':'text'},
             'flags1':{'label':'Required', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'no'},
+            'flags4':{'label':'Locked', 'type':'flagtoggle', 'field':'flags', 'bit':0x08, 'default':'no'},
             'flags2':{'label':'Hide from Jurors', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'no'},
             'flags3':{'label':'Submission Label', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'no'},
+            'field_size':{'label':'Size', 'type':'select', 'default':'large', 'options':{
+//                'tiny':'Tiny',    ** future
+                'small':'Small',
+                'small-medium':'Small Medium',
+                'medium':'Medium',
+                'medium-large':'Medium Large',
+                'large':'Large',
+                }},
             'field_ref':{'label':'Connect To', 'type':'select', 'options':{}},
             }},
         '_options':{'label':'Options', 'visible':'hidden', 'fields':{
@@ -1089,7 +1099,7 @@ function ciniki_forms_main() {
                                     };
                             }
                         }
-                        if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
+                        if( rsp.form.sections[i].fields[j].ftype == 'newline' || rsp.form.sections[i].fields[j].ftype == 'break' ) {
                             subsec++;
                             sid = 's_' + rsp.form.sections[i].id + '_' + subsec;
                             if( (rsp.form.sections[i].flags&0x01) == 0x01 ) { // Repeatable
@@ -1193,7 +1203,7 @@ function ciniki_forms_main() {
                         if( rsp.form.sections[i].fields[j].ftype == 'content' ){
                             continue;
                         }
-                        if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
+                        if( rsp.form.sections[i].fields[j].ftype == 'newline' || rsp.form.sections[i].fields[j].ftype == 'break' ) {
                             subsec++;
                             sid = 's_' + rsp.form.sections[i].id + '_' + subsec;
                             if( (rsp.form.sections[i].flags&0x01) == 0x01 ) { // Repeatable
@@ -1420,6 +1430,10 @@ function ciniki_forms_main() {
             return false;
         }
         
-        this.menu.open(cb);
+        if( args.submission_id != null && args.submission_id > 0 ) {
+            this.submission.open(cb, args.submission_id, null);
+        } else {
+            this.menu.open(cb);
+        }
     }
 }

@@ -22,6 +22,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Order'),
         'field_ref'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Field Ref'),
+        'field_size'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Field Size'),
         'label'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Label'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Description'),
         'options'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
@@ -61,6 +62,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         . "ciniki_form_fields.flags, "
         . "ciniki_form_fields.sequence, "
         . "ciniki_form_fields.field_ref, "
+        . "ciniki_form_fields.field_size, "
         . "ciniki_form_fields.label, "
         . "ciniki_form_fields.description, "
         . "ciniki_form_fields.options "
@@ -171,6 +173,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
             . "ciniki_form_fields.flags, "
             . "ciniki_form_fields.sequence, "
             . "ciniki_form_fields.field_ref, "
+            . "ciniki_form_fields.field_size, "
             . "ciniki_form_fields.label "
             . "FROM ciniki_form_fields "
             . "WHERE ciniki_form_fields.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -180,7 +183,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
             array('container'=>'fields', 'fname'=>'id', 
-                'fields'=>array('id', 'section_id', 'ftype', 'type_text', 'flags', 'sequence', 'field_ref', 'label'),
+                'fields'=>array('id', 'section_id', 'ftype', 'type_text', 'flags', 'sequence', 'field_ref', 'field_size', 'label'),
                 'maps'=>array('type_text'=>$maps['field']['ftype']),
                 ),
             ));

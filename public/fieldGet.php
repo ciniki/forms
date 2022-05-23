@@ -82,6 +82,7 @@ function ciniki_forms_fieldGet($ciniki) {
             'flags' => '0',
             'sequence' => $seq,
             'field_ref' => '',
+            'field_size' => 'large',
             'label' => '',
             'description' => '',
             'options' => '',
@@ -98,6 +99,7 @@ function ciniki_forms_fieldGet($ciniki) {
             . "ciniki_form_fields.flags, "
             . "ciniki_form_fields.sequence, "
             . "ciniki_form_fields.field_ref, "
+            . "ciniki_form_fields.field_size, "
             . "ciniki_form_fields.label, "
             . "ciniki_form_fields.description, "
             . "ciniki_form_fields.options "
@@ -109,7 +111,7 @@ function ciniki_forms_fieldGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
             array('container'=>'fields', 'fname'=>'id', 
                 'fields'=>array('section_id', 'ftype', 'flags', 'sequence', 
-                    'field_ref', 'label', 'description', 'options',
+                    'field_ref', 'field_size', 'label', 'description', 'options',
                     ),
                 ),
             ));
