@@ -54,6 +54,8 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
         . "submissions.dt_terms_accepted AS dt_terms_accepted_display, "
         . "submissions.dt_last_submitted, "
         . "submissions.dt_last_submitted AS dt_last_submitted_display, "
+        . "submissions.dt_last_save, "
+        . "submissions.dt_last_save AS dt_last_save_display, "
         . "data.id AS data_id, "
         . "data.field_id, "
         . "data.repeat_num, "
@@ -72,11 +74,13 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
         array('container'=>'submissions', 'fname'=>'id', 
             'fields'=>array('id', 'form_id', 'object', 'object_id', 'customer_id', 'invoice_id', 'status', 'status_text',
                 'dt_terms_accepted', 'dt_last_submitted', 'dt_terms_accepted_display', 'dt_last_submitted_display',
+                'dt_last_save', 'dt_last_save_display',
                 ),
             'maps'=>array('status_text'=>$maps['submission']['status']),
             'utctotz'=>array(
                 'dt_terms_accepted_display'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                 'dt_last_submitted_display'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                'dt_last_save_display'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                 ),
             ),
         array('container'=>'data', 'fname'=>'field_id', 

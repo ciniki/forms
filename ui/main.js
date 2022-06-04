@@ -1041,7 +1041,9 @@ function ciniki_forms_main() {
                     'cellClasses':['flexlabel', 'multiline'],
                     'noData':'No Votes',
                     },
-                '_actions':{'label':'', 'aside':'yes', 'buttons':{}},
+                '_actions':{'label':'', 'aside':'yes', 'buttons':{
+                    'pdf':{'label':'Submission PDF', 'fn':'M.ciniki_forms_main.submission.submissionPDF();'},
+                    }},
                 };
             for(var i in rsp.form.sections) {
                 var subsec = 1;
@@ -1359,6 +1361,9 @@ function ciniki_forms_main() {
     }
     this.submission.createParticipant = function() {
         M.startApp('ciniki.ags.main',null,'M.ciniki_forms_main.submission.open();','mc',{'customer_id':this.data.customer.id, 'participant_submission_id':this.submission_id});
+    }
+    this.submission.submissionPDF = function() {
+        M.api.openFile('ciniki.forms.submissionPDF', {'tnid':M.curTenantID, 'submission_id':this.submission_id});
     }
     this.submission.addDropImage = function(iid, fid) {
         M.ciniki_forms_main.submission.setFieldValue(fid, iid);
