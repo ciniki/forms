@@ -1202,10 +1202,10 @@ function ciniki_forms_main() {
                     p.data[sid] = [];
 
                     for(var j in rsp.form.sections[i].fields) {
-                        if( rsp.form.sections[i].fields[j].ftype == 'content' ){
+                        if( rsp.form.sections[i].fields[j].ftype == 'content' || rsp.form.sections[i].fields[j].ftype == 'newline' ){
                             continue;
                         }
-                        if( rsp.form.sections[i].fields[j].ftype == 'newline' || rsp.form.sections[i].fields[j].ftype == 'break' ) {
+                        if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
                             subsec++;
                             sid = 's_' + rsp.form.sections[i].id + '_' + subsec;
                             if( (rsp.form.sections[i].flags&0x01) == 0x01 ) { // Repeatable

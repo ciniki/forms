@@ -180,7 +180,11 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                     } elseif( ($field['field_size'] == 'small' || $field['field_size'] == 'small-medium') 
                         && isset($field['group_size']) && $field['group_size'] == 3 
                         ) {
-                        $w = array(26, 34);
+                        if( $field['ftype'] == 'phone' ) {
+                            $w = array(32, 28);
+                        } else {
+                            $w = array(26, 34);
+                        }
                         $newline = ($pdf->getX() > 110 ? 1 : 0);
                     } elseif( $field['field_size'] == 'small' ) {   
                         $w = array(40, 50);
