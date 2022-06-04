@@ -29,14 +29,14 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         public $header_name = '';
         public $header_addr = array();
         public $header_details = array();
-        public $header_height = 10;      // The height of the image and address
+        public $header_height = 7; // height of title
         public $tenant_details = array();
         public $courses_settings = array();
         public $footer_text = '';
 
         public function Header() {
             $this->setFont('', 'B', 14);
-            $this->MultiCell(180, 16, $this->title, 0, 'C', 0, 1, '', '', true, 0, false, true, 16, 'T');
+            $this->MultiCell(180, 10, $this->title, 0, 'C', 0, 1, '', '', true, 0, false, true, 10, 'T');
         }
 
         // Page footer
