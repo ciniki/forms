@@ -128,7 +128,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
             // Output the section heading
             //
             $pdf->setFont('', 'B', 12);
-            $pdf->MultiCell($w[0] + $w[1], 12, $section['label'], 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+            $pdf->MultiCell(180, 12, $section['label'], 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
             if( isset($section['fields']) ) {
                 $fill = 0;
                 //
