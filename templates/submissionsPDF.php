@@ -121,14 +121,6 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         //
         $w = array(80, 100);
         foreach($form['sections'] as $section) {
-            if( $pdf->getY() > ($pdf->getPageHeight() - 50) ) {
-                $pdf->AddPage(); 
-            }
-            //
-            // Output the section heading
-            //
-            $pdf->setFont('', 'B', 12);
-            $pdf->MultiCell(180, 12, $section['label'], 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
             if( isset($section['fields']) ) {
                 $fill = 0;
                 //
@@ -167,13 +159,18 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                 //
                 // Output the fields
                 //
-                foreach($section['fields'] as $field) { 
+                $lh = 0;
+                $section_height = 0;
+                $cur_line = 0;
+                $cur_col = 0;
+                $line_heights = array();
+                foreach($section['fields'] as $fid => $field) { 
                     if( $field['ftype'] == 'newline' ) {
                         continue;
                     }
-                    if( $field['ftype'] == 'break' ) {
-                        $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
-                    }
+//                    if( $field['ftype'] == 'break' ) {
+//                        $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
+//                    }
                     $newline = 1;
                     if( $field['ftype'] == 'address' ) {
                         $w = array(40, 140);
@@ -185,10 +182,12 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         } else {
                             $w = array(26, 34);
                         }
-                        $newline = ($pdf->getX() > 110 ? 1 : 0);
+                        $newline = ($cur_col > 1 ? 1 : 0);
+                        //$newline = ($pdf->getX() > 110 ? 1 : 0);
                     } elseif( $field['field_size'] == 'small' ) {   
                         $w = array(40, 50);
-                        $newline = ($pdf->getX() > 80 ? 1 : 0);
+                        $newline = ($cur_col > 0 ? 1 : 0);
+//                        $newline = ($pdf->getX() > 80 ? 1 : 0);
                     } else {
                         $w = array(90, 90);
                     }
@@ -209,13 +208,57 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         if( isset($field['value']['postal']) && $field['value']['postal'] != '' ) {
                             $addr .= ($addr != '' ? '  ' : '') . $field['value']['postal'];
                         }
+                        $section['fields'][$fid]['value'] = $addr;
                         $field['value'] = $addr;
                     }
+                    //
+                    // Find the tallest field for this line
+                    //
                     $pdf->setFont('', 'B', 10);
-                    $lh = $pdf->getStringHeight($w[0], $field['label']);
-                    if( isset($field['value']) && $pdf->getStringHeight($w[1], $field['value']) > $lh ) {
-                        $lh = $pdf->getStringHeight($w[1], $field['value']);
+                    $label_height = $pdf->getStringHeight($w[0], $field['label']);
+                    $value_height = isset($field['value']) ? $pdf->getStringHeight($w[1], $field['value']) : 0;
+                    if( $label_height > $lh ) {
+                        $lh = $label_height;
                     }
+                    if( $value_height > $lh ) {
+                        $lh = $value_height;
+                    }
+                    $section['fields'][$fid]['widths'] = $w;
+                    $section['fields'][$fid]['line'] = $cur_line;
+                    $section['fields'][$fid]['newline'] = $newline;
+                    $cur_col++;
+                    if( $newline == 1 ) {
+                        $line_heights[$cur_line] = $lh;
+                        $section_height += $lh;
+                        $cur_line++;
+                        $cur_col = 0;
+                        $lh = 0;
+                    }
+                }
+
+                //
+                // Check if section will fit
+                //
+                if( $section_height < 100 && $pdf->getY() > ($pdf->getPageHeight() - $section_height - 30) ) {
+                    $pdf->AddPage(); 
+                }
+                //
+                // Output the section heading
+                //
+                $pdf->setFont('', 'B', 12);
+                $pdf->MultiCell(180, 12, $section['label'], 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+
+                foreach($section['fields'] as $fid => $field) { 
+                    if( $field['ftype'] == 'newline' ) {
+                        continue;
+                    }
+                    if( $field['ftype'] == 'break' ) {
+                        $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
+                    }
+                    $w = $field['widths'];
+                    $lh = $line_heights[$field['line']];
+                    $newline = $field['newline'];
+                    $pdf->setFont('', 'B', 10);
                     $pdf->MultiCell($w[0], $lh, $field['label'], 1, 'L', $fill, 0);
                     $pdf->setFont('', '');
                     $pdf->MultiCell($w[1], $lh, (isset($field['value']) ? $field['value'] : ''), 1, 'L', $fill, $newline);
