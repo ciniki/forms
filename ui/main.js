@@ -244,7 +244,7 @@ function ciniki_forms_main() {
             },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_forms_main.form.save();'},
-            'delete':{'label':'Delete', 
+            'delete':{'label':'Delete Form', 
                 'visible':function() {return M.ciniki_forms_main.form.form_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_forms_main.form.remove();'},
             }},
@@ -502,7 +502,7 @@ function ciniki_forms_main() {
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_forms_main.section.save();'},
-            'delete':{'label':'Delete', 
+            'delete':{'label':'Delete Section', 
                 'visible':function() {return M.ciniki_forms_main.section.section_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_forms_main.section.remove();'},
             }},
