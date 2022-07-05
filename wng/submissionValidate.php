@@ -50,7 +50,14 @@ function ciniki_forms_wng_submissionValidate(&$ciniki, $tnid, $request, $form=nu
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.90', 'msg'=>'Unable to load form', 'err'=>$rc['err']));
     }
     $form = $rc['form'];
-        
+
+    //
+    // Check if submission check is via api
+    //
+    if( isset($request['args']['submission_id']) && $request['args']['submission_id'] > 0 ) {
+        $form['submission_id'] = $request['args']['submission_id'];
+    }
+
     //
     // Load the existing submission
     //
