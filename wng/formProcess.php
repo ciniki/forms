@@ -173,6 +173,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         ) {
         $block_submission_new = array(
             'type' => 'buttons',
+            'class' => 'aligncenter',
             'list' => array(
                 array(
                     'text' => 'Start New Submission',
