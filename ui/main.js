@@ -837,6 +837,9 @@ function ciniki_forms_main() {
             },
         'objects':{'label':'', 'aside':'yes', 'type':'simplegrid', 'num_cols':1, 'visible':'no',
             },
+        '_buttons':{'label':'', 'aside':'yes', 'buttons':{
+            'create':{'label':'New Submission', 'fn':'M.ciniki_forms_main.submission.createSubmission(\'M.ciniki_forms_main.submissions.open();\',M.ciniki_forms_main.submissions.form_id);'},
+            }},
         'submissions':{'label':'Submissions', 'type':'simplegrid', 'num_cols':5,
             'headerValues':[],
             'cellClasses':[],
@@ -1247,12 +1250,21 @@ function ciniki_forms_main() {
                                 };
                         }
                         else if( rsp.form.sections[i].fields[j].ftype == 'address' ) {
-                            p.data[data_id + '-address1'] = p.data[data_id].address1;
-                            p.data[data_id + '-address2'] = p.data[data_id].address2;
-                            p.data[data_id + '-city'] = p.data[data_id].city;
-                            p.data[data_id + '-province'] = p.data[data_id].province;
-                            p.data[data_id + '-postal'] = p.data[data_id].postal;
-                            p.data[data_id + '-country'] = p.data[data_id].country;
+                            if( p.data[data_id] != null ) {
+                                p.data[data_id + '-address1'] = (p.data[data_id].address1 != null ? p.data[data_id].address1 : '');
+                                p.data[data_id + '-address2'] = p.data[data_id].address2;
+                                p.data[data_id + '-city'] = p.data[data_id].city;
+                                p.data[data_id + '-province'] = p.data[data_id].province;
+                                p.data[data_id + '-postal'] = p.data[data_id].postal;
+                                p.data[data_id + '-country'] = p.data[data_id].country;
+                            } else {
+                                p.data[data_id + '-address1'] = '';
+                                p.data[data_id + '-address2'] = '';
+                                p.data[data_id + '-city'] = '';
+                                p.data[data_id + '-province'] = '';
+                                p.data[data_id + '-postal'] = '';
+                                p.data[data_id + '-country'] = '';
+                            }
                             p.sections[sid].fields[data_id + '-address1'] = {
                                 'label':label + ' Line 1',
                                 'type':'text',
@@ -1348,6 +1360,23 @@ function ciniki_forms_main() {
             p.nplist = null;
             p.refresh();
             p.show(cb);
+        });
+    }
+    this.submission.createSubmission = function(cb, fid) {
+        if( cb != null ) { this.cb = cb; }
+        this.form_id = fid;
+        M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_forms_main.submission.startSubmission','customer_id':0});
+    }
+    this.submission.startSubmission = function(cid) {
+        // create new submission for customer
+        M.api.getJSONCb('ciniki.forms.submissionAdd', {'tnid':M.curTenantID, 'form_id':this.form_id, 'customer_id':cid, 'invoice_id':0}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_forms_main.submission;
+            p.submission_id = rsp.id;
+            p.edit();
         });
     }
     this.submission.createProgram = function() {
