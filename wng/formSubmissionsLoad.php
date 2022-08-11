@@ -16,7 +16,7 @@
 //
 function ciniki_forms_wng_formSubmissionsLoad(&$ciniki, $tnid, $request, &$form) {
    
-    if( !isset($form['customer_id']) || $form['customer_id'] <= 0 ) {
+    if( !isset($form['submission_uuid']) && (!isset($form['customer_id']) || $form['customer_id'] <= 0) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.176', 'msg'=>'No customer specified'));
     }
 
@@ -42,8 +42,15 @@ function ciniki_forms_wng_formSubmissionsLoad(&$ciniki, $tnid, $request, &$form)
         . "WHERE submissions.form_id = '" . ciniki_core_dbQuote($ciniki, $form['id']) . "' "
         . "AND submissions.object = '" . ciniki_core_dbQuote($ciniki, $form['object']) . "' "
         . "AND submissions.object_id = '" . ciniki_core_dbQuote($ciniki, $form['object_id']) . "' "
-        . "AND submissions.customer_id = '" . ciniki_core_dbQuote($ciniki, $form['customer_id']) . "' "
-        . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    if( isset($form['customer_id']) && $form['customer_id'] > 0 ) {
+        $strsql .= "AND submissions.customer_id = '" . ciniki_core_dbQuote($ciniki, $form['customer_id']) . "' ";
+    } elseif( isset($form['submission_uuid']) && $form['submission_uuid'] != '' ) {
+        $strsql .= "AND submissions.uuid = '" . ciniki_core_dbQuote($ciniki, $form['submission_uuid']) . "' ";
+    } else {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.193', 'msg'=>'No customer specified'));
+    }   
+    $strsql .= "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY status DESC, label "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');

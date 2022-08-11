@@ -199,7 +199,7 @@ function ciniki_forms_main() {
         'options':{'label':'Other Options', 
             'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
             'fields':{
-                'flags1':{'label':'Account Required', 'type':'flagtoggle', 'default':'on', 'bit':0x01, 'field':'flags',
+                'flags1':{'label':'Account Required', 'type':'flagtoggle', 'default':'yes', 'bit':0x01, 'field':'flags',
                     },
                 'max_submissions':{'label':'Max Submissions', 'type':'text', 'size':'small'},
                 'max_customer_submissions':{'label':'Max Submissions/Customer', 'type':'text', 'size':'small'},

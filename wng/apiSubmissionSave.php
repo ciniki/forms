@@ -20,13 +20,13 @@ function ciniki_forms_wng_apiSubmissionSave(&$ciniki, $tnid, $request) {
     //
     // Make sure customer is logged in
     //
-    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.62', 'msg'=>'Not signed in'));
-    }
+//    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
+//        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.62', 'msg'=>'Not signed in'));
+//    }
     
-    if( !isset($request['args']['customer_id']) || $request['args']['customer_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.63', 'msg'=>'Not signed in'));
-    }
+//    if( !isset($request['args']['customer_id']) || $request['args']['customer_id'] <= 0 ) {
+//        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.63', 'msg'=>'Not signed in'));
+//    }
     if( $request['args']['customer_id'] != $request['args']['customer_id'] ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.64', 'msg'=>'Incorrect account'));
     }
@@ -36,6 +36,11 @@ function ciniki_forms_wng_apiSubmissionSave(&$ciniki, $tnid, $request) {
     //
     if( !isset($request['args']['form_id']) || $request['args']['form_id'] <= 0 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.65', 'msg'=>'No form specified'));
+    }
+
+    $customer_id = 0;
+    if( isset($request['session']['customer']['id']) && $request['session']['customer']['id'] > 0 ) {
+        $customer_id = $request['session']['customer']['id'];
     }
 
     //

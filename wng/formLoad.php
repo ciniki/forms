@@ -177,25 +177,19 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
     $form['object'] = '';
     $form['object_id'] = '';
     $form['customer_id'] = $customer_id;
-    $form['submission_id'] = 0;
     $form['invoice_id'] = 0;
 
     //
     // Check to make sure the person is logged in, or present them with login/create form
-    // FIXME: Currently only support logged in forms
     //
-    /* Old code use to rely on request for customer id, changed so customer id passed as argument to formLoad */
-    /*($form['flags']&0x01) == 0x01 &&*/ 
-/*    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] <= 0 ) {
+    if( ($form['flags']&0x01) == 0x01 && ($customer_id == '' || $customer_id <= 0) ) {
         return array('stat'=>'noauth', 'form'=>$form, 'err'=>array('code'=>'ciniki.forms.83', 'msg'=>'Not signed in'));
     } 
 
     //
     // Setup customer id in the form
     //
-    if( isset($request['session']['customer']['id']) ) {
-        $form['customer_id'] = $request['session']['customer']['id'];
-    } */
+    $form['customer_id'] = ($customer_id != '' || $customer_id > 0 ? $customer_id : 0);
 
     //
     // Load the defaults for the form

@@ -25,11 +25,11 @@ function ciniki_forms_wng_api(&$ciniki, $tnid, &$request) {
     }
 
     //
-    // Check to make sure logged in
+    // Check to make sure logged in (also available to anonymous users of forms)
     //
-    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] < 1 ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.77', 'msg'=>"I'm sorry, the you are not authorized."));
-    }
+//    if( !isset($request['session']['customer']['id']) || $request['session']['customer']['id'] < 1 ) {
+//        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.77', 'msg'=>"I'm sorry, the you are not authorized."));
+//    }
 
     //
     // saveSubmission - Save the form submission
