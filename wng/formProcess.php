@@ -226,7 +226,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     // Check if this is a new submission, then create the submission and redirect to full url
     //
     if( ($form['submission_id'] == 'new' || $form['submission_id'] == 0) ) {
-        if( $form['max_customer_submissions'] > 0 && count($form['submissions']) >= $form['max_customer_submissions'] ) {
+        if( $form['max_customer_submissions'] > 0 
+            && isset($form['submissions']) 
+            && count($form['submissions']) >= $form['max_customer_submissions'] 
+            ) {
             $blocks[] = $block_title;
             $blocks[] = array(
                 'type' => 'msg',
