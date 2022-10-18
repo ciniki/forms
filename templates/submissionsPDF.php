@@ -268,6 +268,14 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                 }
             }
         }
+
+        //
+        // Add terms of use
+        //
+        if( isset($args['terms']) && $args['terms'] == 'yes' && isset($form['termsofuse']) && $form['termsofuse'] != '' ) {  
+            $pdf->Ln();
+            $pdf->MultiCell($w[0]+$w[1], $lh, $form['termsofuse'], 0, 'L', 0, 0);    
+        }
     }
 
     return array('stat'=>'ok', 'pdf'=>$pdf);

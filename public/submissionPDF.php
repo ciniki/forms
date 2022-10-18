@@ -22,6 +22,7 @@ function ciniki_forms_submissionPDF($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'submission_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Submission'),
+        'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -61,6 +62,7 @@ function ciniki_forms_submissionPDF($ciniki) {
     $rc = ciniki_forms_templates_submissionsPDF($ciniki, $args['tnid'], array(
         'tenant_details' => $tenant_details,
         'submission_ids' => array($args['submission_id']),
+        'terms' => isset($args['terms']) ? $args['terms'] : 'no',
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.190', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
