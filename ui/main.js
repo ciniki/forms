@@ -1046,7 +1046,7 @@ function ciniki_forms_main() {
                     },
                 '_actions':{'label':'', 'aside':'yes', 'buttons':{
                     'pdf':{'label':'Submission PDF', 'fn':'M.ciniki_forms_main.submission.submissionPDF();'},
-                    'termspdf':{'label':'Submission PDF + Terms', 'fn':'M.ciniki_forms_main.submission.submissionPDF("terms");'},
+                    'termspdf':{'label':'Submission PDF + Terms', 'fn':'M.ciniki_forms_main.submission.submissionPDF("yes");'},
                     }},
                 };
             for(var i in rsp.form.sections) {

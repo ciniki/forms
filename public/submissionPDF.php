@@ -22,7 +22,7 @@ function ciniki_forms_submissionPDF($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'submission_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Submission'),
-        'type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
+        'terms'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Terms'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

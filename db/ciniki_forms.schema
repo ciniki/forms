@@ -25,7 +25,7 @@
 #                               0x01 - Account Required (must create account in ciniki_customers to fill out form)
 #                               0x02 - Display Sectioned
 #                               0x04 -
-#                               0x08 -
+#                               0x08 - Email submission PDF with terms after submission
 #                               0x10 - Juried
 #                               0x20 - Jurying Enabled (jurors can login and submit votes)
 #                               0x40 -

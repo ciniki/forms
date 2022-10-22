@@ -12,6 +12,9 @@
 //
 function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadCacheJPEG');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLoad');
+
     $submission_ids = $args['submission_ids'];
 
     //
@@ -89,7 +92,6 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
     //
     // Output the submissions
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLoad');
     foreach($submission_ids as $sid) {
         //
         // Load the submission
@@ -100,6 +102,9 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         }
         $form = $rc['form'];
         $submission = $rc['form']['submission'];
+
+
+        $pdf->title = $form['name'] . ' - Submission';
         
 
         //
@@ -245,25 +250,91 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                 //
                 // Output the section heading
                 //
-                $pdf->setFont('', 'B', 12);
-                $pdf->MultiCell(180, 12, $section['label'], 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+                $repeats = ($section['flags']&0x01) == 0x01 ? $section['max_repeats'] : 1;
+                for($i = 1; $i <= $repeats; $i++) {
+                    //
+                    // Check for empty repeat
+                    //
+                    if( $i > 1 ) {
+                        $data = 'no';
+                        foreach($section['fields'] as $fid => $field) {
+                            if( isset($field['ftype']) && $field['ftype'] == 'image' 
+                                && isset($field['values'][$i]) && $field['values'][$i] != '0' 
+                                ) {
+                                $data = 'yes';
+                            }
+                            if( isset($field['values'][$i]) && $field['values'][$i] != '' ) {
+                                $data = 'yes';
+                            }
+                        }
+                        if( $data == 'no' ) {
+                            continue;
+                        }
+                    }
 
-                foreach($section['fields'] as $fid => $field) { 
-                    if( $field['ftype'] == 'newline' ) {
-                        continue;
+                    if( $pdf->GetY() > ($pdf->getPageHeight() - 50) ) {
+                        $pdf->AddPage();
                     }
-                    if( $field['ftype'] == 'break' ) {
-                        $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
-                    }
-                    $w = $field['widths'];
-                    $lh = $line_heights[$field['line']];
-                    $newline = $field['newline'];
-                    $pdf->setFont('', 'B', 10);
-                    $pdf->MultiCell($w[0], $lh, $field['label'], 1, 'L', $fill, 0);
-                    $pdf->setFont('', '');
-                    $pdf->MultiCell($w[1], $lh, (isset($field['value']) ? $field['value'] : ''), 1, 'L', $fill, $newline);
-                    if( $newline == 1 ) {
-                        $fill=!$fill;
+                    $fill = 1;
+                    $pdf->setFont('', 'B', 12);
+                    $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : ''), 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+                    foreach($section['fields'] as $fid => $field) { 
+                        if( $field['ftype'] == 'newline' ) {
+                            continue;
+                        }
+                        if( $repeats > 1 ) {
+                            $field['value'] = isset($field['values'][$i]) ? $field['values'][$i] : '';
+                        } 
+                        if( $field['ftype'] == 'break' ) {
+                            $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
+                        }
+                        if( $pdf->GetY() > ($pdf->getPageHeight() - 40) ) {
+                            $pdf->AddPage();
+                            $pdf->setFont('', 'B', 12);
+                            $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : '') . ' - continued', 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+                        }
+                        if( $field['ftype'] == 'textarea' ) {
+                            $lh = $pdf->getStringHeight(180, $field['label']);
+                            $pdf->setFont('', 'B', 10);
+                            $pdf->MultiCell(180, $lh, $field['label'], 1, 'L', 1, 1);
+                            $pdf->setFont('', '', 10);
+                            $pdf->MultiCell(180, 0, (isset($field['value']) ? $field['value'] : ''), 1, 'L', 0, 1);
+                            $fill=1;
+                            continue;
+                        }
+                        elseif( $field['ftype'] == 'image' ) {
+                            error_log(print_r($field,true));
+                            $lh = 60;
+                            if( $pdf->GetY() > ($pdf->getPageHeight() - 20 - $lh) ) {
+                                $pdf->AddPage();
+                            }
+                            $pdf->setFont('', 'B', 10);
+                            $cur_y = $pdf->GetY();
+                            $pdf->MultiCell(90, $lh, $field['label'], 1, 'L', $fill, 0);
+                            $cur_x = $pdf->GetX();
+                            $pdf->MultiCell($w[1], $lh, '', 1, 'L', $fill, 1);
+
+                            //
+                            // Load and add image
+                            //
+                            $rc = ciniki_images_loadCacheJPEG($ciniki, $tnid, $field['value'], 320, 200);
+                            if( $rc['stat'] == 'ok' ) {
+                                $image = $rc['image'];
+                                $img = $pdf->Image('@'.$image, $pdf->left_margin + 95, $cur_y+5, 80, 50, 'JPEG', '', '', false, 75, '', false, false, 0, 'CM');
+                            }
+                            continue;
+
+                        }
+                        $w = $field['widths'];
+                        $lh = $line_heights[$field['line']];
+                        $newline = $field['newline'];
+                        $pdf->setFont('', 'B', 10);
+                        $pdf->MultiCell($w[0], $lh, $field['label'], 1, 'L', $fill, 0);
+                        $pdf->setFont('', '');
+                        $pdf->MultiCell($w[1], $lh, (isset($field['value']) ? $field['value'] : ''), 1, 'L', $fill, $newline);
+                        if( $newline == 1 ) {
+                            $fill=!$fill;
+                        }
                     }
                 }
             }
@@ -274,7 +345,13 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         //
         if( isset($args['terms']) && $args['terms'] == 'yes' && isset($form['termsofuse']) && $form['termsofuse'] != '' ) {  
             $pdf->Ln();
-            $pdf->MultiCell($w[0]+$w[1], $lh, $form['termsofuse'], 0, 'L', 0, 0);    
+            if( $pdf->GetY() > ($pdf->getPageHeight() - 40) ) {
+                $pdf->AddPage();
+            }
+            $pdf->setFont('', 'B', 12);
+            $pdf->MultiCell(180, 12, 'Terms & Conditions', 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+            $pdf->setFont('', '', 10);
+            $pdf->MultiCell(180, $lh, $form['termsofuse'], 0, 'L', 0, 0);    
         }
     }
 
