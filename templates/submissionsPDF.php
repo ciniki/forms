@@ -259,11 +259,13 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         $data = 'no';
                         foreach($section['fields'] as $fid => $field) {
                             if( isset($field['ftype']) && $field['ftype'] == 'image' 
-                                && isset($field['values'][$i]) && $field['values'][$i] != '0' 
+                                && isset($field['values'][$i]) 
+                                && $field['values'][$i] != '0'
+                                && $field['values'][$i] != 'undefined'
                                 ) {
                                 $data = 'yes';
                             }
-                            if( isset($field['values'][$i]) && $field['values'][$i] != '' ) {
+                            if( isset($field['values'][$i]) && $field['values'][$i] != '' && $field['values'][$i] != 'undefined') {
                                 $data = 'yes';
                             }
                         }
