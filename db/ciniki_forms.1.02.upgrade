@@ -1,0 +1,5 @@
+#
+# Add email thank you message column
+#
+ALTER TABLE ciniki_forms ADD COLUMN emailthankyou text not null AFTER thankyou;
+ALTER TABLE ciniki_forms COMMENT='v1.02';

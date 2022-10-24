@@ -303,7 +303,6 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                             continue;
                         }
                         elseif( $field['ftype'] == 'image' ) {
-                            error_log(print_r($field,true));
                             $lh = 60;
                             if( $pdf->GetY() > ($pdf->getPageHeight() - 20 - $lh) ) {
                                 $pdf->AddPage();

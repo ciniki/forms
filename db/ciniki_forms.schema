@@ -45,6 +45,7 @@
 # guidelines:               The submission guidelines for the form. Will be displayed on website.
 # termsofuse:               The terms of use for the form. Submitters have to agree to them.
 # thankyou:                 The thank you message displayed after the form is submitted.
+# emailthankyou:            The thank you message emailed with the form submission PDF.
 # alreadysubmitted:         The message to display if the user has already submitted this form.
 # loginmsg:                 The message to when the form requires a login.
 #
@@ -72,6 +73,7 @@ create table ciniki_forms (
     guidelines text not null,
     termsofuse text not null,
     thankyou text not null,
+    emailthankyou text not null,
     alreadysubmitted text not null,
     loginmsg text not null,
 
@@ -80,4 +82,4 @@ create table ciniki_forms (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

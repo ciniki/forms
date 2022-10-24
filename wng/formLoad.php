@@ -52,6 +52,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
         . "forms.guidelines, "
         . "forms.termsofuse, "
         . "forms.thankyou, "
+        . "forms.emailthankyou, "
         . "forms.alreadysubmitted, "
         . "forms.loginmsg, "
         . "sections.id AS section_id, "
@@ -89,7 +90,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
         array('container'=>'forms', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'permalink', 'type', 'status', 'flags', 
                 'max_submissions', 'max_customer_submissions', 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
-                'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'alreadysubmitted', 'loginmsg', 
+                'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'emailthankyou', 'alreadysubmitted', 'loginmsg', 
                 ),
             'utctotz'=>array(
                 'dt_start'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),

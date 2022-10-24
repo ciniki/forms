@@ -33,6 +33,7 @@ function ciniki_forms_formUpdate(&$ciniki) {
         'guidelines'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Guidelines'),
         'termsofuse'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Terms of Use'),
         'thankyou'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Thank You'),
+        'emailthankyou'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Email Thank You'),
         'alreadysubmitted'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Existing Submission'),
         'loginmsg'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Login Required Message'),
         ));

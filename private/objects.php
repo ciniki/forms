@@ -38,6 +38,7 @@ function ciniki_forms_objects(&$ciniki) {
             'guidelines' => array('name'=>'Guidelines', 'default'=>''),
             'termsofuse' => array('name'=>'Terms of Use', 'default'=>''),
             'thankyou' => array('name'=>'Thank You Message', 'default'=>''),
+            'emailthankyou' => array('name'=>'Email Thank You Message', 'default'=>''),
             'alreadysubmitted' => array('name'=>'Already Submitted Message', 'default'=>''),
             'loginmsg' => array('name'=>'Login Required Message', 'default'=>''),
             ),

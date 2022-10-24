@@ -136,6 +136,7 @@ function ciniki_forms_main() {
                 '50':'Active', 
                 '90':'Archived',
                 }},
+            'flags4':{'label':'Email Submission', 'type':'flagtoggle', 'default':'off', 'bit':0x08, 'field':'flags'},
             'flags5':{'label':'Juried', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags',
                 'onchange':'M.ciniki_forms_main.form.juryToggle();',
                 'on_fields':['flags6'],
@@ -213,6 +214,12 @@ function ciniki_forms_main() {
             'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
             'fields':{
                 'thankyou':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'}
+            }},
+        '_emailthankyou':{'label':'Email Thank You Message', 
+            //'visible':function() { return M.ciniki_forms_main.form.selected == 'thankyou' ? 'yes' :'hidden'; },
+            'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
+            'fields':{
+                'emailthankyou':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'}
             }},
         '_alreadysubmitted':{'label':'Existing Submission Message', 
             //'visible':function() { return M.ciniki_forms_main.form.selected == 'alreadysubmitted' ? 'yes' :'hidden'; },
