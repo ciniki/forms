@@ -304,7 +304,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                             $fill=1;
                             continue;
                         }
-                        elseif( $field['ftype'] == 'image' ) {
+                        elseif( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] > 0 ) {
                             $lh = 60;
                             if( $pdf->GetY() > ($pdf->getPageHeight() - 20 - $lh) ) {
                                 $pdf->AddPage();
@@ -318,10 +318,12 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                             //
                             // Load and add image
                             //
-                            $rc = ciniki_images_loadCacheJPEG($ciniki, $tnid, $field['value'], 320, 200);
-                            if( $rc['stat'] == 'ok' ) {
-                                $image = $rc['image'];
-                                $img = $pdf->Image('@'.$image, $pdf->left_margin + 95, $cur_y+5, 80, 50, 'JPEG', '', '', false, 75, '', false, false, 0, 'CM');
+                            if( isset($field['value']) && $field['value'] > 0 ) {
+                                $rc = ciniki_images_loadCacheJPEG($ciniki, $tnid, $field['value'], 320, 200);
+                                if( $rc['stat'] == 'ok' ) {
+                                    $image = $rc['image'];
+                                    $img = $pdf->Image('@'.$image, $pdf->left_margin + 95, $cur_y+5, 80, 50, 'JPEG', '', '', false, 75, '', false, false, 0, 'CM');
+                                }
                             }
                             continue;
 
@@ -332,7 +334,11 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         $pdf->setFont('', 'B', 10);
                         $pdf->MultiCell($w[0], $lh, $field['label'], 1, 'L', $fill, 0);
                         $pdf->setFont('', '');
-                        $pdf->MultiCell($w[1], $lh, (isset($field['value']) ? $field['value'] : ''), 1, 'L', $fill, $newline);
+                        if( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] == 0 ) {
+                            $pdf->MultiCell($w[1], $lh, 'No image uploaded', 1, 'L', $fill, $newline);
+                        } else {
+                            $pdf->MultiCell($w[1], $lh, (isset($field['value']) ? $field['value'] : ''), 1, 'L', $fill, $newline);
+                        }
                         if( $newline == 1 ) {
                             $fill=!$fill;
                         }
