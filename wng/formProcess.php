@@ -441,7 +441,11 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                     if( $s['id'] == $form['submission']['id'] ) {
                         $block_submission_list['rows'][$sid]['status'] = 90;
                         $block_submission_list['rows'][$sid]['status_text'] = 'Submitted';
-                        $block_submission_list['rows'][$sid]['url'] = "<a class='button' href='{$request['base_url']}{$base_url}/{$s['uuid']}'>Update</a>";
+                        if( ($form['flags']&0x80) == 0 ) {
+                            $block_submission_list['rows'][$sid]['url'] = "<a class='button' href='{$request['base_url']}{$base_url}/{$s['uuid']}'>Update</a>";
+                        } else {
+                            $block_submission_list['rows'][$sid]['url'] = "";
+                        }
                     }
                 }
 
