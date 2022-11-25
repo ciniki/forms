@@ -72,16 +72,22 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     $votes = isset($rc['votes']) ? $rc['votes'] : array();
 
     //
-    // Check if any modules are currently using this object
+    // Remove the link in mail
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
-    $rc = ciniki_core_objectCheckUsed($ciniki, $args['tnid'], 'ciniki.forms.submission', $args['submission_id']);
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_mail_objrefs "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND object = 'ciniki.forms.submission' "
+        . "AND object_id = '" . ciniki_core_dbQuote($ciniki, $args['submission_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
+        array('container'=>'objrefs', 'fname'=>'id', 'fields'=>array('id', 'uuid')),
+        ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.134', 'msg'=>'Unable to check if the submission is still being used.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.194', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
     }
-    if( $rc['used'] != 'no' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.135', 'msg'=>'The submission is still in use. ' . $rc['msg']));
-    }
+    $objrefs = isset($rc['objrefs']) ? $rc['objrefs'] : array();
 
     //
     // Start transaction
@@ -95,6 +101,32 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.forms');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Remove the links to mail messages
+    //
+    if( count($objrefs) > 0 ) {
+        foreach($objrefs as $or) {
+            $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.mail.objref', $or['id'], $or['uuid'], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.194', 'msg'=>'Unable to remove mail reference', 'err'=>$rc['err']));
+            }
+        }
+    }
+
+    //
+    // Check if any modules are currently using this object
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
+    $rc = ciniki_core_objectCheckUsed($ciniki, $args['tnid'], 'ciniki.forms.submission', $args['submission_id']);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.134', 'msg'=>'Unable to check if the submission is still being used.', 'err'=>$rc['err']));
+    }
+    if( $rc['used'] != 'no' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.135', 'msg'=>'The submission is still in use. ' . $rc['msg']));
     }
 
     //
