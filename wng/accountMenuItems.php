@@ -50,7 +50,7 @@ function ciniki_forms_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
         $items[] = array(
             'title' => 'Jurying', 
             'priority' => 750, 
-            'selected' => 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'forms' ? 'yes' : 'no',
             'items' => $forms,
             );
     }
@@ -90,7 +90,7 @@ function ciniki_forms_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
         $items[] = array(
             'title' => 'Forms in Progress', 
             'priority' => 750, 
-            'selected' => 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'forms' ? 'yes' : 'no',
             'items' => $forms,
             );
     }

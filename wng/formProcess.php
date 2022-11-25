@@ -146,8 +146,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             }
             if( $sub['status'] < 90 ) {
                 $form['submissions'][$sid]['url'] = "<a class='button' href='{$request['base_url']}{$base_url}/{$sub['uuid']}'>Continue</a>";
-            } else {
+            } elseif( ($form['flags']&0x08) == 0 ) {
                 $form['submissions'][$sid]['url'] = "<a class='button' href='{$request['base_url']}{$base_url}/{$sub['uuid']}'>Update</a>";
+            } else {
+                $form['submissions'][$sid]['url'] = "";
             }
         }
     }

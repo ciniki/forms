@@ -27,9 +27,9 @@ function ciniki_forms_wng_apiSubmissionSave(&$ciniki, $tnid, $request) {
 //    if( !isset($request['args']['customer_id']) || $request['args']['customer_id'] <= 0 ) {
 //        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.63', 'msg'=>'Not signed in'));
 //    }
-    if( $request['args']['customer_id'] != $request['args']['customer_id'] ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.64', 'msg'=>'Incorrect account'));
-    }
+//    if( $request['args']['customer_id'] != $request['args']['customer_id'] ) {
+//        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.64', 'msg'=>'Incorrect account'));
+//    }
 
     //
     // Make sure the form id is specified

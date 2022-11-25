@@ -143,6 +143,8 @@ function ciniki_forms_main() {
                 },
             'flags6':{'label':'Voting Open', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags',
                 },
+            'flags8':{'label':'No Submission Edit', 'type':'flagtoggle', 'default':'off', 'bit':0x80, 'field':'flags',
+                },
             'dt_start':{'label':'Start', 'type':'datetime'},
             'dt_end':{'label':'End', 'type':'datetime'},
             }},
