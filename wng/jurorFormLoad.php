@@ -15,6 +15,8 @@
 // -------
 //
 function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalink, $juror_customer_id) {
+
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
     //
     // Load tenant settings
     //
@@ -108,6 +110,7 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.161', 'msg'=>'Unable to find Form'));
     }
     $form = $rc['forms'][0];
+    $label_fields = array();
     if( isset($form['sections']) ) {
         foreach($form['sections'] as $sid => $section) {
             if( isset($section['fields']) ) {
@@ -120,6 +123,12 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
                         foreach($options as $k => $v) {
                             $form['sections'][$sid]['fields'][$fid][$k] = $v;
                         }
+                    }
+                    //
+                    // Get the fields for the label
+                    //
+                    if( ($field['flags']&0x10) == 0x10 ) {
+                        $label_fields[] = $field['id'];
                     }
                 }
             }
@@ -167,6 +176,32 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
     }
     $submissions = isset($rc['submissions']) ? $rc['submissions'] : array();
 
+    if( count($label_fields) > 0 ) {
+        $strsql = "SELECT submissions.id, "
+            . "data.data "
+            . "FROM ciniki_form_submissions AS submissions "
+            . "LEFT JOIN ciniki_form_data AS data ON ("
+                . "submissions.id = data.submission_id "
+                . "AND data.field_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $label_fields) . ") "
+                . ") "
+            . "WHERE submissions.form_id = '" . ciniki_core_dbQuote($ciniki, $form['id']) . "' "
+            . "AND submissions.status = 90 "    // Submitted status
+            . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.forms', array(
+            array('container'=>'submissions', 'fname'=>'id', 
+                'fields'=>array('id', 'data'),
+                'dlists'=>array('data' => ' '),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.195', 'msg'=>'Unable to load submissions', 'err'=>$rc['err']));
+        }
+        $labels = isset($rc['submissions']) ? $rc['submissions'] : array();
+    }
+
     //
     // Setup submission numbering that will also be used
     //
@@ -174,6 +209,11 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
     $form['submissions'] = array();
     foreach($submissions as $sid => $s) {
         $s['number'] = $submission_number;
+        if( isset($labels[$s['id']]['data']) ) {
+            $s['label'] = $submission_number . ' - ' . $labels[$s['id']]['data'];
+        } else {
+            $s['label'] = $s['number'];
+        }
         $form['submissions'][$submission_number] = $s;
         $submission_number++;
     }

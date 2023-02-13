@@ -397,7 +397,7 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
             'columns' => array(
                 array(
                     'label' => 'Submission #',
-                    'field' => 'number',
+                    'field' => 'label',
                     ),
                 array(
                     'label' => 'Vote',

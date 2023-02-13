@@ -641,8 +641,9 @@ function ciniki_forms_main() {
             'label':{'label':'Label', 'type':'text'},
             'flags1':{'label':'Required', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'no'},
             'flags4':{'label':'Locked', 'type':'flagtoggle', 'field':'flags', 'bit':0x08, 'default':'no'},
-            'flags2':{'label':'Hide from Jurors', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'no'},
             'flags3':{'label':'Submission Label', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'no'},
+            'flags2':{'label':'Hide from Jurors', 'type':'flagtoggle', 'field':'flags', 'bit':0x02, 'default':'no'},
+            'flags5':{'label':'Juror Label', 'type':'flagtoggle', 'field':'flags', 'bit':0x10, 'default':'no'},
             'field_size':{'label':'Size', 'type':'select', 'default':'large', 'options':{
 //                'tiny':'Tiny',    ** future
                 'small':'Small',
