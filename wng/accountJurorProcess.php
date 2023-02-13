@@ -67,7 +67,7 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
         $blocks[] = array(
             'type' => 'msg', 
             'level' => 'error',
-            'content' => "The form you requested is no longer available or is not allowing voting at this time."
+            'content' => "There are no submissions for this form.",
             );
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }

@@ -311,7 +311,7 @@ function ciniki_forms_main() {
         if( s == 'options' || s == 'guidelines' || s == 'termsofuse' || s == 'jurors' ) {
         //|| s == 'thankyou' || s == 'alreadysubmitted' || s == 'loginmsg' ) {
             this.selected = s;
-            this.showHideSections(['options', '_thankyou', '_alreadysubmitted', '_loginmsg', '_guidelines', '_termsofuse', 'fields', 'jurors']);
+            this.showHideSections(['options', '_emailthankyou', '_thankyou', '_alreadysubmitted', '_loginmsg', '_guidelines', '_termsofuse', 'fields', 'jurors']);
             this.refreshSection('sections');
             this.refreshSection('_tabs');
         } else {
