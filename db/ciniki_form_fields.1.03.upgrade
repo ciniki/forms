@@ -1,0 +1,7 @@
+#
+# prefill_ref column
+#
+ALTER TABLE ciniki_form_fields ADD COLUMN prefill_ref varchar(250) not null AFTER sequence;
+UPDATE ciniki_form_fields SET prefill_ref = field_ref;
+ALTER TABLE ciniki_form_fields COMMENT='v1.03';
+

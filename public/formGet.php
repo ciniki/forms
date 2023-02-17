@@ -191,6 +191,7 @@ function ciniki_forms_formGet($ciniki) {
                 . "ciniki_form_fields.ftype AS type_text, "
                 . "ciniki_form_fields.flags, "
                 . "ciniki_form_fields.sequence, "
+                . "ciniki_form_fields.prefill_ref, "
                 . "ciniki_form_fields.field_ref, "
                 . "ciniki_form_fields.label "
                 . "FROM ciniki_form_fields "
@@ -201,7 +202,7 @@ function ciniki_forms_formGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
                 array('container'=>'fields', 'fname'=>'id', 
-                    'fields'=>array('id', 'section_id', 'ftype', 'type_text', 'flags', 'sequence', 'field_ref', 'label'),
+                    'fields'=>array('id', 'section_id', 'ftype', 'type_text', 'flags', 'sequence', 'prefill_ref', 'field_ref', 'label'),
                     'maps'=>array('type_text'=>$maps['field']['ftype']),
                     ),
                 ));
@@ -211,6 +212,10 @@ function ciniki_forms_formGet($ciniki) {
             $form['fields'] = isset($rc['fields']) ? $rc['fields'] : array();
             $form['field_ids'] = array();
             foreach($form['fields'] as $iid => $field) {
+                $form['fields'][$iid]['prefill_ref_text'] = '';
+                if( isset($refs[$field['prefill_ref']]) ) {
+                    $form['fields'][$iid]['prefill_ref_text'] = $refs[$field['prefill_ref']]['module'] . ' - ' . $refs[$field['prefill_ref']]['name'];
+                }
                 $form['fields'][$iid]['field_ref_text'] = '';
                 if( isset($refs[$field['field_ref']]) ) {
                     $form['fields'][$iid]['field_ref_text'] = $refs[$field['field_ref']]['module'] . ' - ' . $refs[$field['field_ref']]['name'];

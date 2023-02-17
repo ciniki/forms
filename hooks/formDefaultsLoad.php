@@ -69,8 +69,8 @@ function ciniki_forms_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
                         //
                         // Check if field ref is for customer and if the data exists
                         //
-                        if( isset($field['field_ref']) && $field['field_ref'] != '' 
-                            && preg_match("/^ciniki\.forms\.([^\.]+)\.([^\.]+)/", $field['field_ref'], $m)
+                        if( isset($field['prefill_ref']) && $field['prefill_ref'] != '' 
+                            && preg_match("/^ciniki\.forms\.([^\.]+)\.([^\.]+)/", $field['prefill_ref'], $m)
                             && isset($data[$m[1]]['fields'][$m[2]]['data'])
                             ) {
                             if( isset($section['flags']) && ($section['flags']&0x01) == 0x01 ) {

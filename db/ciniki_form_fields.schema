@@ -43,7 +43,9 @@
 #
 # sequence:                 The order for the field in the form.
 #
-# field_ref:                The reference to another field where the field data can be prefilled or stored.
+# prefill_ref:              The reference to another module/object where the field data can pulled from.
+#
+# field_ref:                The reference to another field where the field data can be pushed to.
 #                           format: package.module.object.field,  eg: ciniki.customers.customer.first
 #
 # field_size:               The size of the field, used to scale fields in forms online and print pdf.
@@ -72,6 +74,7 @@ create table ciniki_form_fields (
     ftype varchar(50) not null,
     flags smallint unsigned not null,
     sequence smallint unsigned not null,
+    prefill_ref varchar(250) not null,
     field_ref varchar(250) not null,
     field_size varchar(50) not null,
     label varchar(250) not null,
@@ -83,4 +86,4 @@ create table ciniki_form_fields (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.02';
+) ENGINE='InnoDB', COMMENT='v1.03';

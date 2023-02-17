@@ -67,6 +67,7 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
         . "fields.flags AS field_flags, "
         . "fields.sequence AS field_sequence, "
         . "IF((fields.flags&0x01)=0x01, 'yes', 'no') AS field_required, "
+        . "fields.prefill_ref, "
         . "fields.field_ref, "
         . "fields.field_size, "
         . "fields.label AS field_label, "
@@ -103,7 +104,7 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
                 ),
             ),
         array('container'=>'fields', 'fname'=>'field_id',
-            'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'field_ref', 'field_size', 'flags'=>'field_flags', 
+            'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'prefill_ref', 'field_ref', 'field_size', 'flags'=>'field_flags', 
                 'sequence'=>'field_sequence', 'required'=>'field_required',
                 'description'=>'field_description', 'options'=>'field_options'),
             ),

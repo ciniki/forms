@@ -21,6 +21,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         'ftype'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Order'),
+        'prefill_ref'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Prefill Ref'),
         'field_ref'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Field Ref'),
         'field_size'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Field Size'),
         'label'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Label'),
@@ -61,6 +62,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         . "ciniki_form_fields.ftype, "
         . "ciniki_form_fields.flags, "
         . "ciniki_form_fields.sequence, "
+        . "ciniki_form_fields.prefill_ref, "
         . "ciniki_form_fields.field_ref, "
         . "ciniki_form_fields.field_size, "
         . "ciniki_form_fields.label, "
@@ -172,6 +174,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
             . "ciniki_form_fields.ftype AS type_text, "
             . "ciniki_form_fields.flags, "
             . "ciniki_form_fields.sequence, "
+            . "ciniki_form_fields.prefill_ref, "
             . "ciniki_form_fields.field_ref, "
             . "ciniki_form_fields.field_size, "
             . "ciniki_form_fields.label "
@@ -183,7 +186,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
             array('container'=>'fields', 'fname'=>'id', 
-                'fields'=>array('id', 'section_id', 'ftype', 'type_text', 'flags', 'sequence', 'field_ref', 'field_size', 'label'),
+                'fields'=>array('id', 'section_id', 'ftype', 'type_text', 'flags', 'sequence', 'prefill_ref', 'field_ref', 'field_size', 'label'),
                 'maps'=>array('type_text'=>$maps['field']['ftype']),
                 ),
             ));
@@ -193,6 +196,10 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         $rsp['fields'] = isset($rc['fields']) ? $rc['fields'] : array();
         $rsp['field_ids'] = array();
         foreach($rsp['fields'] as $iid => $field) {
+            $rsp['fields'][$iid]['prefill_ref_text'] = '';
+            if( isset($refs[$field['prefill_ref']]) ) {
+                $rsp['fields'][$iid]['prefill_ref_text'] = $refs[$field['prefill_ref']]['module'] . ' - ' . $refs[$field['prefill_ref']]['name'];
+            }
             $rsp['fields'][$iid]['field_ref_text'] = '';
             if( isset($refs[$field['field_ref']]) ) {
                 $rsp['fields'][$iid]['field_ref_text'] = $refs[$field['field_ref']]['module'] . ' - ' . $refs[$field['field_ref']]['name'];

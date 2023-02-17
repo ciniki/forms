@@ -652,6 +652,7 @@ function ciniki_forms_main() {
                 'medium-large':'Medium Large',
                 'large':'Large',
                 }},
+            'prefill_ref':{'label':'Prefill From', 'type':'select', 'options':{}},
             'field_ref':{'label':'Connect To', 'type':'select', 'options':{}},
             }},
         '_options':{'label':'Options', 'visible':'hidden', 'fields':{
@@ -742,12 +743,15 @@ function ciniki_forms_main() {
         this.refreshSection('_options');
 
         // Setup the field refs options
+        this.sections.general.fields.prefill_ref.options = {'':'No Reference'};
         this.sections.general.fields.field_ref.options = {'':'No Reference'};
         for(var i in this.refs) {
             if( this.refs[i].type == t ) {
+                this.sections.general.fields.prefill_ref.options[i] = this.refs[i].module + ' - ' + this.refs[i].name;
                 this.sections.general.fields.field_ref.options[i] = this.refs[i].module + ' - ' + this.refs[i].name;
             }
         }
+        this.refreshFormField('general', 'prefill_ref');
         this.refreshFormField('general', 'field_ref');
     }
     this.field.open = function(cb, fid, sid, form_id, list) {

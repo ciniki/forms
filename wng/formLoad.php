@@ -67,6 +67,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
         . "fields.flags AS field_flags, "
         . "IF((fields.flags&0x01)=0x01, 'yes', 'no') AS field_required, "
         . "IF((fields.flags&0x08)=0x08, 'no', 'yes') AS field_editable, "
+        . "fields.prefill_ref, "
         . "fields.field_ref, "
         . "fields.field_size, "
         . "fields.label AS field_label, "
@@ -103,7 +104,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
                 ),
             ),
         array('container'=>'fields', 'fname'=>'field_id',
-            'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'field_ref', 'size'=>'field_size', 'flags'=>'field_flags', 
+            'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'prefill_ref', 'field_ref', 'size'=>'field_size', 'flags'=>'field_flags', 
                 'required'=>'field_required', 'editable'=>'field_editable',
                 'description'=>'field_description', 'options'=>'field_options'),
             ),

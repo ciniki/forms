@@ -24,6 +24,7 @@ function ciniki_forms_fieldAdd(&$ciniki) {
         'ftype'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Type'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Order'),
+        'prefill_ref'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Prefill Ref'),
         'field_ref'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Field Ref'),
         'field_size'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Field Size'),
         'label'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Label'),
