@@ -853,6 +853,10 @@ function ciniki_forms_main() {
             },
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'create':{'label':'New Submission', 'fn':'M.ciniki_forms_main.submission.createSubmission(\'M.ciniki_forms_main.submissions.open();\',M.ciniki_forms_main.submissions.form_id);'},
+            'clear':{'label':'Clear Empty Submissions', 
+                'visible':function() { return M.ciniki_forms_main.submissions.status == 10 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_forms_main.submissions.clearEmpty();',
+                },
             }},
         'submissions':{'label':'Submissions', 'type':'simplegrid', 'num_cols':5,
             'headerValues':[],
@@ -965,6 +969,15 @@ function ciniki_forms_main() {
             p.refresh();
             p.show(cb);
         });
+    }
+    this.submissions.clearEmpty = function() {
+        M.api.getJSONCb('ciniki.forms.submissionsEmptyClear', {'tnid':M.curTenantID, 'form_id':this.form_id, 'status':10}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.ciniki_forms_main.submissions.open();
+            });
     }
     this.submissions.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.form_id) < (this.nplist.length - 1) ) {
