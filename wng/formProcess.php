@@ -203,7 +203,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     if( isset($form['max_customer_submissions']) 
         && $form['max_customer_submissions'] > 1
-        && count($form['submissions']) > 0
+        && isset($form['submissions']) && count($form['submissions']) > 0
         && !isset($submission_uuid)
         ) {
         $blocks[] = $block_title;
