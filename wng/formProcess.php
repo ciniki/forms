@@ -159,6 +159,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     $block_title = array(
         'type' => 'title',
+        'class' => 'form-title',
         'title' => $form['name'],
         );
     $block_submission_list = array(
