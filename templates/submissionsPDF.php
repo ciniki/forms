@@ -80,7 +80,6 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
     $pdf->SetMargins($pdf->left_margin, $pdf->top_margin + $pdf->header_height, $pdf->right_margin);
     $pdf->SetHeaderMargin($pdf->top_margin);
 
-
     // set font and pdf features
     $pdf->SetFont('times', 'BI', 10);
     $pdf->SetCellPadding(2);
@@ -103,9 +102,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         $form = $rc['form'];
         $submission = $rc['form']['submission'];
 
-
         $pdf->title = $form['name'] . ' - Submission';
-        
 
         //
         // Create the PDF of the submission
@@ -196,6 +193,9 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                     } else {
                         $w = array(90, 90);
                     }
+                    if( !isset($section['fields'][($fid+1)]) ) {
+                        $newline = 1;
+                    }
                     if( $field['ftype'] == 'address' ) {
                         $addr = '';
                         if( isset($field['value']['address1']) && $field['value']['address1'] != '' ) {
@@ -277,6 +277,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                     if( $pdf->GetY() > ($pdf->getPageHeight() - 50) ) {
                         $pdf->AddPage();
                     }
+//                    $pdf->Ln();
                     $fill = 1;
                     $pdf->setFont('', 'B', 12);
                     $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : ''), 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
@@ -290,7 +291,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         if( $field['ftype'] == 'break' ) {
                             $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
                         }
-                        if( $pdf->GetY() > ($pdf->getPageHeight() - 40) ) {
+                        if( $pdf->GetY() > ($pdf->getPageHeight() - 35) ) {
                             $pdf->AddPage();
                             $pdf->setFont('', 'B', 12);
                             $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : '') . ' - continued', 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
@@ -329,7 +330,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
 
                         }
                         $w = $field['widths'];
-                        $lh = $line_heights[$field['line']];
+                        $lh = isset($line_heights[$field['line']]) ? $line_heights[$field['line']] : 0;
                         $newline = $field['newline'];
                         $pdf->setFont('', 'B', 10);
                         $pdf->MultiCell($w[0], $lh, $field['label'], 1, 'L', $fill, 0);
@@ -352,13 +353,15 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         //
         if( isset($args['terms']) && $args['terms'] == 'yes' && isset($form['termsofuse']) && $form['termsofuse'] != '' ) {  
             $pdf->Ln();
-            if( $pdf->GetY() > ($pdf->getPageHeight() - 40) ) {
+            $pdf->AddPage();
+            $h = $pdf->getStringHeight(180, $form['termsofuse']);
+            if( $pdf->GetY() > ($pdf->getPageHeight() - $h - 15) ) {
                 $pdf->AddPage();
             }
             $pdf->setFont('', 'B', 12);
             $pdf->MultiCell(180, 12, 'Terms & Conditions', 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
             $pdf->setFont('', '', 10);
-            $pdf->MultiCell(180, $lh, $form['termsofuse'], 0, 'L', 0, 0);    
+            $pdf->MultiCell(180, $lh, preg_replace("/\n\n/", "<br/>", $form['termsofuse']), 0, 'L', 0, 1, '', '', true, 0, true);    
         }
     }
 
