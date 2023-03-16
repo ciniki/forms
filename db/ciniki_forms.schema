@@ -34,6 +34,8 @@
 # max_submissions:          The maximum number of submissions allowed, or 0 for unlimited.
 # max_customer_submissions: The maximum number of submissions allowed per customer.
 #
+# notify_emails:            The email addresses to notify upon submission.
+#
 # fee_label:                The label for the fee.
 # fee_amount:               The submission fee to be charged.
 # cartsubmit_label:         The label to use for the submit to cart.
@@ -64,6 +66,7 @@ create table ciniki_forms (
     flags smallint unsigned not null,
     max_submissions int not null,
     max_customer_submissions int not null,
+    notify_emails varchar(1000) not null,
     fee_label varchar(150) not null,
     fee_amount decimal(19,6) not null,
     cartsubmit_label varchar(150) not null,
@@ -82,4 +85,4 @@ create table ciniki_forms (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.02';
+) ENGINE='InnoDB', COMMENT='v1.03';

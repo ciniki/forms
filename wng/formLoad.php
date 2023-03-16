@@ -43,6 +43,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
         . "forms.flags, "
         . "forms.max_submissions, "
         . "forms.max_customer_submissions, "
+        . "forms.notify_emails, "
         . "forms.fee_label, "
         . "forms.fee_amount, "
         . "forms.cartsubmit_label, "
@@ -90,7 +91,8 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
         array('container'=>'forms', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'permalink', 'type', 'status', 'flags', 
-                'max_submissions', 'max_customer_submissions', 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
+                'max_submissions', 'max_customer_submissions', 'notify_emails', 
+                'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
                 'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'emailthankyou', 'alreadysubmitted', 'loginmsg', 
                 ),
             'utctotz'=>array(

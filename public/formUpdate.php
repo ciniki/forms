@@ -23,6 +23,7 @@ function ciniki_forms_formUpdate(&$ciniki) {
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'max_submissions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'number', 'name'=>'Max Submissions'),
+        'notify_emails'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notify Emails'),
         'fee_label'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Fee Label'),
         'fee_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'number', 'name'=>'Submission Fee'),
         'cartsubmit_label'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Cart Submit Label'),

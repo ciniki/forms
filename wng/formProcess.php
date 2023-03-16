@@ -451,18 +451,9 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 }
 
                 //
-                // Email submission to the customer
+                // Build PDF for emailing
                 //
-                if( ($form['flags']&0x08) == 0x08 ) {
-                    $subject = $form['name'] . ' - Submission';
-                    if( isset($form['emailthankyou']) && $form['emailthankyou'] != '' ) {
-                        $htmlmsg = $form['emailthankyou'];
-                        $textmsg = strip_tags($htmlmsg);
-                    } else {
-                        $htmlmsg = "Thank you for your submission, we have attached a copy.";
-                        $textmsg = strip_tags($htmlmsg);
-                    }
-
+                if( ($form['flags']&0x08) == 0x08 || (isset($form['notify_emails']) && $form['notify_emails'] != '') ) {
                     //
                     // Load tenant details
                     //
@@ -476,7 +467,6 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                     //
                     // Generate the PDF
                     //
-                    $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $subject)) . '.pdf';
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'templates', 'submissionsPDF');
                     $rc = ciniki_forms_templates_submissionsPDF($ciniki, $tnid, array(
                         'tenant_details' => $tenant_details,
@@ -486,30 +476,87 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                     if( $rc['stat'] != 'ok' ) {
                         error_log('ERR: Unable to generate submission pdf ' . print_r($rc['err'], true));
                     } else {
-                        $pdf = $rc['pdf'];
-            
-                        //
-                        // Send the email
-                        //
-                        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
-                        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                            'object' => 'ciniki.forms.submission',
-                            'object_id' => $form['submission']['id'],
-                            'customer_id' => $request['session']['customer']['id'],
-                            'customer_email' => $request['session']['customer']['email'],
-                            'customer_name' => $request['session']['customer']['display_name'],
-                            'subject' => $subject,
-                            'html_content' => $textmsg,
-                            'text_content' => $textmsg,
-                            'attachments' => array(array('content'=>$pdf->Output($filename, 'S'), 'filename'=>$filename)),
-                            ));
-                        if( $rc['stat'] != 'ok' ) {
-                            error_log('ERR: Unable to email submission' . print_r($rc['err'], true));
-                        } else {
-                            $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
+                         $pdf = $rc['pdf'];
+                    }
+                }
+
+                //
+                // Email submission to the customer
+                //
+                if( ($form['flags']&0x08) == 0x08 && isset($pdf) ) {
+                    $subject = $form['name'] . ' - Submission';
+                    if( isset($form['emailthankyou']) && $form['emailthankyou'] != '' ) {
+                        $htmlmsg = $form['emailthankyou'];
+                        $textmsg = strip_tags($htmlmsg);
+                    } else {
+                        $htmlmsg = "Thank you for your submission, we have attached a copy.";
+                        $textmsg = strip_tags($htmlmsg);
+                    }
+                    $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $subject)) . '.pdf';
+
+                    //
+                    // Send the email
+                    //
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+                    $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+                        'object' => 'ciniki.forms.submission',
+                        'object_id' => $form['submission']['id'],
+                        'customer_id' => $request['session']['customer']['id'],
+                        'customer_email' => $request['session']['customer']['email'],
+                        'customer_name' => $request['session']['customer']['display_name'],
+                        'subject' => $subject,
+                        'html_content' => $textmsg,
+                        'text_content' => $textmsg,
+                        'attachments' => array(array('content'=>$pdf->Output($filename, 'S'), 'filename'=>$filename)),
+                        ));
+                    if( $rc['stat'] != 'ok' ) {
+                        error_log('ERR: Unable to email submission' . print_r($rc['err'], true));
+                    } else {
+                        $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
+                    }
+                }
+
+                //
+                // Email submission to addresses specified
+                //
+                if( isset($form['notify_emails']) && $form['notify_emails'] != '' && isset($pdf) ) {
+                    $subject = $form['name'] . ' - Submission';
+                    $htmlmsg = "You have received a form submission from {$request['session']['customer']['display_name']}.";
+                    $textmsg = strip_tags($htmlmsg);
+
+                    $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $subject)) . '.pdf';
+
+                    //
+                    // Send the email
+                    //
+                    $emails = explode(',', $form['notify_emails']);
+                    foreach($emails as $email) {
+                        $email = trim($email);
+                        if( $email != '' ) {
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+                            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+                                'object' => 'ciniki.forms.submission',
+                                'object_id' => $form['submission']['id'],
+                                'customer_id' => 0,
+                                'customer_email' => $email,
+                                'customer_name' => '',
+                                'subject' => $subject,
+                                'html_content' => $textmsg,
+                                'text_content' => $textmsg,
+                                'attachments' => array(array('content'=>$pdf->Output($filename, 'S'), 'filename'=>$filename)),
+                                ));
+                            if( $rc['stat'] != 'ok' ) {
+                                error_log('ERR: Unable to email submission' . print_r($rc['err'], true));
+                            } else {
+                                $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
+                            }
                         }
                     }
                 }
+
+                //
+                // Form is now submitted
+                //
             }
         }
 

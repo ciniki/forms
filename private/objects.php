@@ -29,6 +29,7 @@ function ciniki_forms_objects(&$ciniki) {
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'max_submissions' => array('name'=>'Max Submissions', 'default'=>''),
             'max_customer_submissions' => array('name'=>'Max Customer Submissions', 'default'=>'1'),
+            'notify_emails' => array('name'=>'Notify Emails', 'default'=>'1'),
             'fee_label' => array('name'=>'Fee Label', 'default'=>''),
             'fee_amount' => array('name'=>'Submission Fee', 'default'=>''),
             'cartsubmit_label' => array('name'=>'Cart Submit Label', 'default'=>''),

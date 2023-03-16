@@ -33,6 +33,7 @@ function ciniki_forms_formAdd(&$ciniki) {
         'dt_start'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'trim'=>'yes', 'name'=>'Start Date'),
         'dt_end'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'trim'=>'yes', 'defaulttime'=>'23:59', 'name'=>'End Date'),
         'max_customer_submissions'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'number', 'name'=>'Max Customer Submissions'),
+        'notify_emails'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notify Emails'),
         'guidelines'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Guidelines'),
         'termsofuse'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Terms of Use'),
         'thankyou'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Thank You'),

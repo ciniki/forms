@@ -1,0 +1,5 @@
+#
+# Add email list to notify upon submission
+#
+ALTER TABLE ciniki_forms ADD COLUMN notify_emails varchar(1000) not null AFTER max_customer_submissions;
+ALTER TABLE ciniki_forms COMMENT='v1.03';
