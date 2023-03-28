@@ -118,7 +118,7 @@ function ciniki_forms_formSearch($ciniki) {
                 . "customers.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR customers.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . ") "
-            . "ORDER BY customers.display_name, forms.name "
+            . "ORDER BY submissions.dt_last_submitted DESC, customers.display_name, forms.name "
             . "";
         if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
             $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";
