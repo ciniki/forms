@@ -15,7 +15,7 @@ function ciniki_forms_main() {
             },
         'types':{'label':'Types', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             },
-        'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':1,
+        'search':{'label':'Search', 'type':'livesearchgrid', 'livesearchcols':1,
             'cellClasses':[''],
             'hint':'Search form',
             'noData':'No form found',
@@ -36,10 +36,19 @@ function ciniki_forms_main() {
         }
     }
     this.menu.liveSearchResultValue = function(s, f, i, j, d) {
-        return this.cellValue(s, i, j, d);
+        if( d.submission_id > 0 ) {
+            return 'Submission: ' + d.display_name + ' ' + d.name;
+        } else {
+            return 'Form: ' + d.name;
+        }
+//        return this.cellValue(s, i, j, d);
     }
     this.menu.liveSearchResultRowFn = function(s, f, i, j, d) {
-        return this.rowFn(s, i, d);
+        if( d.submission_id > 0 ) {
+            return 'M.ciniki_forms_main.submission.open(\'M.ciniki_forms_main.menu.open();\',\'' + d.submission_id + '\',null);';
+        } else {
+            return 'M.ciniki_forms_main.form.open(\'M.ciniki_forms_main.menu.open();\',\'' + d.id + '\',null);';
+        }
     }
     this.menu.cellValue = function(s, i, j, d) {
         if( s == 'types' || s == 'statuses' ) {
