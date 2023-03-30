@@ -372,6 +372,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             $request['session']['cart-payment-success'] = 'no';
             unset($request['session']['cart-payment-success']);
             $cur_section_id = 'submit';
+        } elseif( isset($_GET['submit']) ) {
+            $cur_section_id = 'submit';
         }
 
         if( !isset($form['submission']) ) {
@@ -592,7 +594,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             'cart-url' => $request['base_url'] . '/cart',
             'button-label' => $form['cartsubmit_label'] != '' ? $form['cartsubmit_label'] : 'Pay Now',
             );
-        $request['session']['cart-redirect-success'] = $request['base_url'] . '/' . implode('/', $request['uri_split']);
+        $request['session']['cart-redirect-success'] = $request['base_url'] . '/' . implode('/', $request['uri_split']) . '?submit';
     }
     //
     // Check if payment required, and invoice exists but not yet paid, redirect them to the cart
@@ -608,7 +610,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             'cart-url' => $request['base_url'] . '/cart',
             'button-label' => $form['cartsubmit_label'] != '' ? $form['cartsubmit_label'] : 'Pay Now',
             );
-        $request['session']['cart-redirect-success'] = $request['base_url'] . '/' . implode('/', $request['uri_split']);
+        $request['session']['cart-redirect-success'] = $request['base_url'] . '/' . implode('/', $request['uri_split']) . '?submit';
     }
     elseif( $form['fee_amount'] > 0 && $form['invoice_id'] > 0 && $form['invoice_status'] > 50 ) {
         $form['sections']['submit']['fields']['error'] = array(
@@ -641,6 +643,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     if( isset($request['session']['cart-payment-success']) && $request['session']['cart-payment-success'] == 'yes' ) {
         $request['session']['cart-payment-success'] = 'no';
         unset($request['session']['cart-payment-success']);
+        $cur_section_id = 'submit';
+    } elseif( isset($_GET['submit']) ) {
         $cur_section_id = 'submit';
     }
 
