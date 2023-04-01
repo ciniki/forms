@@ -66,7 +66,7 @@ function ciniki_forms_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
         . "INNER JOIN ciniki_forms AS forms ON ("
             . "submissions.form_id = forms.id "
             . "AND forms.status = 50 "
-            . "AND forms.dt_end > NOW() "
+            . "AND (forms.dt_end = '0000-00-00' OR forms.dt_end > NOW()) "
             . "AND forms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE submissions.customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
