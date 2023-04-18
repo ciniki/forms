@@ -35,6 +35,9 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
 
     $base_url = '';
     for($i = 0; $i <= $request['cur_uri_pos']; $i++) {
+        if( !isset($request['uri_split'][$i]) ) {
+            break;
+        }
         $base_url .= '/' . $request['uri_split'][$i];
     }
 
@@ -66,6 +69,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         ) {
         $submission_uuid = $request['uri_split'][($request['cur_uri_pos']+1)];
     }
+    error_log($base_url);
+    error_log($submission_uuid);
 
     //
     // Check to make sure logged in
