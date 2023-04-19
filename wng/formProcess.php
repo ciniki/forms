@@ -34,7 +34,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     $cur_section_id = '';
 
     $base_url = '';
-    for($i = 0; $i <= $request['cur_uri_pos']; $i++) {
+    for($i = 0; $i < $request['cur_uri_pos']; $i++) {
         if( !isset($request['uri_split'][$i]) ) {
             break;
         }
@@ -56,6 +56,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         && $request['uri_split'][($request['cur_uri_pos']+0)] != '' 
         ) {
         $form_id = $request['uri_split'][($request['cur_uri_pos']+0)];
+        $request['cur_uri_pos']++;
     } else {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.19', 'msg'=>"No forms specified"));
     }
@@ -64,10 +65,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Check if submission specified
     //
-    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
-        && $request['uri_split'][($request['cur_uri_pos']+1)] != '' 
+    if( isset($request['uri_split'][($request['cur_uri_pos']+0)])
+        && $request['uri_split'][($request['cur_uri_pos']+0)] != '' 
         ) {
-        $submission_uuid = $request['uri_split'][($request['cur_uri_pos']+1)];
+        $submission_uuid = $request['uri_split'][($request['cur_uri_pos']+0)];
     }
 //    error_log($base_url);
 //    error_log($submission_uuid);
