@@ -31,6 +31,7 @@ function ciniki_forms_wng_process(&$ciniki, $tnid, &$request, $section) {
     }
 
     if( $section['ref'] == 'ciniki.forms.form' ) {
+        $request['cur_uri_pos']++;
         ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formProcess');
         return ciniki_forms_wng_formProcess($ciniki, $tnid, $request, $section);
     }
