@@ -250,6 +250,34 @@ function ciniki_forms_formGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.136', 'msg'=>'Unable to load jurors', 'err'=>$rc['err']));
         }
         $form['jurors'] = isset($rc['jurors']) ? $rc['jurors'] : array();
+
+        //
+        // Get the submission stats
+        //
+        $strsql = "SELECT submissions.status, COUNT(*) AS num_submissions "
+            . "FROM ciniki_form_submissions AS submissions "
+            . "WHERE submissions.form_id = '" . ciniki_core_dbQuote($ciniki, $args['form_id']) . "' "
+            . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY submissions.status "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+        $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.forms', 'statuses');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.198', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+        }
+        $statuses = $rc['statuses'];
+        $total = 0;
+        foreach($statuses as $s) {
+            $total+=$s;
+        }
+        $form['statuses'] = array(
+            '_0' => array('id'=>0, 'label'=>'All', 'num_submissions'=>$total),
+            '_100' => array('id'=>100, 'label'=>'Accepted', 'num_submissions'=>(isset($statuses[100]) ? $statuses[100] : 0)),
+            '_110' => array('id'=>110, 'label'=>'Declined', 'num_submissions'=>(isset($statuses[110]) ? $statuses[110] : 0)),
+            '_90' => array('id'=>90, 'label'=>'Submitted', 'num_submissions'=>(isset($statuses[90]) ? $statuses[90] : 0)),
+            '_80' => array('id'=>80, 'label'=>'Paid', 'num_submissions'=>(isset($statuses[80]) ? $statuses[80] : 0)),
+            '_10' => array('id'=>10, 'label'=>'In Progress', 'num_submissions'=>(isset($statuses[10]) ? $statuses[10] : 0)),
+            );
     }
 
     return array('stat'=>'ok', 'form'=>$form);

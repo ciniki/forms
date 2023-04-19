@@ -186,6 +186,8 @@ function ciniki_forms_main() {
             'addTxt':'Add Section',
             'addFn':'M.ciniki_forms_main.form.addSection();',
             },
+        'statuses':{'label':'Submission Status', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
+            },
         'fields':{'label':'Form Fields', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return M.ciniki_forms_main.form.selected == 'section' ? 'yes' :'hidden'; },
             'headerValues':['Type', 'Label', 'Req', 'Hide', 'Connection'],
@@ -376,6 +378,9 @@ function ciniki_forms_main() {
             }
             return d.label;
         }
+        if( s == 'statuses' ) {
+            return M.textCount(d.label, d.num_submissions);
+        }
         if( s == 'jurors' ) {
             switch(j) {
                 case 0: return d.display_name;
@@ -409,6 +414,9 @@ function ciniki_forms_main() {
         if( s == 'sections' ) {
             return 'M.ciniki_forms_main.form.save("M.ciniki_forms_main.form.showSection(' + d.id + ');");';
         }
+        if( s == 'statuses' ) {
+            return 'M.ciniki_forms_main.form.save("M.ciniki_forms_main.form.openStatus(' + d.id + ');");';
+        }
         if( s == 'jurors' ) {
             return 'M.ciniki_forms_main.form.save("M.ciniki_forms_main.form.customerOpen(' + d.customer_id + ');");';
         }
@@ -418,6 +426,10 @@ function ciniki_forms_main() {
     }
     this.form.addField = function() {
         this.save('M.ciniki_forms_main.field.open(\'M.ciniki_forms_main.form.open();\',0,' + this.section_id + ',' + this.form_id + ',[]);');
+    }
+    this.form.openStatus = function(i) {
+        M.ciniki_forms_main.submissions.status = i;
+        M.ciniki_forms_main.submissions.open('M.ciniki_forms_main.form.open();',this.form_id);
     }
     this.form.open = function(cb, fid, list) {
         if( fid != null ) { 
