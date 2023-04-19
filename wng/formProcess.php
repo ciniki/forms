@@ -69,8 +69,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         ) {
         $submission_uuid = $request['uri_split'][($request['cur_uri_pos']+1)];
     }
-    error_log($base_url);
-    error_log($submission_uuid);
+//    error_log($base_url);
+//    error_log($submission_uuid);
 
     //
     // Check to make sure logged in
