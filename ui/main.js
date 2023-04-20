@@ -1096,6 +1096,7 @@ function ciniki_forms_main() {
                 '_actions':{'label':'', 'aside':'yes', 'buttons':{
                     'pdf':{'label':'Submission PDF', 'fn':'M.ciniki_forms_main.submission.submissionPDF();'},
                     'termspdf':{'label':'Submission PDF + Terms', 'fn':'M.ciniki_forms_main.submission.submissionPDF("yes");'},
+                    'email':{'label':'Email Customer', 'fn':'M.ciniki_forms_main.submission.emailCustomer();'},
                     }},
                 };
             for(var i in rsp.form.sections) {
@@ -1430,6 +1431,23 @@ function ciniki_forms_main() {
             p.submission_id = rsp.id;
             p.edit();
         });
+    }
+    this.submission.emailCustomer = function() {
+        var customers = [];
+        customers[0] = {
+            'id':this.data.customer.id,
+            'name':this.data.customer.display_name,
+            };
+        M.startApp('ciniki.mail.omessage',
+            null,
+            'M.ciniki_forms_main.submission.open();',
+            'mc',
+            {'subject':'',
+                'list':customers, 
+                'object':'ciniki.forms.form',
+                'object_id':this.data.submission.form_id,
+                'removeable':'yes',
+            });
     }
     this.submission.createProgram = function() {
         M.startApp('ciniki.courses.main',null,'M.ciniki_forms_main.submission.open();','mc',{'form_submission_id':this.submission_id});
