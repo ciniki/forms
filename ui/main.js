@@ -1218,6 +1218,8 @@ function ciniki_forms_main() {
                         '80':'Paid',
                         '90':'Submitted',
                         '100':'Accepted',
+                        '104':'Processing',
+                        '107':'Complete',
                         '110':'Declined',
                         }},
                     }},

@@ -27,6 +27,8 @@
 #                               80 - Paid
 #                               90 - Submitted (and paid if fee_amount > 0 for form)
 #                               100 - Accepted
+#                               104 - Processing
+#                               107 - Complete
 #                               110 - Declined
 #
 # label:                    The label for the submission (created by the fields flagged 0x04)
