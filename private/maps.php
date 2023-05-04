@@ -47,6 +47,8 @@ function ciniki_forms_maps(&$ciniki) {
             '80'=>'Paid',
             '90'=>'Submitted',
             '100'=>'Accepted',
+            '104'=>'Processing',
+            '107'=>'Completed',
             '110'=>'Declined',
         ),
     );
