@@ -905,6 +905,7 @@ function ciniki_forms_main() {
         if( s == 'submissions' ) {
             switch(this.sections.submissions.dataMaps[j]) {
                 case 'name': return d.display_name;
+                case 'label': return d.label;
                 case 'status': return d.status_text;
                 case 'object': return d.object_text;
                 case 'submitted': return M.multiline(d.dt_last_submitted_date, d.dt_last_submitted_time);
@@ -957,11 +958,11 @@ function ciniki_forms_main() {
             }
             var p = M.ciniki_forms_main.submissions;
             p.data = rsp;
-            p.sections.submissions.num_cols = 2;
-            p.sections.submissions.headerValues = ['Name'];
-            p.sections.submissions.cellClasses = [''];
-            p.sections.submissions.sortTypes = ['text'];
-            p.sections.submissions.dataMaps = ['name'];
+            p.sections.submissions.num_cols = 3;
+            p.sections.submissions.headerValues = ['Name', 'Label'];
+            p.sections.submissions.cellClasses = ['', ''];
+            p.sections.submissions.sortTypes = ['text', 'text'];
+            p.sections.submissions.dataMaps = ['name', 'label'];
             if( p.status == 0 ) {
                 p.sections.submissions.num_cols++;
                 p.sections.submissions.headerValues.push('Status');
