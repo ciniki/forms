@@ -528,7 +528,11 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 // Email submission to addresses specified
                 //
                 if( isset($form['notify_emails']) && $form['notify_emails'] != '' && isset($pdf) ) {
-                    $subject = $form['name'] . ' - Submission';
+                    if( $form['submission']['label'] != '' ) {
+                        $subject = $form['name'] . ' - ' . $form['submission']['label'] . ' - Submission';
+                    } else {
+                        $subject = $form['name'] . ' - Submission';
+                    }
                     $htmlmsg = "You have received a form submission from {$request['session']['customer']['display_name']}.";
                     $textmsg = strip_tags($htmlmsg);
 
