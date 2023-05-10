@@ -122,226 +122,228 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         // Add the fields and responses
         //
         $w = array(80, 100);
-        foreach($form['sections'] as $section) {
-            if( isset($section['fields']) ) {
-                $fill = 0;
-                //
-                // Determine field groups
-                //
-                $prev_field = null;
-                $group_ids = array();
-                foreach($section['fields'] as $fid => $field) { 
-                    if( count($group_ids) == 0 ) {
-                        $group_ids[] = $fid;
-                        $prev_field = $field;
-                        continue;
-                    }
-                    if( ($prev_field['field_size'] == 'small' || $prev_field['field_size'] == 'small-medium')
-                        && ($field['field_size'] == 'small' || $field['field_size'] == 'small-medium')
-                        ) {
-                        $group_ids[] = $fid;
-                        $prev_field = $field;
-                        continue;
-                    } 
+        if( isset($form['sections']) && count($form['sections']) > 0 ) {
+            foreach($form['sections'] as $section) {
+                if( isset($section['fields']) ) {
+                    $fill = 0;
+                    //
+                    // Determine field groups
+                    //
+                    $prev_field = null;
+                    $group_ids = array();
+                    foreach($section['fields'] as $fid => $field) { 
+                        if( count($group_ids) == 0 ) {
+                            $group_ids[] = $fid;
+                            $prev_field = $field;
+                            continue;
+                        }
+                        if( ($prev_field['field_size'] == 'small' || $prev_field['field_size'] == 'small-medium')
+                            && ($field['field_size'] == 'small' || $field['field_size'] == 'small-medium')
+                            ) {
+                            $group_ids[] = $fid;
+                            $prev_field = $field;
+                            continue;
+                        } 
 
-                    //
-                    // End of group
-                    //
+                        //
+                        // End of group
+                        //
+                        foreach($group_ids as $id) {
+                            $section['fields'][$id]['group_size'] = count($group_ids);
+                        }
+                        $group_ids = array();
+                        $prev_field = null;
+                    }
                     foreach($group_ids as $id) {
                         $section['fields'][$id]['group_size'] = count($group_ids);
                     }
-                    $group_ids = array();
-                    $prev_field = null;
-                }
-                foreach($group_ids as $id) {
-                    $section['fields'][$id]['group_size'] = count($group_ids);
-                }
 
 
-                //
-                // Output the fields
-                //
-                $lh = 0;
-                $section_height = 0;
-                $cur_line = 0;
-                $cur_col = 0;
-                $line_heights = array();
-                foreach($section['fields'] as $fid => $field) { 
-                    if( $field['ftype'] == 'newline' ) {
-                        continue;
-                    }
-//                    if( $field['ftype'] == 'break' ) {
-//                        $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
-//                    }
-                    $newline = 1;
-                    if( $field['ftype'] == 'address' ) {
-                        $w = array(40, 140);
-                    } elseif( ($field['field_size'] == 'small' || $field['field_size'] == 'small-medium') 
-                        && isset($field['group_size']) && $field['group_size'] == 3 
-                        ) {
-                        if( $field['ftype'] == 'phone' ) {
-                            $w = array(32, 28);
-                        } else {
-                            $w = array(26, 34);
-                        }
-                        $newline = ($cur_col > 1 ? 1 : 0);
-                        //$newline = ($pdf->getX() > 110 ? 1 : 0);
-                    } elseif( $field['field_size'] == 'small' ) {   
-                        $w = array(40, 50);
-                        $newline = ($cur_col > 0 ? 1 : 0);
-//                        $newline = ($pdf->getX() > 80 ? 1 : 0);
-                    } else {
-                        $w = array(90, 90);
-                    }
-                    if( !isset($section['fields'][($fid+1)]) ) {
-                        $newline = 1;
-                    }
-                    if( $field['ftype'] == 'address' ) {
-                        $addr = '';
-                        if( isset($field['value']['address1']) && $field['value']['address1'] != '' ) {
-                            $addr .= $field['value']['address1'];
-                        }
-                        if( isset($field['value']['address2']) && $field['value']['address2'] != '' ) {
-                            $addr .= ($addr != '' ? ', ' : '') . $field['value']['address2'];
-                        }
-                        if( isset($field['value']['city']) && $field['value']['city'] != '' ) {
-                            $addr .= ($addr != '' ? ', ' : '') . $field['value']['city'];
-                        }
-                        if( isset($field['value']['province']) && $field['value']['province'] != '' ) {
-                            $addr .= ($addr != '' ? ', ' : '') . $field['value']['province'];
-                        }
-                        if( isset($field['value']['postal']) && $field['value']['postal'] != '' ) {
-                            $addr .= ($addr != '' ? '  ' : '') . $field['value']['postal'];
-                        }
-                        $section['fields'][$fid]['value'] = $addr;
-                        $field['value'] = $addr;
-                    }
                     //
-                    // Find the tallest field for this line
+                    // Output the fields
                     //
-                    $pdf->setFont('', 'B', 10);
-                    $label_height = $pdf->getStringHeight($w[0], $field['label']);
-                    $value_height = isset($field['value']) ? $pdf->getStringHeight($w[1], $field['value']) : 0;
-                    if( $label_height > $lh ) {
-                        $lh = $label_height;
-                    }
-                    if( $value_height > $lh ) {
-                        $lh = $value_height;
-                    }
-                    $section['fields'][$fid]['widths'] = $w;
-                    $section['fields'][$fid]['line'] = $cur_line;
-                    $section['fields'][$fid]['newline'] = $newline;
-                    $cur_col++;
-                    if( $newline == 1 ) {
-                        $line_heights[$cur_line] = $lh;
-                        $section_height += $lh;
-                        $cur_line++;
-                        $cur_col = 0;
-                        $lh = 0;
-                    }
-                }
-
-                //
-                // Check if section will fit
-                //
-                if( $section_height < 100 && $pdf->getY() > ($pdf->getPageHeight() - $section_height - 30) ) {
-                    $pdf->AddPage(); 
-                }
-                //
-                // Output the section heading
-                //
-                $repeats = ($section['flags']&0x01) == 0x01 ? $section['max_repeats'] : 1;
-                for($i = 1; $i <= $repeats; $i++) {
-                    //
-                    // Check for empty repeat
-                    //
-                    if( $i > 1 ) {
-                        $data = 'no';
-                        foreach($section['fields'] as $fid => $field) {
-                            if( isset($field['ftype']) && $field['ftype'] == 'image' 
-                                && isset($field['values'][$i]) 
-                                && $field['values'][$i] != '0'
-                                && $field['values'][$i] != 'undefined'
-                                ) {
-                                $data = 'yes';
-                            }
-                            if( isset($field['values'][$i]) && $field['values'][$i] != '' && $field['values'][$i] != 'undefined') {
-                                $data = 'yes';
-                            }
-                        }
-                        if( $data == 'no' ) {
-                            continue;
-                        }
-                    }
-
-                    if( $pdf->GetY() > ($pdf->getPageHeight() - 50) ) {
-                        $pdf->AddPage();
-                    }
-//                    $pdf->Ln();
-                    $fill = 1;
-                    $pdf->setFont('', 'B', 12);
-                    $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : ''), 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+                    $lh = 0;
+                    $section_height = 0;
+                    $cur_line = 0;
+                    $cur_col = 0;
+                    $line_heights = array();
                     foreach($section['fields'] as $fid => $field) { 
                         if( $field['ftype'] == 'newline' ) {
                             continue;
                         }
-                        if( $repeats > 1 ) {
-                            $field['value'] = isset($field['values'][$i]) ? $field['values'][$i] : '';
-                        } 
-                        if( $field['ftype'] == 'break' ) {
-                            $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
-                        }
-                        if( $pdf->GetY() > ($pdf->getPageHeight() - 35) ) {
-                            $pdf->AddPage();
-                            $pdf->setFont('', 'B', 12);
-                            $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : '') . ' - continued', 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
-                        }
-                        if( $field['ftype'] == 'textarea' ) {
-                            $lh = $pdf->getStringHeight(180, $field['label']);
-                            $pdf->setFont('', 'B', 10);
-                            $pdf->MultiCell(180, $lh, $field['label'], 1, 'L', 1, 1);
-                            $pdf->setFont('', '', 10);
-                            $pdf->MultiCell(180, 0, (isset($field['value']) ? $field['value'] : ''), 1, 'L', 0, 1);
-                            $fill=1;
-                            continue;
-                        }
-                        elseif( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] > 0 ) {
-                            $lh = 60;
-                            if( $pdf->GetY() > ($pdf->getPageHeight() - 20 - $lh) ) {
-                                $pdf->AddPage();
+    //                    if( $field['ftype'] == 'break' ) {
+    //                        $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
+    //                    }
+                        $newline = 1;
+                        if( $field['ftype'] == 'address' ) {
+                            $w = array(40, 140);
+                        } elseif( ($field['field_size'] == 'small' || $field['field_size'] == 'small-medium') 
+                            && isset($field['group_size']) && $field['group_size'] == 3 
+                            ) {
+                            if( $field['ftype'] == 'phone' ) {
+                                $w = array(32, 28);
+                            } else {
+                                $w = array(26, 34);
                             }
-                            $pdf->setFont('', 'B', 10);
-                            $cur_y = $pdf->GetY();
-                            $pdf->MultiCell(90, $lh, $field['label'], 1, 'L', $fill, 0);
-                            $cur_x = $pdf->GetX();
-                            $pdf->MultiCell($w[1], $lh, '', 1, 'L', $fill, 1);
+                            $newline = ($cur_col > 1 ? 1 : 0);
+                            //$newline = ($pdf->getX() > 110 ? 1 : 0);
+                        } elseif( $field['field_size'] == 'small' ) {   
+                            $w = array(40, 50);
+                            $newline = ($cur_col > 0 ? 1 : 0);
+    //                        $newline = ($pdf->getX() > 80 ? 1 : 0);
+                        } else {
+                            $w = array(90, 90);
+                        }
+                        if( !isset($section['fields'][($fid+1)]) ) {
+                            $newline = 1;
+                        }
+                        if( $field['ftype'] == 'address' ) {
+                            $addr = '';
+                            if( isset($field['value']['address1']) && $field['value']['address1'] != '' ) {
+                                $addr .= $field['value']['address1'];
+                            }
+                            if( isset($field['value']['address2']) && $field['value']['address2'] != '' ) {
+                                $addr .= ($addr != '' ? ', ' : '') . $field['value']['address2'];
+                            }
+                            if( isset($field['value']['city']) && $field['value']['city'] != '' ) {
+                                $addr .= ($addr != '' ? ', ' : '') . $field['value']['city'];
+                            }
+                            if( isset($field['value']['province']) && $field['value']['province'] != '' ) {
+                                $addr .= ($addr != '' ? ', ' : '') . $field['value']['province'];
+                            }
+                            if( isset($field['value']['postal']) && $field['value']['postal'] != '' ) {
+                                $addr .= ($addr != '' ? '  ' : '') . $field['value']['postal'];
+                            }
+                            $section['fields'][$fid]['value'] = $addr;
+                            $field['value'] = $addr;
+                        }
+                        //
+                        // Find the tallest field for this line
+                        //
+                        $pdf->setFont('', 'B', 10);
+                        $label_height = $pdf->getStringHeight($w[0], $field['label']);
+                        $value_height = isset($field['value']) ? $pdf->getStringHeight($w[1], $field['value']) : 0;
+                        if( $label_height > $lh ) {
+                            $lh = $label_height;
+                        }
+                        if( $value_height > $lh ) {
+                            $lh = $value_height;
+                        }
+                        $section['fields'][$fid]['widths'] = $w;
+                        $section['fields'][$fid]['line'] = $cur_line;
+                        $section['fields'][$fid]['newline'] = $newline;
+                        $cur_col++;
+                        if( $newline == 1 ) {
+                            $line_heights[$cur_line] = $lh;
+                            $section_height += $lh;
+                            $cur_line++;
+                            $cur_col = 0;
+                            $lh = 0;
+                        }
+                    }
 
-                            //
-                            // Load and add image
-                            //
-                            if( isset($field['value']) && $field['value'] > 0 ) {
-                                $rc = ciniki_images_loadCacheJPEG($ciniki, $tnid, $field['value'], 320, 200);
-                                if( $rc['stat'] == 'ok' ) {
-                                    $image = $rc['image'];
-                                    $img = $pdf->Image('@'.$image, $pdf->left_margin + 95, $cur_y+5, 80, 50, 'JPEG', '', '', false, 75, '', false, false, 0, 'CM');
+                    //
+                    // Check if section will fit
+                    //
+                    if( $section_height < 100 && $pdf->getY() > ($pdf->getPageHeight() - $section_height - 30) ) {
+                        $pdf->AddPage(); 
+                    }
+                    //
+                    // Output the section heading
+                    //
+                    $repeats = ($section['flags']&0x01) == 0x01 ? $section['max_repeats'] : 1;
+                    for($i = 1; $i <= $repeats; $i++) {
+                        //
+                        // Check for empty repeat
+                        //
+                        if( $i > 1 ) {
+                            $data = 'no';
+                            foreach($section['fields'] as $fid => $field) {
+                                if( isset($field['ftype']) && $field['ftype'] == 'image' 
+                                    && isset($field['values'][$i]) 
+                                    && $field['values'][$i] != '0'
+                                    && $field['values'][$i] != 'undefined'
+                                    ) {
+                                    $data = 'yes';
+                                }
+                                if( isset($field['values'][$i]) && $field['values'][$i] != '' && $field['values'][$i] != 'undefined') {
+                                    $data = 'yes';
                                 }
                             }
-                            continue;
+                            if( $data == 'no' ) {
+                                continue;
+                            }
+                        }
 
+                        if( $pdf->GetY() > ($pdf->getPageHeight() - 50) ) {
+                            $pdf->AddPage();
                         }
-                        $w = $field['widths'];
-                        $lh = isset($line_heights[$field['line']]) ? $line_heights[$field['line']] : 0;
-                        $newline = $field['newline'];
-                        $pdf->setFont('', 'B', 10);
-                        $pdf->MultiCell($w[0], $lh, $field['label'], 1, 'L', $fill, 0);
-                        $pdf->setFont('', '');
-                        if( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] == 0 ) {
-                            $pdf->MultiCell($w[1], $lh, 'No image uploaded', 1, 'L', $fill, $newline);
-                        } else {
-                            $pdf->MultiCell($w[1], $lh, (isset($field['value']) ? $field['value'] : ''), 1, 'L', $fill, $newline);
-                        }
-                        if( $newline == 1 ) {
-                            $fill=!$fill;
+    //                    $pdf->Ln();
+                        $fill = 1;
+                        $pdf->setFont('', 'B', 12);
+                        $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : ''), 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+                        foreach($section['fields'] as $fid => $field) { 
+                            if( $field['ftype'] == 'newline' ) {
+                                continue;
+                            }
+                            if( $repeats > 1 ) {
+                                $field['value'] = isset($field['values'][$i]) ? $field['values'][$i] : '';
+                            } 
+                            if( $field['ftype'] == 'break' ) {
+                                $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
+                            }
+                            if( $pdf->GetY() > ($pdf->getPageHeight() - 35) ) {
+                                $pdf->AddPage();
+                                $pdf->setFont('', 'B', 12);
+                                $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : '') . ' - continued', 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+                            }
+                            if( $field['ftype'] == 'textarea' ) {
+                                $lh = $pdf->getStringHeight(180, $field['label']);
+                                $pdf->setFont('', 'B', 10);
+                                $pdf->MultiCell(180, $lh, $field['label'], 1, 'L', 1, 1);
+                                $pdf->setFont('', '', 10);
+                                $pdf->MultiCell(180, 0, (isset($field['value']) ? $field['value'] : ''), 1, 'L', 0, 1);
+                                $fill=1;
+                                continue;
+                            }
+                            elseif( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] > 0 ) {
+                                $lh = 60;
+                                if( $pdf->GetY() > ($pdf->getPageHeight() - 20 - $lh) ) {
+                                    $pdf->AddPage();
+                                }
+                                $pdf->setFont('', 'B', 10);
+                                $cur_y = $pdf->GetY();
+                                $pdf->MultiCell(90, $lh, $field['label'], 1, 'L', $fill, 0);
+                                $cur_x = $pdf->GetX();
+                                $pdf->MultiCell($w[1], $lh, '', 1, 'L', $fill, 1);
+
+                                //
+                                // Load and add image
+                                //
+                                if( isset($field['value']) && $field['value'] > 0 ) {
+                                    $rc = ciniki_images_loadCacheJPEG($ciniki, $tnid, $field['value'], 320, 200);
+                                    if( $rc['stat'] == 'ok' ) {
+                                        $image = $rc['image'];
+                                        $img = $pdf->Image('@'.$image, $pdf->left_margin + 95, $cur_y+5, 80, 50, 'JPEG', '', '', false, 75, '', false, false, 0, 'CM');
+                                    }
+                                }
+                                continue;
+
+                            }
+                            $w = $field['widths'];
+                            $lh = isset($line_heights[$field['line']]) ? $line_heights[$field['line']] : 0;
+                            $newline = $field['newline'];
+                            $pdf->setFont('', 'B', 10);
+                            $pdf->MultiCell($w[0], $lh, $field['label'], 1, 'L', $fill, 0);
+                            $pdf->setFont('', '');
+                            if( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] == 0 ) {
+                                $pdf->MultiCell($w[1], $lh, 'No image uploaded', 1, 'L', $fill, $newline);
+                            } else {
+                                $pdf->MultiCell($w[1], $lh, (isset($field['value']) ? $field['value'] : ''), 1, 'L', $fill, $newline);
+                            }
+                            if( $newline == 1 ) {
+                                $fill=!$fill;
+                            }
                         }
                     }
                 }
