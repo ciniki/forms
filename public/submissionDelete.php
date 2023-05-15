@@ -55,6 +55,20 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     $submission = $rc['submission'];
 
     //
+    // Get the data for the submission
+    //
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_form_data "
+        . "WHERE submission_id = '" . ciniki_core_dbQuote($ciniki, $submission['id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'submission');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $data = isset($rc['rows']) ? $rc['rows'] : array();
+
+    //
     // Check for any dependencies before deleting
     //
     $strsql = "SELECT id, uuid "
@@ -134,6 +148,17 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     //
     foreach($votes as $vote) {
         $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.vote', $vote['id'], $vote['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
+            return $rc;
+        }
+    }
+
+    //
+    // Remove the data for the submission
+    //
+    foreach($data as $d) {
+        $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.data', $d['id'], $d['uuid'], 0x04);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
             return $rc;
