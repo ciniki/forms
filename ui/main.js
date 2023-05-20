@@ -428,8 +428,7 @@ function ciniki_forms_main() {
         this.save('M.ciniki_forms_main.field.open(\'M.ciniki_forms_main.form.open();\',0,' + this.section_id + ',' + this.form_id + ',[]);');
     }
     this.form.openStatus = function(i) {
-        M.ciniki_forms_main.submissions.status = i;
-        M.ciniki_forms_main.submissions.open('M.ciniki_forms_main.form.open();',this.form_id);
+        M.ciniki_forms_main.submissions.open('M.ciniki_forms_main.form.open();',this.form_id,i);
     }
     this.form.open = function(cb, fid, list) {
         if( fid != null ) { 
@@ -943,12 +942,15 @@ function ciniki_forms_main() {
         this.object_id = id;
         this.open();
     }
-    this.submissions.open = function(cb, fid, list) {
+    this.submissions.open = function(cb, fid, status, list) {
         if( fid != null ) { 
             this.form_id = fid; 
             this.status = 90; 
             this.object = '';
             this.object_id = '';
+        }
+        if( status != null ) {
+            this.status = status;
         }
         if( list != null ) { this.nplist = list; }
         M.api.getJSONCb('ciniki.forms.submissions', {'tnid':M.curTenantID, 'form_id':this.form_id, 'status':this.status, 'object':this.object, 'object_id':this.object_id}, function(rsp) {
