@@ -1210,12 +1210,14 @@ function ciniki_forms_main() {
             }
             var p = M.ciniki_forms_main.submission;
             p.data = rsp.form;
+            p.data.label = rsp.form.submission.label;
             p.data.status = rsp.form.submission.status;
             p.sections = {
                 'submission_details':{'label':'Submission', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
                     'cellClasses':['label', ''],
                     },
                 '_details':{'label':'', 'aside':'yes', 'fields':{
+                    'label':{'label':'Label', 'type':'text'},
                     'status':{'label':'Status', 'type':'select', 'options':{
                         '10':'Draft',
                         '70':'Pending Payment',

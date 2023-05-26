@@ -54,6 +54,7 @@ function ciniki_forms_submissionGet($ciniki) {
     //
     $form['submission_details'] = array(
         array('label'=>'Name', 'value'=>$form['name']),
+        array('label'=>'Label', 'value'=>$submission['label']),
         array('label'=>'Terms Accepted', 'value'=>$submission['dt_terms_accepted_display']),
         array('label'=>'Submitted', 'value'=>$submission['dt_last_submitted_display']),
         array('label'=>'Status', 'value'=>$submission['status_text']),
