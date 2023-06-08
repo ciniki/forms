@@ -34,7 +34,7 @@ function ciniki_forms_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
             . "INNER JOIN ciniki_form_submissions AS submissions ON ("
                 . "forms.id = submissions.form_id "
                 . "AND submissions.customer_id = '" . ciniki_core_dbQuote($ciniki, $form['customer_id']) . "' "
-                . "AND submissions.status >= 80 "
+                . "AND submissions.status >= 70 "
                 . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "INNER JOIN ciniki_form_data AS data ON ("
@@ -42,7 +42,7 @@ function ciniki_forms_hooks_formDefaultsLoad(&$ciniki, $tnid, $args) {
                 . "AND data.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE forms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND forms.status = 50 "
+            . "AND forms.status <= 90 "
             . "ORDER BY forms.id, data.field_id, data.repeat_num "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
