@@ -22,7 +22,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
     //
     require_once($ciniki['config']['ciniki.core']['lib_dir'] . '/tcpdf/tcpdf.php');
 
-    class MYPDF extends TCPDF {
+    class SUBMISSION_PDF extends TCPDF {
         public $left_margin = 18;
         public $right_margin = 18;
         public $top_margin = 8;
@@ -56,7 +56,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
     //
     // Start a new document
     //
-    $pdf = new MYPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
+    $pdf = new SUBMISSION_PDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
     $pdf->tenant_details = $args['tenant_details'];
 

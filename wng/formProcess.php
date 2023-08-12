@@ -137,6 +137,11 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         $form['submission_uuid'] = $submission_uuid;
     }
 
+    $block_title = array(
+        'type' => 'title',
+        'class' => 'form-title',
+        'title' => $form['name'],
+        );
     //
     // Load all submissions for the customer for the form
     //
@@ -178,11 +183,6 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Setup the list of submissions. This block could be used multiple times in the following code.
     //
-    $block_title = array(
-        'type' => 'title',
-        'class' => 'form-title',
-        'title' => $form['name'],
-        );
     $block_submission_list = array(
         'type' => 'table',
         'class' => 'limit-width center limit-width-40',
@@ -366,11 +366,30 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     }
 
     //
+    // Check if returning from cart payment
+    //
+    if( isset($request['session']['cart-payment-success']) && $request['session']['cart-payment-success'] == 'yes' ) {
+        $request['session']['cart-payment-success'] = 'no';
+        unset($request['session']['cart-payment-success']);
+        if( isset($request['session']['cart-redirect-success']) ) {
+            unset($request['session']['cart-redirect-success']);
+        }
+        $blocks[] = $block_title;
+        $blocks[] = array(
+            'type' => 'msg',
+            'level' => 'success',
+            'content' => 'Thank you for your submission',
+                'content' => (isset($form['thankyou']) && $form['thankyou'] != '' ? $form['thankyou'] : 'Thank you for your submission.'),
+            );
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    }
+
+    //
     // Check if single submission form and if already submitted
     //
     if( isset($form['submission']['status']) && $form['submission']['status'] >= 90 && $form['max_customer_submissions'] <= 1 ) {
         
-//        $blocks[] = $block_title;
+        $blocks[] = $block_title;
         $blocks[] = array(
             'type' => 'msg',
             'level' => 'error',
@@ -473,6 +492,15 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                     }
                 }
 
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formSubmitEmail');
+                $rc = ciniki_forms_formSubmitEmail($ciniki, $tnid, array(
+                    'form' => $form,    
+                    'customer' => $request['session']['customer'],
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.199', 'msg'=>'Unable to email form submission', 'err'=>$rc['err']));
+                }
+/*
                 //
                 // Build PDF for emailing
                 //
@@ -580,7 +608,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                         }
                     }
                 }
-
+*/
                 //
                 // Form is now submitted
                 //

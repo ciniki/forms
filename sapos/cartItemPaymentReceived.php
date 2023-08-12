@@ -10,7 +10,7 @@
 // Returns
 // =======
 //
-function ciniki_forms_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer, $args) {
+function ciniki_forms_sapos_cartItemPaymentReceived(&$ciniki, $tnid, $customer, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
@@ -36,7 +36,7 @@ function ciniki_forms_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer, $
         if( !isset($form['invoice_id']) || $form['invoice_id'] != $args['invoice_id'] ) {
             $update_args['invoice_id'] = $args['invoice_id'];
         }
-        if( $form['submission']['status'] < 80 ) {
+        if( $form['submission']['status'] < 90 ) {
             $update_args['status'] = 90;
         }
         if( !isset($form['invoice_id']) || $form['invoice_id'] != $args['invoice_id'] ) {
@@ -51,6 +51,18 @@ function ciniki_forms_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer, $
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.105', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
             }
+        }
+
+        //
+        // Email the customer the submission receipt, and email any notification emails
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formSubmitEmail');
+        $rc = ciniki_forms_formSubmitEmail($ciniki, $tnid, array(
+            'form' => $form,
+            'customer' => $customer,
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            error_log('Unable to email form submission: ');
         }
     }
 
