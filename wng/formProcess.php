@@ -118,6 +118,21 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     }
     $form = $rc['form'];
 
+    //
+    // Check if form is to be displayed as a sectioned or simple form
+    //
+    if( isset($s['display-format']) && $s['display-format'] == 'simple' ) {
+        if( isset($form['sections']) ) {
+            $form['fields'] = array();
+            foreach($form['sections'] as $section) {
+                foreach($section['fields'] as $fid => $field) {
+                    $form['fields'][] = $field;
+                }
+            }
+//            unset($form['sections']);
+        }
+    }
+
     if( isset($submission_uuid) ) {
         $form['submission_uuid'] = $submission_uuid;
     }
@@ -677,27 +692,53 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     if( isset($problem_list) && $problem_list != '' ) {
         $problem_list = "You must complete all the required fields in the form. The following fields are missing:\n\n" . $problem_list;
     }
-    $blocks[] = array(
-        'type' => 'form',
-        'section-selector' => 'yes',
-        'form-id' => $form['id'],
-        'termsofuse' => $form['termsofuse'],
-        'fee-amount' => $form['fee_amount'],
-        'form-sections' => $form['sections'],
-        'problem-list' => isset($problem_list) ? $problem_list : '',
-        'api-save-url' => $request['api_url'] . "/ciniki/forms/submissionSave",
-        'api-image-url' => $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . "/" . $form['submission_id'],
-        'api-formcheck-url' => $request['api_url'] . "/ciniki/forms/submissionCheck",
-        'api-cartsubmit-url' => $request['api_url'] . "/ciniki/forms/cartSubmit",
-        'cur-section-id' => $cur_section_id,
-        'api-args' => array(
-            'form_id' => $form['id'],
-            'submission_id' => $form['submission_id'],
-            'object' => $form['object'],
-            'object_id' => $form['object_id'],
-            'customer_id' => $form['customer_id'],
-            ),
-        );
+    if( isset($s['display-format']) && $s['display-format'] == 'simple' ) {
+        $blocks[] = array(
+            'type' => 'form',
+            'section-selector' => 'no',
+            'form-id' => $form['id'],
+            'termsofuse' => $form['termsofuse'],
+            'fee-amount' => $form['fee_amount'],
+//            'form-sections' => $form['sections'],
+            'fields' => $form['fields'],
+            'problem-list' => isset($problem_list) ? $problem_list : '',
+            'api-save-url' => $request['api_url'] . "/ciniki/forms/submissionSave",
+            'api-image-url' => $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . "/" . $form['submission_id'],
+            'api-formcheck-url' => $request['api_url'] . "/ciniki/forms/submissionCheck",
+            'api-cartsubmit-url' => $request['api_url'] . "/ciniki/forms/cartSubmit",
+            'cur-section-id' => $cur_section_id,
+            'api-args' => array(
+                'form_id' => $form['id'],
+                'submission_id' => $form['submission_id'],
+                'object' => $form['object'],
+                'object_id' => $form['object_id'],
+                'customer_id' => $form['customer_id'],
+                ),
+            );
+
+    } else {
+        $blocks[] = array(
+            'type' => 'form',
+            'section-selector' => 'yes',
+            'form-id' => $form['id'],
+            'termsofuse' => $form['termsofuse'],
+            'fee-amount' => $form['fee_amount'],
+            'form-sections' => $form['sections'],
+            'problem-list' => isset($problem_list) ? $problem_list : '',
+            'api-save-url' => $request['api_url'] . "/ciniki/forms/submissionSave",
+            'api-image-url' => $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . "/" . $form['submission_id'],
+            'api-formcheck-url' => $request['api_url'] . "/ciniki/forms/submissionCheck",
+            'api-cartsubmit-url' => $request['api_url'] . "/ciniki/forms/cartSubmit",
+            'cur-section-id' => $cur_section_id,
+            'api-args' => array(
+                'form_id' => $form['id'],
+                'submission_id' => $form['submission_id'],
+                'object' => $form['object'],
+                'object_id' => $form['object_id'],
+                'customer_id' => $form['customer_id'],
+                ),
+            );
+    }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

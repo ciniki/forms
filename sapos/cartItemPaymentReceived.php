@@ -37,7 +37,7 @@ function ciniki_forms_sapos_cartItemPaymentReceived($ciniki, $tnid, $customer, $
             $update_args['invoice_id'] = $args['invoice_id'];
         }
         if( $form['submission']['status'] < 80 ) {
-            $update_args['status'] = 80;
+            $update_args['status'] = 90;
         }
         if( !isset($form['invoice_id']) || $form['invoice_id'] != $args['invoice_id'] ) {
             $update_args['invoice_id'] = $args['invoice_id'];
