@@ -110,7 +110,7 @@ function ciniki_forms_formSubmitEmail(&$ciniki, $tnid, $args) {
         } else {
             $subject = $form['name'] . ' - Submission';
         }
-        $htmlmsg = "You have received a form submission from {$request['session']['customer']['display_name']}.";
+        $htmlmsg = "You have received a form submission from {$customer['display_name']}.";
         $textmsg = strip_tags($htmlmsg);
 
         $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $subject)) . '.pdf';
