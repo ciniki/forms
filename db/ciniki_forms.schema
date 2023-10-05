@@ -23,7 +23,7 @@
 # flags:                    The options for the form.
 #
 #                               0x01 - Account Required (must create account in ciniki_customers to fill out form)
-#                               0x02 - Display Sectioned
+#                               0x02 - Display Simple Form, remove sections when displaying form.
 #                               0x04 -
 #                               0x08 - Email submission PDF with terms after submission
 #                               0x10 - Juried

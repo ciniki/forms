@@ -70,8 +70,6 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         ) {
         $submission_uuid = $request['uri_split'][($request['cur_uri_pos']+0)];
     }
-//    error_log($base_url);
-//    error_log($submission_uuid);
 
     //
     // Check to make sure logged in
@@ -121,10 +119,21 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Check if form is to be displayed as a sectioned or simple form
     //
-    if( isset($s['display-format']) && $s['display-format'] == 'simple' ) {
+    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || ($form['flags']&0x02) == 0x02 ) {
         if( isset($form['sections']) ) {
             $form['fields'] = array();
             foreach($form['sections'] as $section) {
+                //
+                // Add the intro to each section as a break, unless submit section
+                //
+                if( !isset($section['id']) || $section['id'] != 'submit' ) {
+                    $form['fields'][] = array(
+                        'id' => 'section-' . isset($section['id']) ? $section['id'] : '0',
+                        'ftype' => 'break',
+                        'label' => $section['label'],
+                        'description' => isset($section['description']) ? $section['description'] : '',
+                        );
+                }
                 foreach($section['fields'] as $fid => $field) {
                     $form['fields'][] = $field;
                 }
@@ -720,7 +729,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     if( isset($problem_list) && $problem_list != '' ) {
         $problem_list = "You must complete all the required fields in the form. The following fields are missing:\n\n" . $problem_list;
     }
-    if( isset($s['display-format']) && $s['display-format'] == 'simple' ) {
+    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || ($form['flags']&0x02) == 0x02 ) {
         $blocks[] = array(
             'type' => 'form',
             'section-selector' => 'no',
