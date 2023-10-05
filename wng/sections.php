@@ -51,11 +51,11 @@ function ciniki_forms_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Forms',
         'settings' => array(
             'form-id' => array('label'=>'Form', 'type'=>'select', 'idnames'=>'yes', 'options'=>$forms),
-            'display-format' => array('label'=>'Display', 'type'=>'toggle', 'default'=>'sectioned', 
-                'toggles'=>array(
-                    'sectioned' => 'Sectioned Form',
-                    'simple' => 'Single Form',
-                )),
+//            'display-format' => array('label'=>'Display', 'type'=>'toggle', 'default'=>'sectioned', 
+//                'toggles'=>array(
+//                    'sectioned' => 'Sectioned Form',
+//                    'simple' => 'Single Form',
+//                )),
             ),
         );
 /*    $sections['ciniki.forms.list'] = array(

@@ -119,7 +119,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Check if form is to be displayed as a sectioned or simple form
     //
-    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || ($form['flags']&0x02) == 0x02 ) {
+//    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || 
+    if( ($form['flags']&0x02) == 0x02 ) {
         if( isset($form['sections']) ) {
             $form['fields'] = array();
             foreach($form['sections'] as $section) {
@@ -729,7 +730,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     if( isset($problem_list) && $problem_list != '' ) {
         $problem_list = "You must complete all the required fields in the form. The following fields are missing:\n\n" . $problem_list;
     }
-    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || ($form['flags']&0x02) == 0x02 ) {
+//    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || 
+    if( ($form['flags']&0x02) == 0x02 ) {
         $blocks[] = array(
             'type' => 'form',
             'section-selector' => 'no',
