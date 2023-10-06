@@ -119,6 +119,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Check if form is to be displayed as a sectioned or simple form
     //
+
+/* -- Moved to just before display form to convert into list of fields
 //    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || 
     if( ($form['flags']&0x02) == 0x02 ) {
         if( isset($form['sections']) ) {
@@ -142,7 +144,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
 //            unset($form['sections']);
         }
     }
-
+*/
     if( isset($submission_uuid) ) {
         $form['submission_uuid'] = $submission_uuid;
     }
@@ -213,6 +215,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             ),
         'rows' => isset($form['submissions']) ? $form['submissions'] : array(),
         );
+    if( ($form['flags']&0x02) == 0x02 && isset($form['submissions']) && count($form['submissions']) > 0 ) {
+        $cancel_url = $request['ssl_domain_base_url'] . $request['page']['path'];
+        error_log($cancel_url);
+    }
     if( isset($form['submissions']) && count($form['submissions']) < $form['max_customer_submissions'] 
         && ($form['max_submissions'] <= 0 || ($form['num_submissions'] < $form['max_submissions']))
         && !isset($new_submission_exists)
@@ -412,6 +418,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     // Check if submission is to be submitted
     //
     if( (isset($_POST['action']) && $_POST['action'] == 'submit')
+        || (isset($_POST['submit']) && $_POST['submit'] == 'Submit')
         || (isset($request['session']['cart-payment-success']) && $request['session']['cart-payment-success'] == 'yes')
         ) {
         $errors = 'no';
@@ -732,6 +739,26 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     }
 //    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || 
     if( ($form['flags']&0x02) == 0x02 ) {
+        if( isset($form['sections']) ) {
+            $form['fields'] = array();
+            foreach($form['sections'] as $section) {
+                //
+                // Add the intro to each section as a break, unless submit section
+                //
+                if( !isset($section['id']) || $section['id'] != 'submit' ) {
+                    $form['fields'][] = array(
+                        'id' => 'section-' . isset($section['id']) ? $section['id'] : '0',
+                        'ftype' => 'break',
+                        'label' => $section['label'],
+                        'description' => isset($section['description']) ? $section['description'] : '',
+                        );
+                }
+                foreach($section['fields'] as $fid => $field) {
+                    $form['fields'][] = $field;
+                }
+            }
+        }
+
         $blocks[] = array(
             'type' => 'form',
             'section-selector' => 'no',
@@ -741,6 +768,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
 //            'form-sections' => $form['sections'],
             'fields' => $form['fields'],
             'problem-list' => isset($problem_list) ? $problem_list : '',
+            'cancel-label' => isset($cancel_url) && $cancel_url != '' ? 'Cancel' : '',
+            'cancel-url' => isset($cancel_url) && $cancel_url != '' ? $cancel_url : '',
             'api-save-url' => $request['api_url'] . "/ciniki/forms/submissionSave",
             'api-image-url' => $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . "/" . $form['submission_id'],
             'api-formcheck-url' => $request['api_url'] . "/ciniki/forms/submissionCheck",

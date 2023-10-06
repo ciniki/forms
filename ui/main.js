@@ -874,6 +874,7 @@ function ciniki_forms_main() {
             },
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'create':{'label':'New Submission', 'fn':'M.ciniki_forms_main.submission.createSubmission(\'M.ciniki_forms_main.submissions.open();\',M.ciniki_forms_main.submissions.form_id);'},
+            'excel':{'label':'Download Excel', 'fn':'M.ciniki_forms_main.submissions.downloadExcel();'},
             'clear':{'label':'Clear Empty Submissions', 
                 'visible':function() { return M.ciniki_forms_main.submissions.status == 10 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_forms_main.submissions.clearEmpty();',
@@ -941,6 +942,9 @@ function ciniki_forms_main() {
         this.object = o;
         this.object_id = id;
         this.open();
+    }
+    this.submissions.downloadExcel = function() {
+        M.api.openFile('ciniki.forms.submissionsExcel', {'tnid':M.curTenantID, 'form_id':this.form_id, 'status':this.status});
     }
     this.submissions.open = function(cb, fid, status, list) {
         if( fid != null ) { 

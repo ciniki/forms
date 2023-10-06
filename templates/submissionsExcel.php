@@ -61,7 +61,7 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
                 $cols = 0;
                 if( isset($section['fields']) ) {
                     foreach($section['fields'] as $field) {
-                        if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' ) {
+                        if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' || $field['ftype'] == 'image' ) {
                             continue;
                         }
                         if( $col > 25 ) {
@@ -104,7 +104,7 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
                     } else {
                         $ltr = chr($col + 65);
                     }
-                    if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' ) {
+                    if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' || $field['ftype'] == 'image' ) {
                         continue;
                     }
                     if( $field['ftype'] == 'address' ) {
