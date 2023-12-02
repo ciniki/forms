@@ -145,6 +145,14 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
     }
 */
+    //
+    // Check if simple form and no customer required
+    //
+    if( ($form['flags']&0x03) == 0x02 && !isset($submission_uuid) 
+        && isset($request['session']['ciniki.forms']["submission-{$form['id']}"]) 
+        ) {
+        $submission_uuid = $request['session']['ciniki.forms']["submission-{$form['id']}"];
+    }
     if( isset($submission_uuid) ) {
         $form['submission_uuid'] = $submission_uuid;
     }
@@ -157,7 +165,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Load all submissions for the customer for the form
     //
-    if( $customer_id > 0 || isset($submission_uuid) ) {
+    if( isset($submission_uuid) ) { 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formSubmissionsLoad');
         $rc = ciniki_forms_wng_formSubmissionsLoad($ciniki, $tnid, $request, $form);
         if( $rc['stat'] != 'ok' ) {
@@ -217,7 +225,6 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         );
     if( ($form['flags']&0x02) == 0x02 && isset($form['submissions']) && count($form['submissions']) > 0 ) {
         $cancel_url = $request['ssl_domain_base_url'] . $request['page']['path'];
-        error_log($cancel_url);
     }
     if( isset($form['submissions']) && count($form['submissions']) < $form['max_customer_submissions'] 
         && ($form['max_submissions'] <= 0 || ($form['num_submissions'] < $form['max_submissions']))
@@ -259,6 +266,20 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         $rc = ciniki_forms_wng_submissionLoad($ciniki, $tnid, $request, $form);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.50', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
+        }
+    }
+
+    if( ($form['flags']&0x02) == 0x02 && isset($_POST['f-action']) && $_POST['f-action'] == 'submit' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formPOSTApply');
+        $rc = ciniki_forms_wng_formPOSTApply($ciniki, $tnid, $request, $form);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.202', 'msg'=>'Unable to process submission', 'err'=>$rc['err']));
+        }
+
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionSave');
+        $rc = ciniki_forms_wng_submissionSave($ciniki, $tnid, $request, $form);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.203', 'msg'=>'', 'err'=>$rc['err']));
         }
     }
 
@@ -359,6 +380,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             }
             $form['submission_id'] = $rc['id'];
             $form['submission_uuid'] = $rc['uuid'];
+            $request['session']['ciniki.forms']["submission-{$form['id']}"] = $rc['uuid'];
             //
             // Redirect to the submission
             //
@@ -397,6 +419,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             'content' => 'Thank you for your submission',
                 'content' => (isset($form['thankyou']) && $form['thankyou'] != '' ? $form['thankyou'] : 'Thank you for your submission.'),
             );
+
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }
 
@@ -494,6 +517,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.117', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
                 }
+
+                if( isset($request['session']['ciniki.forms']["submission-{$form['id']}"]) ) {
+                    unset($request['session']['ciniki.forms']["submission-{$form['id']}"]);
+                }
                 //
                 // Update the status in the submission list 
                 //
@@ -512,120 +539,11 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formSubmitEmail');
                 $rc = ciniki_forms_formSubmitEmail($ciniki, $tnid, array(
                     'form' => $form,    
-                    'customer' => $request['session']['customer'],
+                    'customer' => isset($request['session']['customer']) ? $request['session']['customer'] : array(),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.199', 'msg'=>'Unable to email form submission', 'err'=>$rc['err']));
                 }
-/*
-                //
-                // Build PDF for emailing
-                //
-                if( ($form['flags']&0x08) == 0x08 || (isset($form['notify_emails']) && $form['notify_emails'] != '') ) {
-                    //
-                    // Load tenant details
-                    //
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'tenantDetails');
-                    $rc = ciniki_tenants_tenantDetails($ciniki, $tnid);
-                    if( $rc['stat'] != 'ok' ) {
-                        return $rc;
-                    }
-                    $tenant_details = isset($rc['details']) ? $rc['details'] : array();
-
-                    //
-                    // Generate the PDF
-                    //
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'templates', 'submissionsPDF');
-                    $rc = ciniki_forms_templates_submissionsPDF($ciniki, $tnid, array(
-                        'tenant_details' => $tenant_details,
-                        'submission_ids' => array($form['submission']['id']),
-                        'terms' => 'yes',
-                        ));
-                    if( $rc['stat'] != 'ok' ) {
-                        error_log('ERR: Unable to generate submission pdf ' . print_r($rc['err'], true));
-                    } else {
-                         $pdf = $rc['pdf'];
-                    }
-                }
-
-                //
-                // Email submission to the customer
-                //
-                if( ($form['flags']&0x08) == 0x08 && isset($pdf) ) {
-                    $subject = $form['name'] . ' - Submission';
-                    if( isset($form['emailthankyou']) && $form['emailthankyou'] != '' ) {
-                        $htmlmsg = $form['emailthankyou'];
-                        $textmsg = strip_tags($htmlmsg);
-                    } else {
-                        $htmlmsg = "Thank you for your submission, we have attached a copy.";
-                        $textmsg = strip_tags($htmlmsg);
-                    }
-                    $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $subject)) . '.pdf';
-
-                    //
-                    // Send the email
-                    //
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
-                    $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                        'object' => 'ciniki.forms.submission',
-                        'object_id' => $form['submission']['id'],
-                        'customer_id' => $request['session']['customer']['id'],
-                        'customer_email' => $request['session']['customer']['email'],
-                        'customer_name' => $request['session']['customer']['display_name'],
-                        'subject' => $subject,
-                        'html_content' => $textmsg,
-                        'text_content' => $textmsg,
-                        'attachments' => array(array('content'=>$pdf->Output($filename, 'S'), 'filename'=>$filename)),
-                        ));
-                    if( $rc['stat'] != 'ok' ) {
-                        error_log('ERR: Unable to email submission' . print_r($rc['err'], true));
-                    } else {
-                        $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
-                    }
-                }
-
-                //
-                // Email submission to addresses specified
-                //
-                if( isset($form['notify_emails']) && $form['notify_emails'] != '' && isset($pdf) ) {
-                    if( $form['submission']['label'] != '' ) {
-                        $subject = $form['name'] . ' - ' . $form['submission']['label'] . ' - Submission';
-                    } else {
-                        $subject = $form['name'] . ' - Submission';
-                    }
-                    $htmlmsg = "You have received a form submission from {$request['session']['customer']['display_name']}.";
-                    $textmsg = strip_tags($htmlmsg);
-
-                    $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $subject)) . '.pdf';
-
-                    //
-                    // Send the email
-                    //
-                    $emails = explode(',', $form['notify_emails']);
-                    foreach($emails as $email) {
-                        $email = trim($email);
-                        if( $email != '' ) {
-                            ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
-                            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                                'object' => 'ciniki.forms.submission',
-                                'object_id' => $form['submission']['id'],
-                                'customer_id' => 0,
-                                'customer_email' => $email,
-                                'customer_name' => '',
-                                'subject' => $subject,
-                                'html_content' => $textmsg,
-                                'text_content' => $textmsg,
-                                'attachments' => array(array('content'=>$pdf->Output($filename, 'S'), 'filename'=>$filename)),
-                                ));
-                            if( $rc['stat'] != 'ok' ) {
-                                error_log('ERR: Unable to email submission' . print_r($rc['err'], true));
-                            } else {
-                                $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
-                            }
-                        }
-                    }
-                }
-*/
                 //
                 // Form is now submitted
                 //
@@ -757,6 +675,12 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                     $form['fields'][] = $field;
                 }
             }
+            $form['fields']['action'] = array(
+                'id' => 'action',
+                'ftype' => 'hidden', 
+                'name' => 'submit',
+                'value' => 'submit',
+                );
         }
 
         $blocks[] = array(
@@ -768,13 +692,13 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
 //            'form-sections' => $form['sections'],
             'fields' => $form['fields'],
             'problem-list' => isset($problem_list) ? $problem_list : '',
-            'cancel-label' => isset($cancel_url) && $cancel_url != '' ? 'Cancel' : '',
-            'cancel-url' => isset($cancel_url) && $cancel_url != '' ? $cancel_url : '',
+//            'cancel-label' => isset($cancel_url) && $cancel_url != '' ? 'Cancel' : '',
+//            'cancel-url' => isset($cancel_url) && $cancel_url != '' ? $cancel_url : '',
             'api-save-url' => $request['api_url'] . "/ciniki/forms/submissionSave",
             'api-image-url' => $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . "/" . $form['submission_id'],
             'api-formcheck-url' => $request['api_url'] . "/ciniki/forms/submissionCheck",
             'api-cartsubmit-url' => $request['api_url'] . "/ciniki/forms/cartSubmit",
-            'cur-section-id' => $cur_section_id,
+//            'cur-section-id' => $cur_section_id,
             'api-args' => array(
                 'form_id' => $form['id'],
                 'submission_id' => $form['submission_id'],

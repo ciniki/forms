@@ -276,7 +276,7 @@ function ciniki_forms_main() {
     }
     this.form.liveSearchCb = function(s, i, value) {
         if( i == 'type' ) {
-            var rsp = M.api.getJSONBgCb('ciniki.forms.formFieldSearch', {'tnid':M.curTenantID, 'field':i, 'start_needle':value, 'limit':15},
+            M.api.getJSONBgCb('ciniki.forms.formFieldSearch', {'tnid':M.curTenantID, 'field':i, 'start_needle':value, 'limit':15},
                 function(rsp) {
                     M.ciniki_forms_main.form.liveSearchShow(s, i, M.gE(M.ciniki_forms_main.form.panelUID + '_' + i), rsp.results);
                 });
@@ -641,6 +641,7 @@ function ciniki_forms_main() {
                     'date':'Date',
                     'number':'Number',
                     'price':'Price',
+                    'donation':'Donation',
                     'phone':'Phone Number',
                     'email':'Email Address',
                     'address':'Address',

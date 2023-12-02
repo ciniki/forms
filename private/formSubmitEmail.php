@@ -52,12 +52,12 @@ function ciniki_forms_formSubmitEmail(&$ciniki, $tnid, $args) {
     //
     // Email submission to the customer
     //
-    if( ($form['flags']&0x08) == 0x08 && isset($pdf) ) {
+    if( ($form['flags']&0x08) == 0x08 && isset($pdf) && isset($args['customer']['id']) ) {
 
         //
         // Load the customer details
         //
-        if( !isset($args['customer']) ) {
+        if( !isset($args['customer']['id']) ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
             $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, array('customer_id'=>$form['submission']['customer_id']));
             if( $rc['stat'] != 'ok' ) {
@@ -110,7 +110,11 @@ function ciniki_forms_formSubmitEmail(&$ciniki, $tnid, $args) {
         } else {
             $subject = $form['name'] . ' - Submission';
         }
-        $htmlmsg = "You have received a form submission from {$customer['display_name']}.";
+        if( isset($customer['display_name']) ) {
+            $htmlmsg = "You have received a form submission from {$customer['display_name']}.";
+        } else {
+            $htmlmsg = "You have received a form submission.";
+        }
         $textmsg = strip_tags($htmlmsg);
 
         $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $subject)) . '.pdf';
