@@ -117,14 +117,17 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
     if( isset($submission['invoice_id']) && $submission['invoice_id'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceStatus');
         $rc = ciniki_sapos_hooks_invoiceStatus($ciniki, $tnid, array('invoice_id'=>$submission['invoice_id']));
-        if( $rc['stat'] != 'ok' ) {
+        //
+        // Changed code so submission will still load when cart or invoice has been deleted
+        //
+        if( $rc['stat'] != 'ok' && $rc['stat'] != 'noexist' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.130', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
         }
-        if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.129', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+        elseif( isset($rc['invoice']) ) {
+//            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.129', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+            $form['invoice'] = $rc['invoice'];
+            $form['invoice_status'] = $rc['invoice']['status'];
         }
-        $form['invoice'] = $rc['invoice'];
-        $form['invoice_status'] = $rc['invoice']['status'];
     }
 
     //
