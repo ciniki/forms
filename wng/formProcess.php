@@ -655,7 +655,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     if( isset($problem_list) && $problem_list != '' ) {
         $problem_list = "You must complete all the required fields in the form. The following fields are missing:\n\n" . $problem_list;
     }
-//    if( (isset($s['display-format']) && $s['display-format'] == 'simple') || 
+
+    //
+    // Display form in simple 1 page form
+    //
     if( ($form['flags']&0x02) == 0x02 ) {
         if( isset($form['sections']) ) {
             $form['fields'] = array();
@@ -689,6 +692,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             'form-id' => $form['id'],
             'termsofuse' => $form['termsofuse'],
             'fee-amount' => $form['fee_amount'],
+            'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['label']),
 //            'form-sections' => $form['sections'],
             'fields' => $form['fields'],
             'problem-list' => isset($problem_list) ? $problem_list : '',
@@ -708,10 +712,15 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 ),
             );
 
-    } else {
+    } 
+    //
+    // Display form in sectioned format
+    //
+    else {
         $blocks[] = array(
             'type' => 'form',
             'section-selector' => 'yes',
+            'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['label']),
             'form-id' => $form['id'],
             'termsofuse' => $form['termsofuse'],
             'fee-amount' => $form['fee_amount'],

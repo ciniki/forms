@@ -205,13 +205,26 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
     }
 
     //
+    // Check if the last section is flagged to be a submit section
+    //
+    if( isset($form['sections'][(count($form['sections'])-1)]['flags'])
+        && ($form['sections'][(count($form['sections'])-1)]['flags']&0x04) == 0x04
+        ) {
+        $sid = count($form['sections']) - 1;
+        $form['sections']['submit'] = $form['sections'][$sid];
+        unset($form['sections'][$sid]);
+    }
+
+    //
     // Setup the submission/payment/termsofuse section
     //
-    $form['sections']['submit'] = array(
-        'id' => 'submit',
-        'label' => isset($form['submit_label']) && $form['submit_label'] != '' ? $form['submit_label'] : 'Submit',
-        'fields' => array(),
-        );
+    if( !isset($form['sections']['submit']) ) {
+        $form['sections']['submit'] = array(
+            'id' => 'submit',
+            'label' => isset($form['submit_label']) && $form['submit_label'] != '' ? $form['submit_label'] : 'Submit',
+            'fields' => array(),
+            );
+    }
     if( isset($form['termsofuse']) && $form['termsofuse'] != '' ) {
         $form['sections']['submit']['fields']['termsofuse'] = array(
             'id' => 'termsofuse',

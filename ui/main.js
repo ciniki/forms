@@ -523,6 +523,7 @@ function ciniki_forms_main() {
             'flags1':{'label':'Repeatable', 'type':'flagtoggle', 'default':'no', 'field':'flags', 'bit':0x01,
                 'on_fields':['repeat_prefix', 'min_repeats', 'max_repeats'],
                 },
+            'flags3':{'label':'Submit Button', 'type':'flagtoggle', 'default':'no', 'field':'flags', 'bit':0x04},
             'repeat_prefix':{'label':'Repeat Label', 'visible':'no', 'type':'text'},
             'min_repeats':{'label':'Min Repeats', 'visible':'no', 'type':'number', 'size':'small'},
             'max_repeats':{'label':'Max Repeats', 'visible':'no', 'type':'number', 'size':'small'},

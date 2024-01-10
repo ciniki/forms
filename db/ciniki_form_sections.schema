@@ -22,7 +22,7 @@
 #
 #                               0x01 - Repeatable
 #                               0x02 - 
-#                               0x04 - 
+#                               0x04 - Submit Section (only works on last section) 
 #                               0x08 - 
 #
 # repeat_prefix:            The prefix to the repeatable number to be added before fields section.
