@@ -104,6 +104,7 @@ function ciniki_forms_fieldGet($ciniki) {
             . "ciniki_form_fields.field_size, "
             . "ciniki_form_fields.label, "
             . "ciniki_form_fields.description, "
+            . "ciniki_form_fields.formula, "
             . "ciniki_form_fields.options "
             . "FROM ciniki_form_fields "
             . "WHERE ciniki_form_fields.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -113,7 +114,7 @@ function ciniki_forms_fieldGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
             array('container'=>'fields', 'fname'=>'id', 
                 'fields'=>array('section_id', 'ftype', 'flags', 'sequence', 
-                    'prefill_ref', 'field_ref', 'field_size', 'label', 'description', 'options',
+                    'prefill_ref', 'field_ref', 'field_size', 'label', 'description', 'formula', 'options',
                     ),
                 ),
             ));

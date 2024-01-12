@@ -79,6 +79,7 @@ function ciniki_forms_objects(&$ciniki) {
             'field_size' => array('name'=>'Size', 'default'=>'large'),
             'label' => array('name'=>'Label', 'default'=>''),
             'description' => array('name'=>'Description', 'default'=>''),
+            'formula' => array('name'=>'Calculated Formula', 'default'=>''),
             'options' => array('name'=>'Options', 'default'=>''),
             ),
         'history_table' => 'ciniki_forms_history',

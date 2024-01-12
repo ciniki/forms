@@ -655,6 +655,7 @@ function ciniki_forms_main() {
                     'content':'Information',
                     'image':'Image',
 //                    'document':'Document',
+                    'formula':'Calculated',
                     'newline':'Start New Line',
                     'break':'Break Between Fields',
                     },
@@ -680,6 +681,7 @@ function ciniki_forms_main() {
             }},
         '_options':{'label':'Options', 'visible':'hidden', 'fields':{
             'price':{'label':'Option Price', 'type':'text', 'size':'small', 'active':'no'},
+            'formula':{'label':'Formula', 'type':'textarea', 'size':'small', 'active':'no'},
             'max-characters':{'label':'Maximum Characters', 'type':'text', 'size':'small', 'active':'no'},
             'max-words':{'label':'Word Limit', 'type':'text', 'size':'small', 'active':'no'},
             'size':{'label':'Size', 'type':'toggle', 'toggles':{'tiny':'Tiny', 'small':'Small', 'medium':'Medium', 'large':'Large', 'xlarge':'X-Large'}, 'active':'no'},
@@ -761,6 +763,9 @@ function ciniki_forms_main() {
             this.sections._options.fields['min-height'].active = 'yes';
             this.sections._options.fields['max-width'].active = 'yes';
             this.sections._options.fields['max-height'].active = 'yes';
+        } else if( t == 'formula' ) {
+            this.sections._options.visible = 'yes';
+            this.sections._options.fields['formula'].active = 'yes';
         }
         this.showHideSection('_options');
         this.refreshSection('_options');

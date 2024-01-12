@@ -26,6 +26,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         'field_size'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Field Size'),
         'label'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Label'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Description'),
+        'formula'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Formula'),
         'options'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'fieldlist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Field List'),
         ));

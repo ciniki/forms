@@ -37,7 +37,7 @@
 #                               0x04 - Submission Label (use this field as the title for this submission).
 #                               0x08 - Locked (no edits by customer allowed, pulled from default values).
 #                               0x10 - Juror Label (must also be visible to jurors !0x02)
-#                               0x20 - 
+#                               0x20 - Calculated Field
 #                               0x40 - 
 #                               0x80 - 
 #
@@ -60,6 +60,8 @@
 # label:                    The label for the field/content. 
 # description:              The optional description for the field.
 #
+# formula:                  The formula to apply for a calculated field.
+#
 # options:                  JSON encoded options for the field. Used to store select/radio options, checkbox label, etc.
 #
 # date_added:               The UTC date and time the record was added.
@@ -79,6 +81,7 @@ create table ciniki_form_fields (
     field_size varchar(50) not null,
     label varchar(250) not null,
     description text not null,
+    formula varchar(1000) not null,
     options text not null,
 
     date_added datetime not null,
@@ -86,4 +89,4 @@ create table ciniki_form_fields (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';
