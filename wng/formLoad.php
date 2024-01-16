@@ -214,7 +214,8 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
     //
     // Check if the last section is flagged to be a submit section
     //
-    if( isset($form['sections'][(count($form['sections'])-1)]['flags'])
+    if( isset($form['sections']) 
+        && isset($form['sections'][(count($form['sections'])-1)]['flags'])
         && ($form['sections'][(count($form['sections'])-1)]['flags']&0x04) == 0x04
         ) {
         $sid = count($form['sections']) - 1;
