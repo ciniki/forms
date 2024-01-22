@@ -204,6 +204,20 @@ function ciniki_forms_main() {
                         p.refreshSection("fields");
                     });
                 },
+            'seqDropAdd':function(e,from,to) {
+                M.api.getJSONCb('ciniki.forms.fieldDuplicate', {'tnid':M.curTenantID, 
+                    'field_id':M.ciniki_forms_main.form.data.fields[from].id,
+                    'fieldlist':'yes',
+                    }, function(rsp) {
+                        if( rsp.stat != 'ok' ) {
+                            M.api.err(rsp);
+                            return false;
+                        }
+                        var p = M.ciniki_forms_main.form;
+                        p.data.fields = rsp.fields;
+                        p.refreshSection("fields");
+                    });
+                },
             'addTxt':'Add Field',
             'addFn':'M.ciniki_forms_main.form.addField()',
             },
