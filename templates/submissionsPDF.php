@@ -284,16 +284,24 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : ''), 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
                         foreach($section['fields'] as $fid => $field) { 
                             if( $field['ftype'] == 'newline' ) {
-//                                if( $pdf->getX() > 50 ) {
-//                                    $pdf->Ln();
-//                                }
+                                if( $pdf->getX() > 50 ) {
+                                    $pdf->Ln();
+                                }
+                                $pdf->SetCellPadding(0);
+                                $pdf->SetDrawColor(255);
+                                $pdf->Ln(2);
+                                $pdf->SetCellPadding(2);
+                                $pdf->SetDrawColor(200);
                                 continue;
                             }
                             if( $repeats > 1 ) {
                                 $field['value'] = isset($field['values'][$i]) ? $field['values'][$i] : '';
                             } 
                             if( $field['ftype'] == 'break' ) {
-                                $pdf->MultiCell($w[0], '', '', 0, 'L', 0, 1);
+                                $pdf->setFont('', 'B', 12);
+                                $pdf->MultiCell(180, 12, $field['label'] . ($repeats > 1 ? ' #' . $i : ''), 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
+                                $fill=1;
+                                continue;
                             }
                             if( $pdf->GetY() > ($pdf->getPageHeight() - 35) ) {
                                 $pdf->AddPage();
