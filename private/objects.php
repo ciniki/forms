@@ -81,6 +81,8 @@ function ciniki_forms_objects(&$ciniki) {
             'description' => array('name'=>'Description', 'default'=>''),
             'formula' => array('name'=>'Calculated Formula', 'default'=>''),
             'options' => array('name'=>'Options', 'default'=>''),
+            'pdf_label_size' => array('name'=>'PDF Label Size', 'default'=>''),
+            'pdf_value_size' => array('name'=>'PDF Value Size', 'default'=>''),
             ),
         'history_table' => 'ciniki_forms_history',
         );

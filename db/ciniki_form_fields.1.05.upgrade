@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_form_fields ADD COLUMN pdf_label_size varchar(15) not null AFTER options;
+ALTER TABLE ciniki_form_fields ADD COLUMN pdf_value_size varchar(15) not null AFTER pdf_label_size;
+ALTER TABLE ciniki_form_fields COMMENT='v1.05';
+

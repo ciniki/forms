@@ -87,6 +87,8 @@ function ciniki_forms_fieldGet($ciniki) {
             'label' => '',
             'description' => '',
             'options' => '',
+            'pdf_label_size' => '',
+            'pdf_value_size' => '',
         );
     }
 
@@ -105,7 +107,9 @@ function ciniki_forms_fieldGet($ciniki) {
             . "ciniki_form_fields.label, "
             . "ciniki_form_fields.description, "
             . "ciniki_form_fields.formula, "
-            . "ciniki_form_fields.options "
+            . "ciniki_form_fields.options, "
+            . "ciniki_form_fields.pdf_label_size, "
+            . "ciniki_form_fields.pdf_value_size "
             . "FROM ciniki_form_fields "
             . "WHERE ciniki_form_fields.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_form_fields.id = '" . ciniki_core_dbQuote($ciniki, $args['field_id']) . "' "
@@ -115,6 +119,7 @@ function ciniki_forms_fieldGet($ciniki) {
             array('container'=>'fields', 'fname'=>'id', 
                 'fields'=>array('section_id', 'ftype', 'flags', 'sequence', 
                     'prefill_ref', 'field_ref', 'field_size', 'label', 'description', 'formula', 'options',
+                    'pdf_label_size', 'pdf_value_size',
                     ),
                 ),
             ));

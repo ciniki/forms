@@ -177,6 +177,11 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         $newline = 1;
                         if( $field['ftype'] == 'address' ) {
                             $w = array(40, 140);
+                        } elseif( isset($field['pdf_label_size']) && is_numeric($field['pdf_label_size']) 
+                            && isset($field['pdf_value_size']) && is_numeric($field['pdf_value_size']) 
+                            ) {
+                            $w = array($field['pdf_label_size'], $field['pdf_value_size']);
+                            $newline = 0;
                         } elseif( ($field['field_size'] == 'small' || $field['field_size'] == 'small-medium') 
                             && isset($field['group_size']) && $field['group_size'] == 3 
                             ) {
@@ -287,11 +292,12 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                                 if( $pdf->getX() > 50 ) {
                                     $pdf->Ln();
                                 }
-                                $pdf->SetCellPadding(0);
+                                // This needs to become an option in UI to allow newline to be a break between fields.
+/*                                $pdf->SetCellPadding(0);
                                 $pdf->SetDrawColor(255);
                                 $pdf->Ln(2);
                                 $pdf->SetCellPadding(2);
-                                $pdf->SetDrawColor(200);
+                                $pdf->SetDrawColor(200); */
                                 continue;
                             }
                             if( $repeats > 1 ) {
@@ -354,15 +360,22 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                                 if( $field['label'] == '' ) {
                                     continue;
                                 }
-                                if( $pdf->getX() > 50 ) {
-                                    $fill = ($fill == 0 ? 1 : 0);
+                                $field_width = 180;
+                                if( isset($field['pdf_label_size']) && is_numeric($field['pdf_label_size']) ) {
+                                    $field_width = $field['pdf_label_size'];
+                                }
+                                if( $field_width < 180 && ($pdf->getX() + $field_width) > (180 - $pdf->right_margin) ) {
                                     $pdf->Ln();
                                 }
-                                $lh = $pdf->getStringHeight(180, $field['label']);
+                                $lh = isset($line_heights[$field['line']]) ? $line_heights[$field['line']] : 0;
                                 $pdf->setFont('', 'B', 10);
-                                $pdf->MultiCell(180, $lh, $field['label'], 1, 'L', $fill, 1);
+                                $pdf->MultiCell($field_width, $lh, $field['label'], 1, 'L', $fill, 0);
                                 $pdf->setFont('', '', 10);
                                 $fill = ($fill == 0 ? 1 : 0);
+                                if( $pdf->getX() > 180 ) {
+                                    $pdf->Ln();
+                                    $fill = ($fill == 0 ? 1 : 0);
+                                }
                                 continue;
                             }
                             $w = $field['widths'];
@@ -374,7 +387,9 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                             if( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] == 0 ) {
                                 $pdf->MultiCell($w[1], $lh, 'No image uploaded', 1, 'L', $fill, $newline);
                             } elseif( $field['ftype'] == 'checkbox' && isset($field['value']) && $field['value'] == 'on' ) {
+                                $pdf->SetCellPaddings(2.8,2,1,2);
                                 $pdf->MultiCell($w[1], $lh, '<span style="font-family:zapfdingbats;">3</span>', 1, 'L', $fill, $newline, '', '', true, 0, true);
+                                $pdf->SetCellPaddings(2,2,2,2);
                             } elseif( $field['ftype'] == 'checkbox' && isset($field['value']) && $field['value'] == 'off' ) {
                                 $pdf->MultiCell($w[1], $lh, '', 1, 'L', $fill, $newline, '', '', true, 0, true);
                             } else {

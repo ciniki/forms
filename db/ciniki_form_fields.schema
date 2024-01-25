@@ -64,6 +64,9 @@
 #
 # options:                  JSON encoded options for the field. Used to store select/radio options, checkbox label, etc.
 #
+# pdf_label_size:           The size of the label in submissions pdf **optional**.
+# pdf_value_size:           The size of the value for the field in the submissions pdf. **optional**
+#
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
 #
@@ -83,10 +86,12 @@ create table ciniki_form_fields (
     description text not null,
     formula varchar(1000) not null,
     options text not null,
+    pdf_label_size varchar(15) not null,
+    pdf_value_size varchar(15) not null,
 
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

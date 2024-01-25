@@ -693,6 +693,12 @@ function ciniki_forms_main() {
             'prefill_ref':{'label':'Prefill From', 'type':'select', 'options':{}},
             'field_ref':{'label':'Connect To', 'type':'select', 'options':{}},
             }},
+        '_pdf_options':{'label':'PDF Options', 
+            'visible':function() { return (M.userPerms&0x01) == 0x01 ? 'yes' : 'no'; },
+            'fields':{
+                'pdf_label_size':{'label':'Label Size', 'type':'text', 'size':'small'},
+                'pdf_value_size':{'label':'Value Size', 'type':'text', 'size':'small'},
+                }},
         '_options':{'label':'Options', 'visible':'hidden', 'fields':{
             'price':{'label':'Option Price', 'type':'text', 'size':'small', 'active':'no'},
             'formula':{'label':'Formula', 'type':'textarea', 'size':'small', 'active':'no'},
