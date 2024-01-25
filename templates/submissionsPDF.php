@@ -85,7 +85,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
     $pdf->SetCellPadding(2);
     $pdf->SetFillColor(235);
     $pdf->SetTextColor(0);
-    $pdf->SetDrawColor(51);
+    $pdf->SetDrawColor(200);
     $pdf->SetLineWidth(0.15);
 
     //
@@ -284,6 +284,9 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : ''), 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
                         foreach($section['fields'] as $fid => $field) { 
                             if( $field['ftype'] == 'newline' ) {
+//                                if( $pdf->getX() > 50 ) {
+//                                    $pdf->Ln();
+//                                }
                                 continue;
                             }
                             if( $repeats > 1 ) {
@@ -297,6 +300,11 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                                 $pdf->setFont('', 'B', 12);
                                 $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : '') . ' - continued', 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
                             }
+                            if( isset($field['field_size']) && $field['field_size'] == 'large' && $pdf->getX() > 50 ) {
+//                                $fill=!$fill;
+                                $fill = ($fill == 0 ? 1 : 0);
+                                $pdf->Ln();
+                            }
                             if( $field['ftype'] == 'textarea' ) {
                                 $lh = $pdf->getStringHeight(180, $field['label']);
                                 $pdf->setFont('', 'B', 10);
@@ -308,6 +316,10 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                             }
                             elseif( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] > 0 ) {
                                 $lh = 60;
+                                if( $pdf->getX() > 50 ) {
+                                    $fill = ($fill == 0 ? 1 : 0);
+                                    $pdf->Ln();
+                                }
                                 if( $pdf->GetY() > ($pdf->getPageHeight() - 20 - $lh) ) {
                                     $pdf->AddPage();
                                 }
@@ -327,8 +339,23 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                                         $img = $pdf->Image('@'.$image, $pdf->left_margin + 95, $cur_y+5, 80, 50, 'JPEG', '', '', false, 75, '', false, false, 0, 'CM');
                                     }
                                 }
+                                $fill = ($fill == 0 ? 1 : 0);
                                 continue;
-
+                            }
+                            elseif( $field['ftype'] == 'content' && $field['field_size'] == 'large' ) {
+                                if( $field['label'] == '' ) {
+                                    continue;
+                                }
+                                if( $pdf->getX() > 50 ) {
+                                    $fill = ($fill == 0 ? 1 : 0);
+                                    $pdf->Ln();
+                                }
+                                $lh = $pdf->getStringHeight(180, $field['label']);
+                                $pdf->setFont('', 'B', 10);
+                                $pdf->MultiCell(180, $lh, $field['label'], 1, 'L', $fill, 1);
+                                $pdf->setFont('', '', 10);
+                                $fill = ($fill == 0 ? 1 : 0);
+                                continue;
                             }
                             $w = $field['widths'];
                             $lh = isset($line_heights[$field['line']]) ? $line_heights[$field['line']] : 0;
@@ -338,11 +365,16 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                             $pdf->setFont('', '');
                             if( $field['ftype'] == 'image' && isset($field['value']) && $field['value'] == 0 ) {
                                 $pdf->MultiCell($w[1], $lh, 'No image uploaded', 1, 'L', $fill, $newline);
+                            } elseif( $field['ftype'] == 'checkbox' && isset($field['value']) && $field['value'] == 'on' ) {
+                                $pdf->MultiCell($w[1], $lh, '<span style="font-family:zapfdingbats;">3</span>', 1, 'L', $fill, $newline, '', '', true, 0, true);
+                            } elseif( $field['ftype'] == 'checkbox' && isset($field['value']) && $field['value'] == 'off' ) {
+                                $pdf->MultiCell($w[1], $lh, '', 1, 'L', $fill, $newline, '', '', true, 0, true);
                             } else {
                                 $pdf->MultiCell($w[1], $lh, (isset($field['value']) ? $field['value'] : ''), 1, 'L', $fill, $newline);
                             }
                             if( $newline == 1 ) {
-                                $fill=!$fill;
+                                $fill = ($fill == 0 ? 1 : 0);
+                                //$fill=!$fill;
                             }
                         }
                     }
