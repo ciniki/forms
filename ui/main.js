@@ -1150,7 +1150,7 @@ function ciniki_forms_main() {
                     p.data[sid] = [];
 
                     for(var j in rsp.form.sections[i].fields) {
-                        if( rsp.form.sections[i].fields[j].ftype == 'content' ){
+                        if( rsp.form.sections[i].fields[j].ftype == 'content' && rsp.form.sections[i].fields[j].label == '' ) {
                             continue;
                         }
                         if( rsp.form.sections[i].fields[j].field_ref != '' ) {
@@ -1288,7 +1288,10 @@ function ciniki_forms_main() {
                     p.data[sid] = [];
 
                     for(var j in rsp.form.sections[i].fields) {
-                        if( rsp.form.sections[i].fields[j].ftype == 'content' || rsp.form.sections[i].fields[j].ftype == 'newline' ){
+                        if( rsp.form.sections[i].fields[j].ftype == 'content' && rsp.form.sections[i].fields[j].label == '' ) {
+                            continue;
+                        }
+                        if( rsp.form.sections[i].fields[j].ftype == 'newline' ){
                             continue;
                         }
                         if( rsp.form.sections[i].fields[j].ftype == 'break' ) {
@@ -1425,6 +1428,12 @@ function ciniki_forms_main() {
                                 'controls':'all',
                                 };
 
+                        }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'content' ) {
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'label',
+                                };
                         }
                         else if( rsp.form.sections[i].fields[j].ftype == 'document' ) {
                         }
