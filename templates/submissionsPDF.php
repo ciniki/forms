@@ -289,9 +289,10 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell(180, 12, $section['label'] . ($repeats > 1 ? ' #' . $i : ''), 0, 'L', 0, 1, '', '', true, 0, false, true, 12, 'B');
                         foreach($section['fields'] as $fid => $field) { 
                             if( $field['ftype'] == 'newline' ) {
-                                if( $pdf->getX() > 50 ) {
-                                    $pdf->Ln();
-                                }
+//                                if( $pdf->getX() > 50 ) {
+//                                    $pdf->Ln();
+//                                }
+//                                $fill = ($fill == 0 ? 1 : 0);
                                 // This needs to become an option in UI to allow newline to be a break between fields.
 /*                                $pdf->SetCellPadding(0);
                                 $pdf->SetDrawColor(255);
@@ -365,13 +366,14 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                                     $field_width = $field['pdf_label_size'];
                                 }
                                 if( $field_width < 180 && ($pdf->getX() + $field_width) > (180 - $pdf->right_margin) ) {
+                                    $fill = ($fill == 0 ? 1 : 0);
                                     $pdf->Ln();
                                 }
                                 $lh = isset($line_heights[$field['line']]) ? $line_heights[$field['line']] : 0;
                                 $pdf->setFont('', 'B', 10);
                                 $pdf->MultiCell($field_width, $lh, $field['label'], 1, 'L', $fill, 0);
                                 $pdf->setFont('', '', 10);
-                                $fill = ($fill == 0 ? 1 : 0);
+//                                $fill = ($fill == 0 ? 1 : 0);
                                 if( $pdf->getX() > 180 ) {
                                     $pdf->Ln();
                                     $fill = ($fill == 0 ? 1 : 0);
@@ -397,7 +399,10 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
                             }
                             if( $newline == 1 ) {
                                 $fill = ($fill == 0 ? 1 : 0);
-                                //$fill=!$fill;
+                            } 
+                            elseif( $pdf->getX() > 180 ) {
+                                $pdf->Ln($lh);
+                                $fill = ($fill == 0 ? 1 : 0);
                             }
                         }
                     }
