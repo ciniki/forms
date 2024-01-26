@@ -34,13 +34,55 @@ function ciniki_forms_hooks_customerMerge($ciniki, $tnid, $args) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'items');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.140', 'msg'=>'Unable to find submissions', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.206', 'msg'=>'Unable to find submissions', 'err'=>$rc['err']));
     }
     $items = $rc['rows'];
     foreach($items as $i => $row) {
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $row['id'], array('customer_id'=>$args['primary_customer_id']), 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.142', 'msg'=>'Unable to update form submission.', 'err'=>$rc['err']));
+        }
+        $updated++;
+    }
+
+    //
+    // Get the list of jurors
+    //
+    $strsql = "SELECT id "
+        . "FROM ciniki_form_jurors "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'items');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.207', 'msg'=>'Unable to find submissions', 'err'=>$rc['err']));
+    }
+    $items = $rc['rows'];
+    foreach($items as $i => $row) {
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.juror', $row['id'], array('customer_id'=>$args['primary_customer_id']), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.140', 'msg'=>'Unable to update form submission.', 'err'=>$rc['err']));
+        }
+        $updated++;
+    }
+
+    //
+    // Get the list of votes
+    //
+    $strsql = "SELECT id "
+        . "FROM ciniki_form_votes "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND juror_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'items');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.208', 'msg'=>'Unable to find submissions', 'err'=>$rc['err']));
+    }
+    $items = $rc['rows'];
+    foreach($items as $i => $row) {
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.juror', $row['id'], array('juror_id'=>$args['primary_customer_id']), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.209', 'msg'=>'Unable to update form submission.', 'err'=>$rc['err']));
         }
         $updated++;
     }
