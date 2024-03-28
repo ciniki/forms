@@ -96,6 +96,7 @@ function ciniki_forms_hooks_uiCustomersData($ciniki, $tnid, $args) {
         $rsp['tabs'][] = array(
             'id' => 'ciniki.forms.submissions',
             'label' => 'Forms',
+            'priority' => 1000,
             'sections' => $sections,
             );
     }

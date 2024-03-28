@@ -53,7 +53,9 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
             $row++;
             foreach($form['sections'] as $section) {
                 $sec_col = $col;
-                if( $col > 25 ) {
+                if( $col > 51 ) {
+                    $sec_ltr = chr(floor($col/26) + 64) . chr(($col-52) + 65);
+                } elseif( $col > 25 ) {
                     $sec_ltr = chr(floor($col/26) + 64) . chr(($col-26) + 65);
                 } else {
                     $sec_ltr = chr($col + 65);
@@ -64,7 +66,9 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
                         if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' || $field['ftype'] == 'image' ) {
                             continue;
                         }
-                        if( $col > 25 ) {
+                        if( $col > 51 ) {
+                            $ltr = chr(floor($col/26) + 64) . chr(($col-52) + 65);
+                        } elseif( $col > 25 ) {
                             $ltr = chr(floor($col/26) + 64) . chr(($col-26) + 65);
                         } else {
                             $ltr = chr($col + 65);
