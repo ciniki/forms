@@ -52,12 +52,13 @@ function ciniki_forms_formSubmitEmail(&$ciniki, $tnid, $args) {
     //
     // Email submission to the customer
     //
-    if( ($form['flags']&0x08) == 0x08 && isset($pdf) && isset($args['customer']['id']) ) {
+    if( ($form['flags']&0x08) == 0x08 && isset($pdf) && isset($form['submission']['customer_id']) ) {
 
         //
         // Load the customer details
         //
-        if( !isset($args['customer']['id']) ) {
+//        if( isset($args['customer']['id']) ) {
+    // Note: This changed due to change in how cartItemPaymentReceived was processed.
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
             $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, array('customer_id'=>$form['submission']['customer_id']));
             if( $rc['stat'] != 'ok' ) {
@@ -65,9 +66,9 @@ function ciniki_forms_formSubmitEmail(&$ciniki, $tnid, $args) {
             }
             $customer = $rc['customer'];
             $customer['email'] = $rc['customer']['emails'][0]['address'];
-        } else {
-            $customer = $args['customer'];
-        }
+//        } else {
+//            $customer = $args['customer'];
+//        }
 
         $subject = $form['name'] . ' - Submission';
         if( isset($form['emailthankyou']) && $form['emailthankyou'] != '' ) {
