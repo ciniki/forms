@@ -52,24 +52,10 @@ function ciniki_forms_formSubmitEmail(&$ciniki, $tnid, $args) {
     //
     // Email submission to the customer
     //
-    if( ($form['flags']&0x08) == 0x08 && isset($pdf) && isset($form['submission']['customer_id']) ) {
-
+    if( ($form['flags']&0x08) == 0x08 && isset($pdf) ) {
         //
-        // Load the customer details
+        // Prepare email content
         //
-//        if( isset($args['customer']['id']) ) {
-    // Note: This changed due to change in how cartItemPaymentReceived was processed.
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
-            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, array('customer_id'=>$form['submission']['customer_id']));
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.201', 'msg'=>'Unable to load customer details', 'err'=>$rc['err']));
-            }
-            $customer = $rc['customer'];
-            $customer['email'] = $rc['customer']['emails'][0]['address'];
-//        } else {
-//            $customer = $args['customer'];
-//        }
-
         $subject = $form['name'] . ' - Submission';
         if( isset($form['emailthankyou']) && $form['emailthankyou'] != '' ) {
             $htmlmsg = $form['emailthankyou'];
@@ -81,26 +67,76 @@ function ciniki_forms_formSubmitEmail(&$ciniki, $tnid, $args) {
         $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $subject)) . '.pdf';
 
         //
-        // Send the email
+        // If the customer is logged in
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
-        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-            'object' => 'ciniki.forms.submission',
-            'object_id' => $form['submission']['id'],
-            'customer_id' => $customer['id'],
-            'customer_email' => $customer['email'],
-            'customer_name' => $customer['display_name'],
-            'subject' => $subject,
-            'html_content' => $textmsg,
-            'text_content' => $textmsg,
-            'attachments' => array(array('content'=>$pdf->Output($filename, 'S'), 'filename'=>$filename)),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            error_log('ERR: Unable to email submission' . print_r($rc['err'], true));
-        } else {
-            $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
+        if( isset($form['submission']['customer_id']) && $form['submission']['customer_id'] > 0 ) {
+            //
+            // Load the customer details
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, array('customer_id'=>$form['submission']['customer_id']));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.201', 'msg'=>'Unable to load customer details', 'err'=>$rc['err']));
+            }
+            $customer = $rc['customer'];
+            $customer['email'] = $rc['customer']['emails'][0]['address'];
+
+            //
+            // Send the email
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+                'object' => 'ciniki.forms.submission',
+                'object_id' => $form['submission']['id'],
+                'customer_id' => $customer['id'],
+                'customer_email' => $customer['email'],
+                'customer_name' => $customer['display_name'],
+                'subject' => $subject,
+                'html_content' => $textmsg,
+                'text_content' => $textmsg,
+                'attachments' => array(array('content'=>$pdf->Output($filename, 'S'), 'filename'=>$filename)),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                error_log('ERR: Unable to email submission' . print_r($rc['err'], true));
+            } else {
+                $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
+            }
+        } 
+        //
+        // Find the first email address field and use it send submission
+        //
+        else {  
+            $email_address = '';
+            foreach($form['sections'] as $section) {
+                if( isset($section['fields']) ) {
+                    foreach($section['fields'] as $field) {
+                        if( $field['ftype'] == 'email' && $field['value'] != '' ) {
+                            $email_address = $field['value'];
+                        }
+                    }
+                }
+            }
+            if( $email_address != '' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+                $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+                    'object' => 'ciniki.forms.submission',
+                    'object_id' => $form['submission']['id'],
+                    'customer_id' => 0,
+                    'customer_email' => $email_address,
+                    'subject' => $subject,
+                    'html_content' => $textmsg,
+                    'text_content' => $textmsg,
+                    'attachments' => array(array('content'=>$pdf->Output($filename, 'S'), 'filename'=>$filename)),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    error_log('ERR: Unable to email submission' . print_r($rc['err'], true));
+                } else {
+                    $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
+                }
+            }
         }
     }
+
 
     //
     // Email submission to addresses specified
