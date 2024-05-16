@@ -1057,6 +1057,7 @@ function ciniki_forms_main() {
     this.submission = new M.panel('Submission', 'ciniki_forms_main', 'submission', 'mc', 'xlarge narrowaside', 'sectioned', 'ciniki.forms.main.submission');
     this.submission.data = null;
     this.submission.submission_id = 0;
+    this.submission.customer_id = 0;
     this.submission.nplist = [];
     this.submission.sections = {};
 //    this.submission.fieldHistoryArgs = function(s, i) {
@@ -1114,6 +1115,7 @@ function ciniki_forms_main() {
             }
             var p = M.ciniki_forms_main.submission;
             p.data = rsp.form;
+            p.customer_id = rsp.form.submission.customer_id;
             p.sections = {
                 'submission_details':{'label':'Submission', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
                     'cellClasses':['label', ''],
@@ -1263,6 +1265,10 @@ function ciniki_forms_main() {
                 'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
                     'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
                     'cellClasses':['label', ''],
+                    'addTxt':'Edit',
+                    'addFn':'M.ciniki_forms_main.submission.save(\'M.ciniki_forms_main.submission.editCustomer();\');',
+                    'changeTxt':'Change',
+                    'changeFn':'M.ciniki_forms_main.submission.save(\'M.ciniki_forms_main.submission.changeCustomer();\');',
                     },
                 'votes':{'label':'Votes', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
                     'visible':((rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no'),
@@ -1464,6 +1470,26 @@ function ciniki_forms_main() {
         if( cb != null ) { this.cb = cb; }
         this.form_id = fid;
         M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_forms_main.submission.startSubmission','customer_id':0});
+    }
+    this.submission.editCustomer = function() {
+        M.startApp('ciniki.customers.edit',null,'M.ciniki_forms_main.submission.updateCustomer();','mc',{'next':'M.ciniki_forms_main.submission.updateCustomer','customer_id':M.ciniki_forms_main.submission.customer_id});
+    }
+    this.submission.changeCustomer = function() {
+        M.startApp('ciniki.customers.edit',null,'M.ciniki_forms_main.submission.updateCustomer();','mc',{'next':'M.ciniki_forms_main.submission.updateCustomer','customer_id':0});
+    }
+    this.submission.updateCustomer = function(cid) {
+        if( cid != null && this.customer_id != cid ) { 
+            this.customer_id = cid;
+            M.api.getJSONCb('ciniki.forms.submissionUpdate', {'tnid':M.curTenantID, 'submission_id':this.submission_id, 'customer_id':this.customer_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_forms_main.submission.edit();
+            });
+        } else {
+            this.show();
+        }
     }
     this.submission.startSubmission = function(cid) {
         // create new submission for customer
