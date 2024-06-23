@@ -84,6 +84,9 @@ function ciniki_forms_wng_cartSubmit(&$ciniki, $tnid, $request) {
         'flags' => 0x80,
         ));
     if( $rc['stat'] != 'ok' ) {
+        if( $rc['stat'] == '404' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.210', 'msg'=>'Unable to add item'));
+        } 
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.100', 'msg'=>'Unable to add item', 'err'=>$rc['err']));
     }
 
