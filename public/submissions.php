@@ -241,6 +241,7 @@ function ciniki_forms_submissions($ciniki) {
         '_110' => array('id'=>110, 'label'=>'Declined', 'num_submissions'=>(isset($statuses[110]) ? $statuses[110] : 0)),
         '_90' => array('id'=>90, 'label'=>'Submitted', 'num_submissions'=>(isset($statuses[90]) ? $statuses[90] : 0)),
         '_80' => array('id'=>80, 'label'=>'Paid', 'num_submissions'=>(isset($statuses[80]) ? $statuses[80] : 0)),
+        '_70' => array('id'=>70, 'label'=>'Pending Payment', 'num_submissions'=>(isset($statuses[70]) ? $statuses[70] : 0)),
         '_10' => array('id'=>10, 'label'=>'In Progress', 'num_submissions'=>(isset($statuses[10]) ? $statuses[10] : 0)),
         );
 
