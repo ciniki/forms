@@ -169,7 +169,7 @@ function ciniki_forms_submissions($ciniki) {
         . "submissions.dt_last_submitted AS dt_last_submitted_date, "
         . "submissions.dt_last_submitted AS dt_last_submitted_time, "
         . "IFNULL(COUNT(votes.vote), 0) AS num_votes, "
-        . "IFNULL(SUM(votes.vote), '-') AS rank "
+        . "IFNULL(SUM(votes.vote), '-') AS voterank "
         . "FROM ciniki_form_submissions AS submissions "
         . "LEFT JOIN ciniki_customers AS customers ON ("
             . "submissions.customer_id = customers.id "
@@ -192,7 +192,7 @@ function ciniki_forms_submissions($ciniki) {
             'fields'=>array('id', 'form_id', 'object', 'object_id', 'customer_id', 'display_name', 
                 'invoice_id', 'status', 'status_text', 'label',
                 'dt_terms_accepted', 'dt_last_save', 'dt_last_submitted_date', 'dt_last_submitted_time',
-                'num_votes', 'rank',
+                'num_votes', 'voterank',
                 ),
             'maps'=>array('status_text'=>$maps['submission']['status']),
             'utctotz'=>array(

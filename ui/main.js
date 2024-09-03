@@ -936,7 +936,7 @@ function ciniki_forms_main() {
                 case 'status': return d.status_text;
                 case 'object': return d.object_text;
                 case 'submitted': return M.multiline(d.dt_last_submitted_date, d.dt_last_submitted_time);
-                case 'ranking': return M.multiline(d.rank, d.num_votes + ' of ' + this.data.form.num_jurors);
+                case 'ranking': return M.multiline(d.voterank, d.num_votes + ' of ' + this.data.form.num_jurors);
             }
         }
     }
