@@ -117,7 +117,7 @@ function ciniki_forms_reporting_blockVotes(&$ciniki, $tnid, $args) {
         . "submissions.id AS submission_id, "
         . "IFNULL(submissions.dt_last_submitted, '') AS dt_last_submitted, "
         . "IFNULL(COUNT(votes.vote), 0) AS num_votes, "
-        . "IFNULL(SUM(votes.vote), '-') AS rank "
+        . "IFNULL(SUM(votes.vote), '-') AS voterank "
         . "FROM ciniki_forms AS forms "
         . "LEFT JOIN ciniki_form_submissions AS submissions ON ("
             . "forms.id = submissions.form_id "
@@ -143,7 +143,7 @@ function ciniki_forms_reporting_blockVotes(&$ciniki, $tnid, $args) {
         array('container'=>'forms', 'fname'=>'id', 'fields'=>array('id', 'name')),
         array('container'=>'submissions', 'fname'=>'submission_id', 
             'fields'=>array('id'=>'submission_id', 'name', 'display_name', 
-                'dt_last_submitted', 'num_votes', 'rank',
+                'dt_last_submitted', 'num_votes', 'voterank',
                 ),
             'utctotz'=>array(
                 'dt_last_submitted'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
@@ -173,7 +173,7 @@ function ciniki_forms_reporting_blockVotes(&$ciniki, $tnid, $args) {
                         . (isset($jurors[$form['id']]) ? $jurors[$form['id']] : '?');
                     $textlist .= $s['display_name'] . ", ";
                     $textlist .= $s['dt_last_submitted'] . ",";
-                    $textlist .= $s['rank'] . "";
+                    $textlist .= $s['voterank'] . "";
                     $textlist .= $form['submissions'][$sid]['votes'] . "";
                     $textlist .= "\n";
                 }
@@ -183,7 +183,7 @@ function ciniki_forms_reporting_blockVotes(&$ciniki, $tnid, $args) {
                     'columns'=>array(
                         array('label'=>'Customer', 'pdfwidth'=>'40%', 'field'=>'display_name'),
                         array('label'=>'Submitted', 'pdfwidth'=>'30%', 'field'=>'dt_last_submitted'),
-                        array('label'=>'Rank', 'pdfwidth'=>'15%', 'field'=>'rank'),
+                        array('label'=>'Rank', 'pdfwidth'=>'15%', 'field'=>'voterank'),
                         array('label'=>'Voted', 'pdfwidth'=>'15%', 'field'=>'votes'),
                         ),
                     'data'=>$form['submissions'],
