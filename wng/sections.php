@@ -30,8 +30,8 @@ function ciniki_forms_wng_sections(&$ciniki, $tnid, $args) {
         . "FROM ciniki_forms "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND status = 50 "
-        . "AND (ISNULL(dt_start) OR dt_start <= NOW()) "
-        . "AND (dt_end >= NOW() OR ISNULL(dt_end) ) "
+//        . "AND (ISNULL(dt_start) OR dt_start <= NOW()) "
+//        . "AND (dt_end >= NOW() OR ISNULL(dt_end) ) "
         . "ORDER BY name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
