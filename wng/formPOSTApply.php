@@ -116,7 +116,10 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                             $new_value = $request['args']["f-{$field['id']}"] == 'on' ? 'on' : 'off';
                         }
                     }
-                    elseif( $field['ftype'] == 'image' && isset($_FILES["f-{$field['id']}"]) ) {
+                    elseif( $field['ftype'] == 'image' 
+                        && isset($_FILES["f-{$field['id']}"]['size']) 
+                        && $_FILES["f-{$field['id']}"]['size'] > 0
+                        ) {
                         $file = $_FILES["f-{$field['id']}"];
                         if( !isset($file['tmp_name']) || $file['tmp_name'] == '' ) {
                             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.165', 'problem'=>'other', 'msg'=>'There was an error uploading your image, please try again or contact us for help.'));
