@@ -165,7 +165,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
     //
     // Load all submissions for the customer for the form
     //
-//    if( isset($submission_uuid) ) { 
+    if( isset($submission_uuid) || (isset($form['customer_id']) && $form['customer_id'] > 0) ) { 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formSubmissionsLoad');
         $rc = ciniki_forms_wng_formSubmissionsLoad($ciniki, $tnid, $request, $form);
         if( $rc['stat'] != 'ok' ) {
@@ -177,7 +177,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 );
             return array('stat'=>'ok', 'blocks'=>$blocks);
         }
-//    }
+    }
 
     //
     // Check if a submission already exists
