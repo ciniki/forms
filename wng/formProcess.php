@@ -223,7 +223,10 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             ),
         'rows' => isset($form['submissions']) ? $form['submissions'] : array(),
         );
-    if( ($form['flags']&0x02) == 0x02 && isset($form['submissions']) && count($form['submissions']) > 0 ) {
+    if( ($form['flags']&0x02) == 0x02 && isset($form['submissions']) 
+        && count($form['submissions']) > 0 
+        && isset($request['page']['path'])
+        ) {
         $cancel_url = $request['ssl_domain_base_url'] . $request['page']['path'];
     }
     if( isset($form['submissions']) && count($form['submissions']) < $form['max_customer_submissions'] 
