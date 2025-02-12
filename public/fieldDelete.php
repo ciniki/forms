@@ -57,7 +57,7 @@ function ciniki_forms_fieldDelete(&$ciniki) {
     //
     // Check for any dependencies before deleting
     //
-    $strsql = "SELECT COUNT(id) AS num "
+/*    $strsql = "SELECT COUNT(id) AS num "
         . "FROM ciniki_form_data "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND field_id = '" . ciniki_core_dbQuote($ciniki, $args['field_id']) . "' "
@@ -69,7 +69,7 @@ function ciniki_forms_fieldDelete(&$ciniki) {
     }
     if( $rc['num'] > 0 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.27', 'msg'=>'There is still submission data for this field'));
-    }
+    } */
 
     //
     // Check if any modules are currently using this object
@@ -98,10 +98,30 @@ function ciniki_forms_fieldDelete(&$ciniki) {
     }
 
     //
+    // Remove all data for the field
+    //
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_form_data "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND field_id = '" . ciniki_core_dbQuote($ciniki, $args['field_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.211', 'msg'=>'Unable to load submitted data', 'err'=>$rc['err']));
+    }
+    $data = isset($rc['rows']) ? $rc['rows'] : array();
+    foreach($data as $d) {
+        $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.data', $d['id'], $d['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
+            return $rc;
+        }
+    }
+
+    //
     // Remove the field
     //
-    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.field',
-        $args['field_id'], $field['uuid'], 0x04);
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.field', $args['field_id'], $field['uuid'], 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
         return $rc;
