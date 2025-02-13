@@ -1121,9 +1121,15 @@ function ciniki_forms_main() {
                     'cellClasses':['label', ''],
                     },
                 'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
-                    'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
+//                    'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
                     'cellClasses':['label', ''],
-                    },
+                    'noData':'No Customer',
+                    'menu':{
+                        'view':{
+                            'label':'View Customer', 
+                            'fn':'M.ciniki_forms_main.submission.viewCustomer();',
+                        },
+                    }},
                 'votes':{'label':'Votes', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
                     'visible':((rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no'),
                     'cellClasses':['flexlabel', 'multiline'],
@@ -1243,6 +1249,7 @@ function ciniki_forms_main() {
             }
             var p = M.ciniki_forms_main.submission;
             p.data = rsp.form;
+            p.data.customer_id = rsp.form.submission.customer_id;
             p.data.label = rsp.form.submission.label;
             p.data.status = rsp.form.submission.status;
             p.sections = {
@@ -1262,13 +1269,12 @@ function ciniki_forms_main() {
                         '110':'Declined',
                         }},
                     }},
-                'customer_details':{'label':'Customer', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
-                    'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
+                'customer_details':{'label':'Customer', 'type':'customer', 'num_cols':2, 'aside':'yes', 
+//                    'visible':(rsp.form.customer_details != null ? 'yes' : 'no'),
                     'cellClasses':['label', ''],
-                    'addTxt':'Edit',
-                    'addFn':'M.ciniki_forms_main.submission.save(\'M.ciniki_forms_main.submission.editCustomer();\');',
-                    'changeTxt':'Change',
-                    'changeFn':'M.ciniki_forms_main.submission.save(\'M.ciniki_forms_main.submission.changeCustomer();\');',
+                    'customer_id':rsp.form.submission.customer_id,
+                    'customer_field':'customer_id',
+                    'noData':'No Customer',
                     },
                 'votes':{'label':'Votes', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
                     'visible':((rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no'),
@@ -1471,12 +1477,15 @@ function ciniki_forms_main() {
         this.form_id = fid;
         M.startApp('ciniki.customers.edit',null,cb,'mc',{'next':'M.ciniki_forms_main.submission.startSubmission','customer_id':0});
     }
-    this.submission.editCustomer = function() {
+    this.submission.viewCustomer = function() {
+        M.startApp('ciniki.customers.main',null,'M.ciniki_forms_main.submission.open();','mc',{'customer_id':M.ciniki_forms_main.submission.customer_id});
+    }
+/*    this.submission.editCustomer = function() {
         M.startApp('ciniki.customers.edit',null,'M.ciniki_forms_main.submission.updateCustomer();','mc',{'next':'M.ciniki_forms_main.submission.updateCustomer','customer_id':M.ciniki_forms_main.submission.customer_id});
     }
     this.submission.changeCustomer = function() {
         M.startApp('ciniki.customers.edit',null,'M.ciniki_forms_main.submission.updateCustomer();','mc',{'next':'M.ciniki_forms_main.submission.updateCustomer','customer_id':0});
-    }
+    } 
     this.submission.updateCustomer = function(cid) {
         if( cid != null && this.customer_id != cid ) { 
             this.customer_id = cid;
@@ -1490,7 +1499,7 @@ function ciniki_forms_main() {
         } else {
             this.show();
         }
-    }
+    } */
     this.submission.startSubmission = function(cid) {
         // create new submission for customer
         M.api.getJSONCb('ciniki.forms.submissionAdd', {'tnid':M.curTenantID, 'form_id':this.form_id, 'customer_id':cid, 'invoice_id':0}, function(rsp) {
