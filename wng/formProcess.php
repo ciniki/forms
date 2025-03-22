@@ -548,8 +548,13 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.199', 'msg'=>'Unable to email form submission', 'err'=>$rc['err']));
                 }
                 //
-                // Form is now submitted
+                // Form is now submitted, run any auto imports
                 //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formSubmitted');
+                $rc = ciniki_forms_formSubmitted($ciniki, $tnid, ['form' => $form]);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.212', 'msg'=>'', 'err'=>$rc['err']));
+                }
             }
         }
 

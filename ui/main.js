@@ -225,6 +225,10 @@ function ciniki_forms_main() {
             'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
             'fields':{
                 'flags1':{'label':'Account Required', 'type':'flagtoggle', 'default':'yes', 'bit':0x01, 'field':'flags',
+                    'onchange':'M.ciniki_forms_main.form.updateForm();',
+                    },
+                'flags9':{'label':'Auto Update Customer', 'type':'flagtoggle', 'default':'off', 'bit':0x0100, 'field':'flags',
+                    'visible':'no',
                     },
                 'flags2':{'label':'Display as Single Form', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags'},
                 'max_submissions':{'label':'Total Submissions Accepted', 'type':'text', 'size':'small'},
@@ -444,6 +448,11 @@ function ciniki_forms_main() {
     this.form.openStatus = function(i) {
         M.ciniki_forms_main.submissions.open('M.ciniki_forms_main.form.open();',this.form_id,i);
     }
+    this.form.updateForm = function() {
+        var e = this.formValue('flags1');
+        this.sections.options.fields.flags9.visible = (e == 'on' ? 'yes' : 'no');
+        this.refreshFormField('options', 'flags9');
+    }
     this.form.open = function(cb, fid, list) {
         if( fid != null ) { 
             this.form_id = fid; 
@@ -462,6 +471,7 @@ function ciniki_forms_main() {
             p.sections._tabs.list.jurors.visible = (rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no';
             p.refresh();
             p.show(cb);
+            p.updateForm();
         });
     }
     this.form.save = function(cb) {
@@ -900,7 +910,8 @@ function ciniki_forms_main() {
         'objects':{'label':'', 'aside':'yes', 'type':'simplegrid', 'num_cols':1, 'visible':'no',
             },
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
-            'create':{'label':'New Submission', 'fn':'M.ciniki_forms_main.submission.createSubmission(\'M.ciniki_forms_main.submissions.open();\',M.ciniki_forms_main.submissions.form_id);'},
+            'create':{'label':'New Submission', 
+                'fn':'M.ciniki_forms_main.submission.createSubmission(\'M.ciniki_forms_main.submissions.open();\',M.ciniki_forms_main.submissions.form_id);'},
             'excel':{'label':'Download Excel', 'fn':'M.ciniki_forms_main.submissions.downloadExcel();'},
             'clear':{'label':'Clear Empty Submissions', 
                 'visible':function() { return M.ciniki_forms_main.submissions.status == 10 ? 'yes' : 'no'; },
@@ -914,6 +925,24 @@ function ciniki_forms_main() {
             'sortTypes':[],
             'dataMaps':[],
             'noData':'No Submissions',
+            'menu':{    
+                'add':{
+                    'label':'New Submission',
+                    'fn':'M.ciniki_forms_main.submission.createSubmission(\'M.ciniki_forms_main.submissions.open();\',M.ciniki_forms_main.submissions.form_id);',
+                    },
+                'excel':{
+                    'label':'Download Excel',
+                    'fn':'M.ciniki_forms_main.submissions.downloadExcel();',
+                    },
+                'clear':{
+                    'label':'Download Empty Submissions',
+                    'fn':'M.ciniki_forms_main.submissions.clearEmpty();',
+                    },
+                'pdf':{
+                    'label':'Download Submissions PDF',
+                    'fn':'M.ciniki_forms_main.submissions.downloadSubmissions();',
+                    },
+                },
             },
         }
     this.submissions.cellValue = function(s, i, j, d) {
@@ -972,6 +1001,9 @@ function ciniki_forms_main() {
     }
     this.submissions.downloadExcel = function() {
         M.api.openFile('ciniki.forms.submissionsExcel', {'tnid':M.curTenantID, 'form_id':this.form_id, 'status':this.status});
+    }
+    this.submissions.downloadSubmissions = function() {
+        M.api.openFile('ciniki.forms.submissions', {'tnid':M.curTenantID, 'form_id':this.form_id, 'status':this.status, 'output':'pdf'});
     }
     this.submissions.open = function(cb, fid, status, list) {
         if( fid != null ) { 

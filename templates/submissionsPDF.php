@@ -102,7 +102,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         $form = $rc['form'];
         $submission = $rc['form']['submission'];
 
-        $pdf->title = $form['name'] . ' - Submission';
+        $pdf->title = $form['name'] . ' - ' . (isset($args['title']) && $args['title'] != '' ? $args['title'] : 'Submission');
 
         //
         // Create the PDF of the submission

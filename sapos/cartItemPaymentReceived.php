@@ -64,6 +64,14 @@ function ciniki_forms_sapos_cartItemPaymentReceived(&$ciniki, $tnid, $customer, 
         if( $rc['stat'] != 'ok' ) {
             error_log('Unable to email form submission: ');
         }
+
+        if( isset($update_args['status']) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formSubmitted');
+            $rc = ciniki_forms_formSubmitted($ciniki, $tnid, ['form' => $form]);
+            if( $rc['stat'] != 'ok' ) {
+                error_log('Unable to update from form submission: ' . $form['submission_id']);
+            }
+        }
     }
 
     return array('stat'=>'ok');

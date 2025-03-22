@@ -23,7 +23,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
     // Check if submission_id specified
     //
     $update_args = array();
-    if( isset($form['submission_id']) && $form['submission_id'] > 0 ) {
+    if( isset($form['submission_id']) && is_numeric($form['submission_id']) && $form['submission_id'] > 0 ) {
         $update_args['dt_last_save'] = $dt_now->format('Y-m-d H:i:s');
     } else {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
@@ -73,7 +73,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
                                     'data' => is_array($field['values'][$i]) ? $json_encode($field['values'][$i]) : $field['values'][$i],
                                     ), 0x04);
                                 if( $rc['stat'] != 'ok' ) {
-                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.74', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.74', 'msg'=>'Unable to update data', 'err'=>$rc['err']));
                                 }
                                 if( $field['ftype'] == 'image' ) {
                                     $image_urls["{$field['id']}-{$i}"] = $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . '/' . $form['submission_id'] . '/' . $field['values'][$i];
@@ -125,7 +125,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
                                 'data' => is_array($field['value']) ? json_encode($field['value']) : $field['value'],
                                 ), 0x04);
                             if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.75', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.75', 'msg'=>'Unable to update data', 'err'=>$rc['err']));
                             }
                             if( $field['ftype'] == 'image' ) {
                                 $image_urls["{$field['id']}"] = $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . '/' . $form['submission_id'] . '/' . $field['value'];

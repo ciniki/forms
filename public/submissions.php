@@ -24,6 +24,7 @@ function ciniki_forms_submissions($ciniki) {
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Submission Status'),
         'object'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object'),
         'object_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object ID'),
+        'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -212,6 +213,42 @@ function ciniki_forms_submissions($ciniki) {
         $submission_ids[] = $submission['id'];
     }
     $rsp = array('stat'=>'ok', 'form'=>$form, 'submissions'=>$submissions, 'nplist'=>$submission_ids);
+
+    //
+    // 
+    //
+    if( isset($args['output']) && $args['output'] == 'pdf' ) {
+        //
+        // Load tenant details
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'tenantDetails');
+        $rc = ciniki_tenants_tenantDetails($ciniki, $args['tnid']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['details']) && is_array($rc['details']) ) {   
+            $tenant_details = $rc['details'];
+        } else {
+            $tenant_details = array();
+        }
+
+        $title = 'Submissions';
+        $filename = preg_replace('/[^a-zA-Z0-9_]/', '', preg_replace('/ /', '_', $title));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'templates', 'submissionsPDF');
+        $rc = ciniki_forms_templates_submissionsPDF($ciniki, $args['tnid'], array(
+            'title' => $title,
+            'tenant_details' => $tenant_details,
+            'submission_ids' => $submission_ids,
+            'terms' => isset($args['terms']) ? $args['terms'] : 'no',
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.190', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
+        }
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($filename . '.pdf', 'I');
+            return array('stat'=>'exit');
+        }
+    }
 
     //
     // Get the submission stats
