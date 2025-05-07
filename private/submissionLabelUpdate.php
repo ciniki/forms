@@ -15,6 +15,22 @@
 function ciniki_forms_submissionLabelUpdate(&$ciniki, $tnid, $submission_id) {
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+
+    //
+    // Load the date format strings for the user
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+    $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
+    
+    //
     // Load the submission
     //
     $strsql = "SELECT submissions.id, "
@@ -45,6 +61,10 @@ function ciniki_forms_submissionLabelUpdate(&$ciniki, $tnid, $submission_id) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
         array('container'=>'submissions', 'fname'=>'id', 
             'fields'=>array('id', 'label', 'date_added', 'date_submitted'),
+            'utctotz'=>array(
+                'date_added'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                'date_submitted'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                ),
             ),
         array('container'=>'fields', 'fname'=>'field_id', 'fields'=>array('data')),
         ));
