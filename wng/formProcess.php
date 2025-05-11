@@ -111,6 +111,15 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
         return $rc;
     }
+    if( $rc['stat'] == 'expired' ) {
+        return array('stat'=>'ok', 'blocks'=>array(
+            array(
+                'type' => 'text',
+                'title' => $rc['form']['name'],
+                'content' => 'Form has expired', 
+                ),
+            ));
+    }
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.20', 'msg'=>'Form not found', 'err'=>$rc['err']));
     }

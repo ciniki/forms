@@ -175,7 +175,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
     if( $form['dt_end'] != '' ) {
         $dt_end = new DateTime($form['dt_end'], new DateTimezone('UTC'));
         if( $dt_end < $now ) {
-            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.23', 'msg'=>'Form is expired'));
+            return array('stat'=>'expired', 'form'=>$form, 'err'=>array('code'=>'ciniki.forms.23', 'msg'=>'Form is expired'));
         }
     }
 
