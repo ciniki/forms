@@ -166,13 +166,13 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.21', 'msg'=>'Form expired'));
     }
     $now = new DateTime('now', new DateTimezone('UTC'));
-    if( $form['dt_start'] != '' ) {
+    if( $form['dt_start'] != '' && $form['dt_start'] != '0000-00-00 00:00:00' ) {
         $dt_start = new DateTime($form['dt_start'], new DateTimezone('UTC'));
         if( $dt_start > $now ) {
             return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.22', 'msg'=>'Form is not yet available'));
         }
     }
-    if( $form['dt_end'] != '' ) {
+    if( $form['dt_end'] != '' && $form['dt_end'] != '0000-00-00 00:00:00' ) {
         $dt_end = new DateTime($form['dt_end'], new DateTimezone('UTC'));
         if( $dt_end < $now ) {
             return array('stat'=>'expired', 'form'=>$form, 'err'=>array('code'=>'ciniki.forms.23', 'msg'=>'Form is expired'));
