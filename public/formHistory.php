@@ -41,6 +41,11 @@ function ciniki_forms_formHistory($ciniki) {
         return $rc;
     }
 
+    if( in_array($args['field'], ['dt_start', 'dt_end']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
+        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.forms', 'ciniki_forms_history', $args['tnid'], 'ciniki_forms', $args['form_id'], $args['field'], 'utcdatetime');
+    }
+
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
     return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.forms', 'ciniki_forms_history', $args['tnid'], 'ciniki_forms', $args['form_id'], $args['field']);
 }

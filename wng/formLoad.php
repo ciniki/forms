@@ -94,10 +94,10 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
                 'fee_label', 'fee_amount', 'cartsubmit_label', 'submit_label', 
                 'dt_start', 'dt_end', 'guidelines', 'termsofuse', 'thankyou', 'emailthankyou', 'alreadysubmitted', 'loginmsg', 
                 ),
-            'utctotz'=>array(
-                'dt_start'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),
-                'dt_end'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),
-                ),
+//            'utctotz'=>array(
+//                'dt_start'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),
+//                'dt_end'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),
+//                ),
             ),
         array('container'=>'sections', 'fname'=>'section_id',
             'fields'=>array('id'=>'section_id', 'label'=>'section_label', 'flags'=>'section_flags', 
