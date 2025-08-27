@@ -1018,7 +1018,7 @@ function ciniki_forms_main() {
             null,
             'M.ciniki_forms_main.submissions.open();',
             'mc',
-            {'subject':'Re: ' + this.data.name,
+            {'subject':'Re: ' + this.data.form.name,
                 'list':customers, 
                 'object':'ciniki.forms.form',
                 'object_id':this.form_id,
