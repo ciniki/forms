@@ -930,6 +930,11 @@ function ciniki_forms_main() {
                     'label':'New Submission',
                     'fn':'M.ciniki_forms_main.submission.createSubmission(\'M.ciniki_forms_main.submissions.open();\',M.ciniki_forms_main.submissions.form_id);',
                     },
+                'email':{
+                    'label':'Email Submissions',
+                    'visible':function() { return (M.ciniki_forms_main.submissions.data.form.flags&0x01) == 0x01 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_forms_main.submissions.emailCustomers();',
+                    },
                 'excel':{
                     'label':'Download Excel',
                     'fn':'M.ciniki_forms_main.submissions.downloadExcel();',
@@ -998,6 +1003,27 @@ function ciniki_forms_main() {
         this.object = o;
         this.object_id = id;
         this.open();
+    }
+    this.submissions.emailCustomers = function() {
+        var customers = [];
+        for(var i in this.data.submissions) {
+            if( this.data.submissions[i].customer_id > 0 ) {
+                customers[i] = {
+                    'id':this.data.submissions[i].customer_id,
+                    'name':this.data.submissions[i].display_name,
+                    };
+            }
+        }
+        M.startApp('ciniki.mail.omessage',
+            null,
+            'M.ciniki_forms_main.submissions.open();',
+            'mc',
+            {'subject':'Re: ' + this.data.name,
+                'list':customers, 
+                'object':'ciniki.forms.form',
+                'object_id':this.form_id,
+                'removeable':'yes',
+            });
     }
     this.submissions.downloadExcel = function() {
         M.api.openFile('ciniki.forms.submissionsExcel', {'tnid':M.curTenantID, 'form_id':this.form_id, 'status':this.status});
