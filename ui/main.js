@@ -268,12 +268,12 @@ function ciniki_forms_main() {
         '_guidelines':{'label':'Guidelines', 
             'visible':function() { return M.ciniki_forms_main.form.selected == 'guidelines' ? 'yes' :'hidden'; },
             'fields':{
-                'guidelines':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'xlarge'}
+                'guidelines':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'xlarge'}
             }},
         '_termsofuse':{'label':'Terms of Use', 
             'visible':function() { return M.ciniki_forms_main.form.selected == 'termsofuse' ? 'yes' :'hidden'; },
             'fields':{
-                'termsofuse':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'xlarge'}
+                'termsofuse':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'xlarge'}
             }},
         'jurors':{'label':'Jurors', 'type':'simplegrid', 'num_cols':2, 
             'visible':function() { return M.ciniki_forms_main.form.selected == 'jurors' ? 'yes' :'hidden'; },
