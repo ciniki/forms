@@ -169,7 +169,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
     if( $form['dt_start'] != '' && $form['dt_start'] != '0000-00-00 00:00:00' ) {
         $dt_start = new DateTime($form['dt_start'], new DateTimezone('UTC'));
         if( $dt_start > $now ) {
-            return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.22', 'msg'=>'Form is not yet available'));
+            return array('stat'=>'notopen', 'form'=>$form, 'err'=>array('code'=>'ciniki.forms.22', 'msg'=>'Form is not yet available'));
         }
     }
     if( $form['dt_end'] != '' && $form['dt_end'] != '0000-00-00 00:00:00' ) {

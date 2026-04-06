@@ -120,6 +120,15 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 ),
             ));
     }
+    if( $rc['stat'] == 'notopen' ) {
+        return array('stat'=>'ok', 'blocks'=>array(
+            array(
+                'type' => 'text',
+                'title' => $rc['form']['name'],
+                'content' => 'Form is not currently open', 
+                ),
+            ));
+    }
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.forms.20', 'msg'=>'Form not found', 'err'=>$rc['err']));
     }
