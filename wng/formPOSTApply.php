@@ -82,7 +82,7 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                         elseif( isset($request['args']["f-{$field['id']}-{$i}"]) ) {
                             $new_value = trim($request['args']["f-{$field['id']}-{$i}"]);
                         }
-                        if( $new_value != null ) {
+                        if( !is_null($new_value) ) {
                             if( isset($field['values'][$i]) && $new_value != $field['values'][$i] ) {
                                 $form['sections'][$sid]['fields'][$fid]['old_values'][$i] = $field['values'][$i];
                             }
