@@ -147,6 +147,7 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
     //
     $strsql = "SELECT submissions.id, "
         . "submissions.uuid, "
+        . "submissions.label, "
         . "IFNULL(votes.id, 0) AS vote_id, "
         . "IFNULL(votes.vote, 0) AS vote, "
         . "IFNULL(votes.vote, 0) AS vote_text, "
@@ -165,7 +166,7 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
         array('container'=>'submissions', 'fname'=>'id', 
-            'fields'=>array('id', 'uuid', 'vote_id', 'vote', 'vote_text', 'notes'),
+            'fields'=>array('id', 'uuid', 'label', 'vote_id', 'vote', 'vote_text', 'notes'),
             'maps'=>array('vote_text'=>$maps['vote']['vote']),
             ),
         ));
@@ -207,10 +208,12 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
     $form['submissions'] = array();
     foreach($submissions as $sid => $s) {
         $s['number'] = $submission_number;
-        if( isset($labels[$s['id']]['data']) ) {
-            $s['label'] = $submission_number . ' - ' . $labels[$s['id']]['data'];
-        } else {
-            $s['label'] = $s['number'];
+        if( $form['flags']&0x40) == 0 ) {
+            if( isset($labels[$s['id']]['data']) ) {
+                $s['label'] = $submission_number . ' - ' . $labels[$s['id']]['data'];
+            } else {
+                $s['label'] = $s['number'];
+            }
         }
         $form['submissions'][$submission_number] = $s;
         $submission_number++;

@@ -147,9 +147,11 @@ function ciniki_forms_main() {
                 }},
             'flags5':{'label':'Juried', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags',
                 'onchange':'M.ciniki_forms_main.form.juryToggle();',
-                'on_fields':['flags6'],
+                'on_fields':['flags6', 'flags7'],
                 },
             'flags6':{'label':'Voting Open', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags',
+                },
+            'flags7':{'label':'Show Label', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags',
                 },
             'dt_start':{'label':'Start', 'type':'datetime'},
             'dt_end':{'label':'End', 'type':'datetime'},
@@ -468,6 +470,7 @@ function ciniki_forms_main() {
             var p = M.ciniki_forms_main.form;
             p.data = rsp.form;
             p.sections.general.fields.flags6.visible = (rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no';
+            p.sections.general.fields.flags7.visible = (rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no';
             p.sections._tabs.list.jurors.visible = (rsp.form.flags&0x10) == 0x10 ? 'yes' : 'no';
             p.refresh();
             p.show(cb);

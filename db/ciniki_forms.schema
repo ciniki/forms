@@ -28,7 +28,7 @@
 #                               0x08 - Email submission PDF with terms after submission
 #                               0x10 - Juried
 #                               0x20 - Jurying Enabled (jurors can login and submit votes)
-#                               0x40 - 
+#                               0x40 - Jurying - Show Label
 #                               0x80 - Submit Only - no editing of submissions, used for voting/polls/silent auctions.
 #                               0x0100 - Auto update customer details (must have 0x01 flag set)
 #                               0x0200 - 
