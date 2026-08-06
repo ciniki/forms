@@ -208,7 +208,7 @@ function ciniki_forms_wng_jurorFormLoad($ciniki, $tnid, $request, $form_permalin
     $form['submissions'] = array();
     foreach($submissions as $sid => $s) {
         $s['number'] = $submission_number;
-        if( $form['flags']&0x40) == 0 ) {
+        if( ($form['flags']&0x40) == 0 ) {
             if( isset($labels[$s['id']]['data']) ) {
                 $s['label'] = $submission_number . ' - ' . $labels[$s['id']]['data'];
             } else {
