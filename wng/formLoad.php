@@ -62,6 +62,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
         . "sections.max_repeats, "
         . "sections.description AS section_description, "
         . "fields.id AS field_id, "
+        . "fields.uuid AS field_uuid, "
         . "fields.ftype, "
         . "fields.flags AS field_flags, "
         . "IF((fields.flags&0x01)=0x01, 'yes', 'no') AS field_required, "
@@ -105,7 +106,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
                 ),
             ),
         array('container'=>'fields', 'fname'=>'field_id',
-            'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'prefill_ref', 'field_ref', 'size'=>'field_size', 'flags'=>'field_flags', 
+            'fields'=>array('id'=>'field_id', 'uuid'=>'field_uuid', 'ftype', 'label'=>'field_label', 'prefill_ref', 'field_ref', 'size'=>'field_size', 'flags'=>'field_flags', 
                 'required'=>'field_required', 'editable'=>'field_editable',
                 'description'=>'field_description', 'formula'=>'field_formula', 'options'=>'field_options'),
             ),

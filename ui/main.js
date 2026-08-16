@@ -681,7 +681,7 @@ function ciniki_forms_main() {
                     'checkbox':'Checkbox',
                     'content':'Information',
                     'image':'Image',
-//                    'document':'Document',
+                    'document':'Document',
                     'formula':'Calculated',
                     'newline':'Start New Line',
                     'break':'Break Between Fields',
@@ -1156,6 +1156,10 @@ function ciniki_forms_main() {
             else if( d.ftype != null && d.ftype == 'textarea' ) {
                 return M.formatHtml(d.value != null ? d.value : '');
             }
+            else if( d.ftype != null && d.ftype == 'document' ) {
+                console.log(d);
+                return d.value + ' <button class="button" onclick="M.ciniki_forms_main.submission.documentDownload(' + d.data_id + ');">Download</button>';
+            }
             else if( d.ftype != null && d.ftype == 'image' ) {
                 if( d.value != null && d.value > 0 ) {
                     return '<div class="image_preview"><img src=\'' + M.api.getBinaryURL('ciniki.images.get', {'tnid':M.curTenantID, 'image_id':d.value, 'version':'original', 'maxheight':600}) + '\'/></div>';
@@ -1500,13 +1504,19 @@ function ciniki_forms_main() {
                                 'toggles':{'off':'Unchecked', 'on':'Checked'},
                                 };
                         }
+                        else if( rsp.form.sections[i].fields[j].ftype == 'document' ) {
+                            p.sections[sid].fields[data_id] = {
+                                'label':label,
+                                'type':'file',
+                                'downloadFn':'M.ciniki_forms_main.submissions.documentDownload(' + data_id + ');',
+                                };
+                        }
                         else if( rsp.form.sections[i].fields[j].ftype == 'image' ) {
                             p.sections[sid].fields[data_id] = {
                                 'label':label,
                                 'type':'image_id',
                                 'controls':'all',
                                 };
-
                         }
                         else if( rsp.form.sections[i].fields[j].ftype == 'content' ) {
                             p.sections[sid].fields[data_id] = {
@@ -1616,11 +1626,14 @@ function ciniki_forms_main() {
     this.submission.deleteImage = function(fid) {
         this.setFieldValue(fid, 0);
     }
+    this.submission.documentDownload = function(did) {
+        M.api.openFile('ciniki.forms.submissionDocumentDownload',{'tnid':M.curTenantID, 'submission_id':this.submission_id, 'data_id':did, 'repeat':i});
+    }
     this.submission.save = function(cb) {
         if( cb == null ) { cb = 'M.ciniki_forms_main.submission.open();'; }
-        var c = this.serializeForm('no');
+        var c = this.serializeFormData('no');
         if( c != '' ) {
-            M.api.postJSONCb('ciniki.forms.submissionUpdate', {'tnid':M.curTenantID, 'submission_id':this.submission_id}, c, function(rsp) {
+            M.api.postJSONFormData('ciniki.forms.submissionUpdate', {'tnid':M.curTenantID, 'submission_id':this.submission_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;

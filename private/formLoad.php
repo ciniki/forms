@@ -61,6 +61,7 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
         . "sections.max_repeats, "
         . "sections.description AS section_description, "
         . "fields.id AS field_id, "
+        . "fields.uuid AS field_uuid, "
         . "fields.ftype, "
         . "fields.flags AS field_flags, "
         . "fields.sequence AS field_sequence, "
@@ -105,7 +106,7 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
                 ),
             ),
         array('container'=>'fields', 'fname'=>'field_id',
-            'fields'=>array('id'=>'field_id', 'ftype', 'label'=>'field_label', 'prefill_ref', 'field_ref', 'field_size', 'flags'=>'field_flags', 
+            'fields'=>array('id'=>'field_id', 'uuid'=>'field_uuid', 'ftype', 'label'=>'field_label', 'prefill_ref', 'field_ref', 'field_size', 'flags'=>'field_flags', 
                 'sequence'=>'field_sequence', 'required'=>'field_required',
                 'description'=>'field_description', 'formula'=>'field_formula', 'options'=>'field_options',
                 'pdf_label_size', 'pdf_value_size',

@@ -44,6 +44,16 @@ function ciniki_forms_submissionUpdate(&$ciniki) {
     }
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Load the submission
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLoad');
@@ -149,6 +159,30 @@ function ciniki_forms_submissionUpdate(&$ciniki) {
                         && $ciniki['request']['args'][$arg] == '0' 
                         ) {
                         $ciniki['request']['args'][$arg] = '';
+                    }
+                    elseif( $field['ftype'] == 'document' ) {
+                        if( isset($_FILES[$arg]) ) {
+                            $storage_filename = "{$tenant_storage_dir}/ciniki.forms/documents/" 
+                                . "{$submission['uuid'][0]}/{$submission['uuid']}_{$repeat}_{$field['uuid']}";
+                            //
+                            // Remove existing file
+                            //
+                            if( file_exists($storage_filename) ) {
+                                unlink($storage_filename);
+                            }
+                            //
+                            // Move the file to ciniki-storage
+                            //
+                            if( !is_dir(dirname($storage_filename)) ) {
+                                if( !mkdir(dirname($storage_filename), 0700, true) ) {
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.221', 'msg'=>'Unable to save file'));
+                                }
+                            }
+                            if( !rename($_FILES[$arg]['tmp_name'], $storage_filename) ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.222', 'msg'=>'Unable to save file'));
+                            }
+                            $ciniki['request']['args'][$arg] = $_FILES[$arg]['name'];
+                        }
                     }
 
                     //

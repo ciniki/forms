@@ -43,6 +43,7 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
     // Load the submission for the form, object, and customer
     //
     $strsql = "SELECT submissions.id, "
+        . "submissions.uuid, "
         . "submissions.label, "
         . "submissions.form_id, "
         . "submissions.object, "
@@ -73,7 +74,7 @@ function ciniki_forms_submissionLoad(&$ciniki, $tnid, $submission_id) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.forms', array(
         array('container'=>'submissions', 'fname'=>'id', 
-            'fields'=>array('id', 'label', 'form_id', 'object', 'object_id', 'customer_id', 'invoice_id', 'status', 'status_text',
+            'fields'=>array('id', 'uuid', 'label', 'form_id', 'object', 'object_id', 'customer_id', 'invoice_id', 'status', 'status_text',
                 'dt_terms_accepted', 'dt_last_submitted', 'dt_terms_accepted_display', 'dt_last_submitted_display',
                 'dt_last_save', 'dt_last_save_display',
                 ),

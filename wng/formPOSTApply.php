@@ -15,6 +15,16 @@
 function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $tnid, array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Apply any posted updates to the form
     //
     if( isset($form['sections']) ) {
@@ -39,6 +49,31 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                         } 
                         elseif( $field['ftype'] == 'checkbox' && isset($request['args']["f-{$field['id']}-{$i}"]) ) {
                             $new_value = $request['args']["f-{$field['id']}-{$i}"] == 'on' ? 'on' : 'off';
+                        }
+                        elseif( $field['ftype'] == 'document' && isset($_FILES["f-{$field['id']}-{$i}"]['name']) ) {
+                            $file = $_FILES["f-{$field['id']}-{$i}"];
+                            if( !isset($file['tmp_name']) || $file['tmp_name'] == '' ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.214', 'problem'=>'other', 'msg'=>'There was an error uploading your file, please try again or contact us for help.'));
+                            }
+                            $storage_filename = $tenant_storage_dir . '/ciniki.forms/documents/' . $form['submission']['uuid'][0] . '/' . $form['submission']['uuid'] .'_' . $i . '_' . $field['uuid'];
+                            //
+                            // Remove existing file
+                            //
+                            if( file_exists($storage_filename) ) {
+                                unlink($storage_filename);
+                            }
+                            //
+                            // Move the file to ciniki-storage
+                            //
+                            if( !is_dir(dirname($storage_filename)) ) {
+                                if( !mkdir(dirname($storage_filename), 0700, true) ) {
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.215', 'msg'=>'Unable to save file'));
+                                }
+                            }
+                            if( !rename($file['tmp_name'], $storage_filename) ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.216', 'msg'=>'Unable to save file'));
+                            }
+                            $new_value = $file['name'];
                         }
                         elseif( $field['ftype'] == 'image' && isset($_FILES["f-{$field['id']}-{$i}"]) ) {
                             $file = $_FILES["f-{$field['id']}-{$i}"];
@@ -115,6 +150,31 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                         if( isset($request['args']["f-{$field['id']}"]) ) {
                             $new_value = $request['args']["f-{$field['id']}"] == 'on' ? 'on' : 'off';
                         }
+                    }
+                    elseif( $field['ftype'] == 'document' && isset($_FILES["f-{$field['id']}"]['name']) ) {
+                        $file = $_FILES["f-{$field['id']}"];
+                        if( !isset($file['tmp_name']) || $file['tmp_name'] == '' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.214', 'problem'=>'other', 'msg'=>'There was an error uploading your file, please try again or contact us for help.'));
+                        }
+                        $storage_filename = $tenant_storage_dir . '/ciniki.forms/documents/' . $form['submission']['uuid'][0] . '/' . $form['submission']['uuid'] .'_1_' . $field['uuid'];
+                        //
+                        // Remove existing file
+                        //
+                        if( file_exists($storage_filename) ) {
+                            unlink($storage_filename);
+                        }
+                        //
+                        // Move the file to ciniki-storage
+                        //
+                        if( !is_dir(dirname($storage_filename)) ) {
+                            if( !mkdir(dirname($storage_filename), 0700, true) ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.215', 'msg'=>'Unable to save file'));
+                            }
+                        }
+                        if( !rename($file['tmp_name'], $storage_filename) ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.216', 'msg'=>'Unable to save file'));
+                        }
+                        $new_value = $file['name'];
                     }
                     elseif( $field['ftype'] == 'image' 
                         && isset($_FILES["f-{$field['id']}"]['size']) 

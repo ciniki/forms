@@ -38,6 +38,16 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     }
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Get the current settings for the submission
     //
     $strsql = "SELECT id, uuid "
@@ -57,10 +67,18 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     //
     // Get the data for the submission
     //
-    $strsql = "SELECT id, uuid "
-        . "FROM ciniki_form_data "
-        . "WHERE submission_id = '" . ciniki_core_dbQuote($ciniki, $submission['id']) . "' "
-        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+    $strsql = "SELECT data.id, "
+        . "data.uuid, "
+        . "data.repeat_num, "
+        . "fields.ftype, "
+        . "fields.uuid AS field_uuid "
+        . "FROM ciniki_form_data AS data "
+        . "LEFT JOIN ciniki_form_fields AS fields ON ("
+            . "data.field_id = fields.id "
+            . "AND fields.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE data.submission_id = '" . ciniki_core_dbQuote($ciniki, $submission['id']) . "' "
+        . "AND data.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.forms', 'submission');
     if( $rc['stat'] != 'ok' ) {
@@ -158,6 +176,12 @@ function ciniki_forms_submissionDelete(&$ciniki) {
     // Remove the data for the submission
     //
     foreach($data as $d) {
+        if( isset($d['ftype']) && $d['ftype'] == 'document' ) {
+            $storage_filename = $tenant_storage_dir . '/ciniki.forms/documents/' . $submission['uuid'][0] . '/' . $submission['uuid'] .'_' . $d['repeat_num'] . '_' . $d['field_uuid'];
+            if( is_file($storage_filename) ) {
+                unlink($storage_filename);
+            }
+        }
         $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.forms.data', $d['id'], $d['uuid'], 0x04);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.forms');
