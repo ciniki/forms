@@ -34,6 +34,9 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
             //
             if( isset($section['flags']) && ($section['flags']&0x01) == 0x01 ) {
                 for($i = 1; $i <= $section['max_repeats']; $i++) {
+                    if( !isset($section['fields']) ) {
+                        continue;
+                    }
                     foreach($section['fields'] as $fid => $field) {
                         //
                         // FIXME: Add other field types eg: address
