@@ -90,6 +90,7 @@ function ciniki_forms_formDup(&$ciniki) {
     if( isset($form['sections']) ) {
         foreach($form['sections'] as $section) {
             unset($section['id']);
+            unset($section['uuid']);
             $section['form_id'] = $form['id'];
             $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.forms.section', $section, 0x04);
             if( $rc['stat'] != 'ok' ) {
@@ -101,6 +102,7 @@ function ciniki_forms_formDup(&$ciniki) {
             if( isset($section['fields']) ) {
                 foreach($section['fields'] as $field) {
                     unset($field['id']);
+                    unset($field['uuid']);
                     $field['section_id'] = $section['id'];
                     $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.forms.field', $field, 0x04);
                     if( $rc['stat'] != 'ok' ) {
