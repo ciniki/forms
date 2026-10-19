@@ -669,7 +669,7 @@ function ciniki_forms_main() {
                     'date':'Date',
                     'number':'Number',
                     'price':'Price',
-                    'donation':'Donation',
+//                    'donation':'Donation',
                     'phone':'Phone Number',
                     'email':'Email Address',
                     'address':'Address',
