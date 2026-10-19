@@ -704,12 +704,12 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                     $form['fields'][] = $field;
                 }
             }
-            $form['fields']['action'] = array(
+/*            $form['fields']['action'] = array(
                 'id' => 'action',
                 'ftype' => 'hidden', 
                 'name' => 'submit',
                 'value' => 'submit',
-                );
+                ); */
         }
 
         $blocks[] = array(
@@ -723,6 +723,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             'fields' => $form['fields'],
             'formulas' => isset($form['formulas']) ? $form['formulas'] : '',
             'problem-list' => isset($problem_list) ? $problem_list : '',
+//            'submit-hide' => 'yes',
 //            'cancel-label' => isset($cancel_url) && $cancel_url != '' ? 'Cancel' : '',
 //            'cancel-url' => isset($cancel_url) && $cancel_url != '' ? $cancel_url : '',
             'api-save-url' => $request['api_url'] . "/ciniki/forms/submissionSave",
