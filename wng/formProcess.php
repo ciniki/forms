@@ -290,7 +290,8 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
         }
     }
 
-    if( ($form['flags']&0x02) == 0x02 && isset($_POST['f-action']) && $_POST['f-action'] == 'submit' ) {
+//    if( ($form['flags']&0x02) == 0x02 && isset($_POST['f-action']) && $_POST['f-action'] == 'submit' ) {
+    if( ($form['flags']&0x02) == 0x02 && isset($_POST['action']) && $_POST['action'] == 'submit' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'formPOSTApply');
         $rc = ciniki_forms_wng_formPOSTApply($ciniki, $tnid, $request, $form);
         if( $rc['stat'] != 'ok' ) {
@@ -739,7 +740,6 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 'customer_id' => $form['customer_id'],
                 ),
             );
-
     } 
     //
     // Display form in sectioned format
