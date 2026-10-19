@@ -337,7 +337,7 @@ function ciniki_forms_main() {
         }
     }
     this.form.addSection = function() {
-        this.save("M.ciniki_forms_main.section.open('M.ciniki_forms_main.form.open();',0," + this.form_id + ");");
+        this.save("M.ciniki_forms_main.section.open('M.ciniki_forms_main.form.open();',0,M.ciniki_forms_main.form.form_id);");
     }
     this.form.showSection = function(s) {
         if( s == 'options' || s == 'guidelines' || s == 'termsofuse' || s == 'jurors' ) {
