@@ -72,6 +72,7 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
         . "fields.pdf_label_size, "
         . "fields.pdf_value_size, "
         . "fields.label AS field_label, "
+        . "fields.formula_label AS formula_label, "
         . "fields.description AS field_description, "
         . "fields.formula AS field_formula, "
         . "fields.options AS field_options "
@@ -106,8 +107,10 @@ function ciniki_forms_formLoad($ciniki, $tnid, $form_id) {
                 ),
             ),
         array('container'=>'fields', 'fname'=>'field_id',
-            'fields'=>array('id'=>'field_id', 'uuid'=>'field_uuid', 'ftype', 'label'=>'field_label', 'prefill_ref', 'field_ref', 'field_size', 'flags'=>'field_flags', 
+            'fields'=>array('id'=>'field_id', 'uuid'=>'field_uuid', 'ftype', 'flags'=>'field_flags', 
                 'sequence'=>'field_sequence', 'required'=>'field_required',
+                'prefill_ref', 'field_ref', 'field_size', 
+                'label'=>'field_label', 'formula_label', 
                 'description'=>'field_description', 'formula'=>'field_formula', 'options'=>'field_options',
                 'pdf_label_size', 'pdf_value_size',
                 ),

@@ -220,8 +220,18 @@ function ciniki_forms_main() {
                         p.refreshSection("fields");
                     });
                 },
-            'addTxt':'Add Field',
-            'addFn':'M.ciniki_forms_main.form.addField()',
+            'menu':{
+                'add':{
+                    'label':'Add Field',
+                    'fn':'M.ciniki_forms_main.form.addField();',
+                    },
+                'dup':{
+                    'label':'Duplicate Section',
+                    'fn':'M.ciniki_forms_main.form.dupSection();',
+                    },
+                },
+            'changeTxt':'Add Field',
+            'changeFn':'M.ciniki_forms_main.form.addField()',
             },
         'options':{'label':'Other Options', 
             'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
@@ -447,6 +457,17 @@ function ciniki_forms_main() {
     this.form.addField = function() {
         this.save('M.ciniki_forms_main.field.open(\'M.ciniki_forms_main.form.open();\',0,' + this.section_id + ',' + this.form_id + ',[]);');
     }
+    this.form.dupSection = function() {
+        M.api.getJSONCb('ciniki.forms.sectionDup', {'tnid':M.curTenantID, 'form_id':this.form_id, 'section_id':this.section_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_forms_main.form;
+            p.section_id = rsp.id;
+            M.ciniki_forms_main.section.open('M.ciniki_forms_main.form.open();',p.section_id,p.form_id);
+        });
+    }
     this.form.openStatus = function(i) {
         M.ciniki_forms_main.submissions.open('M.ciniki_forms_main.form.open();',this.form_id,i);
     }
@@ -543,7 +564,7 @@ function ciniki_forms_main() {
     this.section.section_id = 0;
     this.section.nplist = [];
     this.section.sections = {
-        'general':{'label':'', 'fields':{
+        'general':{'label':'Section', 'fields':{
             'label':{'label':'Label', 'type':'text', 'required':'yes'},
             'sequence':{'label':'Order', 'type':'text'},
 //            'flags':{'label':'Options', 'type':'text'},

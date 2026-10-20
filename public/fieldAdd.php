@@ -83,6 +83,16 @@ function ciniki_forms_fieldAdd(&$ciniki) {
     $field_id = $rc['id'];
 
     //
+    // Update the sequences
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+    $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.forms.field', 'section_id', $args['section_id'], 
+        $args['sequence'], -1);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.223', 'msg'=>'Unable to update section', 'err'=>$rc['err']));
+    }
+
+    //
     // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.forms');
