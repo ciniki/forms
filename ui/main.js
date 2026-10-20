@@ -690,6 +690,7 @@ function ciniki_forms_main() {
                 },
             'sequence':{'label':'Order', 'type':'text', 'size':'small'},
             'label':{'label':'Label', 'type':'text'},
+            'formula_label':{'label':'Formula Label', 'type':'text', 'visible':'no',},
             'flags1':{'label':'Required', 'type':'flagtoggle', 'field':'flags', 'bit':0x01, 'default':'no'},
             'flags4':{'label':'Locked', 'type':'flagtoggle', 'field':'flags', 'bit':0x08, 'default':'no'},
             'flags3':{'label':'Submission Label', 'type':'flagtoggle', 'field':'flags', 'bit':0x04, 'default':'no'},
@@ -757,6 +758,7 @@ function ciniki_forms_main() {
         var t = this.formFieldValue('general', 'ftype');
         // Turn options off and hide all options by default
         this.sections._options.visible = 'hidden';
+        this.sections.general.fields.formula_label.visible = 'no';
         for(var i in this.sections._options.fields) {
             this.sections._options.fields[i].active = 'no';
         }
@@ -796,10 +798,14 @@ function ciniki_forms_main() {
             this.sections._options.fields['min-height'].active = 'yes';
             this.sections._options.fields['max-width'].active = 'yes';
             this.sections._options.fields['max-height'].active = 'yes';
+        } else if( t == 'number' ) {
+            this.sections.general.fields.formula_label.visible = 'yes';
         } else if( t == 'formula' ) {
+            this.sections.general.fields.formula_label.visible = 'yes';
             this.sections._options.visible = 'yes';
             this.sections._options.fields['formula'].active = 'yes';
         }
+        this.showHideFormField('general', 'formula_label');
         this.showHideSection('_options');
         this.refreshSection('_options');
 

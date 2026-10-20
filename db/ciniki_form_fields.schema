@@ -58,6 +58,7 @@
 #                               large - 80 rem
 #
 # label:                    The label for the field/content. 
+# formula_label:            The unique label used in formula fields. This field is not displayed on the website.
 # description:              The optional description for the field.
 #
 # formula:                  The formula to apply for a calculated field.
@@ -83,6 +84,7 @@ create table ciniki_form_fields (
     field_ref varchar(250) not null,
     field_size varchar(50) not null,
     label varchar(250) not null,
+    formula_label varchar(150) not null,
     description text not null,
     formula varchar(1000) not null,
     options text not null,
@@ -94,4 +96,4 @@ create table ciniki_form_fields (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';

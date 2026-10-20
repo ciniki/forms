@@ -71,6 +71,7 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
         . "fields.field_ref, "
         . "fields.field_size, "
         . "fields.label AS field_label, "
+        . "fields.formula_label AS formula_label, "
         . "fields.description AS field_description, "
         . "fields.formula AS field_formula, "
         . "fields.options AS field_options "
@@ -106,7 +107,8 @@ function ciniki_forms_wng_formLoad($ciniki, $tnid, $request, $form_id, $customer
                 ),
             ),
         array('container'=>'fields', 'fname'=>'field_id',
-            'fields'=>array('id'=>'field_id', 'uuid'=>'field_uuid', 'ftype', 'label'=>'field_label', 'prefill_ref', 'field_ref', 'size'=>'field_size', 'flags'=>'field_flags', 
+            'fields'=>array('id'=>'field_id', 'uuid'=>'field_uuid', 'ftype', 'label'=>'field_label', 'formula_label',
+                'prefill_ref', 'field_ref', 'size'=>'field_size', 'flags'=>'field_flags', 
                 'required'=>'field_required', 'editable'=>'field_editable',
                 'description'=>'field_description', 'formula'=>'field_formula', 'options'=>'field_options'),
             ),

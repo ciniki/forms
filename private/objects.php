@@ -78,6 +78,7 @@ function ciniki_forms_objects(&$ciniki) {
             'field_ref' => array('name'=>'Linked Object Ref', 'default'=>''),
             'field_size' => array('name'=>'Size', 'default'=>'large'),
             'label' => array('name'=>'Label', 'default'=>''),
+            'formula_label' => array('name'=>'Formula Label', 'default'=>''),
             'description' => array('name'=>'Description', 'default'=>''),
             'formula' => array('name'=>'Calculated Formula', 'default'=>''),
             'options' => array('name'=>'Options', 'default'=>''),
