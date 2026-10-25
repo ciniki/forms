@@ -56,6 +56,7 @@ function ciniki_forms_submissionLabelUpdate(&$ciniki, $tnid, $submission_id) {
             . ") "
         . "WHERE submissions.id = '" . ciniki_core_dbQuote($ciniki, $submission_id) . "' "
         . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY sections.sequence, fields.sequence "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(

@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_forms_wng_apiSubmissionSave(&$ciniki, $tnid, $request) {
+function ciniki_forms_wng_apiSubmissionSave(&$ciniki, $tnid, &$request) {
     
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
