@@ -30,7 +30,7 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                             break;
                         }
                         
-                        if( isset($field['required']) && $field['required'] == 'yes' ) {
+                        if( isset($field['required']) && $field['required'] == 'yes' && $field['ftype'] != 'content' ) {
                             if( $field['ftype'] == 'checkbox' && $field['values'][$i] != 'on' ) {
                                 $problems["{$field['id']}-{$i}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                             }
@@ -87,7 +87,7 @@ function ciniki_forms_submissionValidate(&$ciniki, $tnid, $form) {
                     //
                     // Check if other fields are required
                     //
-                    elseif( isset($field['required']) && $field['required'] == 'yes' ) {
+                    elseif( isset($field['required']) && $field['required'] == 'yes' && $field['ftype'] != 'content' ) {
                         if( $field['ftype'] == 'checkbox' && (!isset($field['value']) || $field['value'] != 'on') ) {
                             $problems["{$field['id']}"] = $section['label'] . ' - ' . $field['label'] . ': Missing';
                         }
