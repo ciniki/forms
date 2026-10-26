@@ -31,7 +31,7 @@
 #                               0x40 - Jurying - Show Label
 #                               0x80 - Submit Only - no editing of submissions, used for voting/polls/silent auctions.
 #                               0x0100 - Auto update customer details (must have 0x01 flag set)
-#                               0x0200 - 
+#                               0x0200 - Simple Jurying (yes/no) - default is no/maybe/yes
 #                               0x0400 -
 #                               0x0800 - 
 # 

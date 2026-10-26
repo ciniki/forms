@@ -95,7 +95,7 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
         //
         if( isset($_POST['f-vote']) && $_POST['f-vote'] == 'No' ) {
             $_POST['f-vote'] = 1;
-        } elseif( isset($_POST['f-vote']) && $_POST['f-vote'] == 'Maybe' ) {
+        } elseif( isset($_POST['f-vote']) && $_POST['f-vote'] == 'Maybe' && ($form['flags']&0x0200) == 0 ) {
             $_POST['f-vote'] = 2;
         } elseif( isset($_POST['f-vote']) && $_POST['f-vote'] == 'Yes' ) {
             $_POST['f-vote'] = 3;
@@ -350,6 +350,7 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
         } elseif( $submission['vote'] == 3 ) {
             $submission['vote'] = 'Yes';
         }
+            error_log(print_r($form['flags']&0x0200,true));
         $blocks[] = array(
             'type' => 'form',
             'fields' => array(
@@ -370,7 +371,7 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
                     'label' => 'Your Vote',
                     'value' => $submission['vote'],
                     'option-1' => 'No',
-                    'option-2' => 'Maybe',
+                    'option-2' => (($form['flags']&0x0200) == 0 ? 'Maybe' : ''),
                     'option-3' => 'Yes',
                     ),
                 ),

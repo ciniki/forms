@@ -169,8 +169,11 @@ function ciniki_forms_submissions($ciniki) {
         . "submissions.dt_last_save, "
         . "submissions.dt_last_submitted AS dt_last_submitted_date, "
         . "submissions.dt_last_submitted AS dt_last_submitted_time, "
-        . "IFNULL(COUNT(votes.vote), 0) AS num_votes, "
-        . "IFNULL(SUM(votes.vote), '-') AS voterank "
+        . "votes.id AS vote_id, "
+        . "votes.vote AS vote "
+
+//        . "IFNULL(COUNT(votes.vote), 0) AS num_votes, "
+//        . "IFNULL(SUM(votes.vote), '-') AS voterank "
         . "FROM ciniki_form_submissions AS submissions "
         . "LEFT JOIN ciniki_customers AS customers ON ("
             . "submissions.customer_id = customers.id "
@@ -184,8 +187,8 @@ function ciniki_forms_submissions($ciniki) {
         . "AND submissions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . $status_sql
         . $object_sql
-        . "GROUP BY submissions.id "
-        . "ORDER BY dt_last_submitted DESC "
+//        . "GROUP BY submissions.id "
+        . "ORDER BY dt_last_submitted DESC, submissions.id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.forms', array(
@@ -193,7 +196,7 @@ function ciniki_forms_submissions($ciniki) {
             'fields'=>array('id', 'form_id', 'object', 'object_id', 'customer_id', 'display_name', 
                 'invoice_id', 'status', 'status_text', 'label',
                 'dt_terms_accepted', 'dt_last_save', 'dt_last_submitted_date', 'dt_last_submitted_time',
-                'num_votes', 'voterank',
+//                'num_votes', 'voterank',
                 ),
             'maps'=>array('status_text'=>$maps['submission']['status']),
             'utctotz'=>array(
@@ -203,6 +206,7 @@ function ciniki_forms_submissions($ciniki) {
                 'dt_last_submitted_time'=>array('timezone'=>$intl_timezone, 'format'=>$time_format),
                 ),
             ),
+        array('container'=>'votes', 'fname'=>'vote_id', 'fields'=>array('id'=>'vote_id', 'vote')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -211,6 +215,34 @@ function ciniki_forms_submissions($ciniki) {
     $submission_ids = array();
     foreach($submissions as $iid => $submission) {
         $submission_ids[] = $submission['id'];
+
+        //
+        // Process the votes
+        //
+        $submissions[$iid]['num_votes'] = 0;
+        $submissions[$iid]['num_no'] = 0;
+        $submissions[$iid]['num_maybe'] = 0;
+        $submissions[$iid]['num_yes'] = 0;
+        if( isset($submission['votes']) ) {
+            $submissions[$iid]['voterank'] = 0;
+            foreach($submission['votes'] as $vote) {
+                $submissions[$iid]['num_votes']++;
+                if( $vote['vote'] == 1 ) {
+                    $submissions[$iid]['num_no'] += 1;
+                } elseif( $vote['vote'] == 2 ) {
+                    $submissions[$iid]['num_maybe'] += 1;
+                } elseif( $vote['vote'] == 3 ) {
+                    $submissions[$iid]['num_yes'] += 1;
+                }
+                $submissions[$iid]['voterank'] += $vote['vote'];
+            }
+            //
+            // Check for simple voting (yes/no)
+            //
+            if( ($form['flags']&0x0200) == 0x0200 ) {
+                $submissions[$iid]['voterank'] = "No: {$submissions[$iid]['num_no']}, Yes: {$submissions[$iid]['num_yes']}";
+            }
+        }
     }
     $rsp = array('stat'=>'ok', 'form'=>$form, 'submissions'=>$submissions, 'nplist'=>$submission_ids);
 
