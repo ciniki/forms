@@ -219,6 +219,7 @@ function ciniki_forms_submissions($ciniki) {
         //
         // Process the votes
         //
+        $submissions[$iid]['votes'] = '-';
         $submissions[$iid]['voterank'] = '-';
         $submissions[$iid]['num_votes'] = 0;
         $submissions[$iid]['num_no'] = 0;
@@ -241,7 +242,7 @@ function ciniki_forms_submissions($ciniki) {
             // Check for simple voting (yes/no)
             //
             if( ($form['flags']&0x0200) == 0x0200 ) {
-                $submissions[$iid]['voterank'] = "No: {$submissions[$iid]['num_no']}, Yes: {$submissions[$iid]['num_yes']}";
+                $submissions[$iid]['votes'] = "No: {$submissions[$iid]['num_no']}, Yes: {$submissions[$iid]['num_yes']}";
             }
         }
     }
