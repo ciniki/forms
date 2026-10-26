@@ -219,6 +219,7 @@ function ciniki_forms_submissions($ciniki) {
         //
         // Process the votes
         //
+        $submissions[$iid]['voterank'] = '-';
         $submissions[$iid]['num_votes'] = 0;
         $submissions[$iid]['num_no'] = 0;
         $submissions[$iid]['num_maybe'] = 0;

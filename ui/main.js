@@ -1004,6 +1004,7 @@ function ciniki_forms_main() {
                 case 'object': return d.object_text;
                 case 'submitted': return M.multiline(d.dt_last_submitted_date, d.dt_last_submitted_time);
                 case 'ranking': return M.multiline(d.voterank, d.num_votes + ' of ' + this.data.form.num_jurors);
+                case 'votes': return M.multiline(d.votes, d.num_votes + ' of ' + this.data.form.num_jurors);
             }
         }
     }
@@ -1105,7 +1106,14 @@ function ciniki_forms_main() {
             p.sections.submissions.sortTypes.push('date');
             p.sections.submissions.dataMaps.push('submitted');
             // Check if juried form
-            if( (p.data.form.flags&0x10) == 0x10 ) {
+            if( (p.data.form.flags&0x0210) == 0x0210 ) {
+                p.sections.submissions.num_cols += 1;
+                p.sections.submissions.headerValues.push('Votes');
+                p.sections.submissions.cellClasses.push('multiline aligncenter');
+                p.sections.submissions.sortTypes.push('number');
+                p.sections.submissions.dataMaps.push('votes');
+
+            } else if( (p.data.form.flags&0x10) == 0x10 ) {
                 p.sections.submissions.num_cols += 1;
                 p.sections.submissions.headerValues.push('Ranking');
                 p.sections.submissions.cellClasses.push('multiline aligncenter');
