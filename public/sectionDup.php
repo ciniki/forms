@@ -43,7 +43,7 @@ function ciniki_forms_sectionDup(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formLoad');
     $rc = ciniki_forms_formLoad($ciniki, $args['tnid'], $args['form_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.118', 'msg'=>'Unable to load form', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.234', 'msg'=>'Unable to load form', 'err'=>$rc['err']));
     }
     $form = $rc['form'];
 
@@ -96,7 +96,7 @@ function ciniki_forms_sectionDup(&$ciniki) {
     $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.forms.section', 'form_id', $section['form_id'], 
         $section['sequence'], -1);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.223', 'msg'=>'Unable to update section', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.251', 'msg'=>'Unable to update section', 'err'=>$rc['err']));
     }
 
     //

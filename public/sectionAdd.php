@@ -73,7 +73,7 @@ function ciniki_forms_sectionAdd(&$ciniki) {
     $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.forms.section', 'form_id', $args['form_id'], 
         $args['sequence'], -1);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.223', 'msg'=>'Unable to update section', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.250', 'msg'=>'Unable to update section', 'err'=>$rc['err']));
     }
 
     //

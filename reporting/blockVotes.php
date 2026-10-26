@@ -151,7 +151,7 @@ function ciniki_forms_reporting_blockVotes(&$ciniki, $tnid, $args) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.168', 'msg'=>'Unable to find new form submissions.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.238', 'msg'=>'Unable to find new form submissions.', 'err'=>$rc['err']));
     }
 
     if( isset($rc['forms']) && count($rc['forms']) > 0 ) {

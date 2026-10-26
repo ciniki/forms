@@ -62,7 +62,7 @@ function ciniki_forms_submissionAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'formDefaultsLoad');
     $rc = ciniki_forms_formDefaultsLoad($ciniki, $args['tnid'], $form);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.25', 'msg'=>'Unable to load form defaults', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.220', 'msg'=>'Unable to load form defaults', 'err'=>$rc['err']));
     }
     $form = $rc['form'];
 

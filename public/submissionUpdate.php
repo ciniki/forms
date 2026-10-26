@@ -203,7 +203,7 @@ function ciniki_forms_submissionUpdate(&$ciniki) {
                                 'data' => $new_data,
                                 ), 0x04);
                             if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.185', 'msg'=>'Unable to update the data', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.243', 'msg'=>'Unable to update the data', 'err'=>$rc['err']));
                             }
                              
                         } 

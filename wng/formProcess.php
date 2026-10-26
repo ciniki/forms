@@ -375,7 +375,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 'label' => 'New Submission',
                 ), 0x04);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.71', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.225', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
             }
             $form['submission_id'] = $rc['id'];
             $form['submission_uuid'] = $rc['uuid'];
@@ -398,7 +398,7 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
                 'label' => 'New Submission',
                 ), 0x04);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.71', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.224', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
             }
             $form['submission_id'] = $rc['id'];
             $form['submission_uuid'] = $rc['uuid'];

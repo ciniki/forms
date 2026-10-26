@@ -133,10 +133,10 @@ function ciniki_forms_submissionsExcel($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.138', 'msg'=>'Form not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.235', 'msg'=>'Form not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['forms'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.139', 'msg'=>'Unable to find Form'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.236', 'msg'=>'Unable to find Form'));
     }
     $form = $rc['forms'][0];
 

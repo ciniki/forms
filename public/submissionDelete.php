@@ -117,7 +117,7 @@ function ciniki_forms_submissionDelete(&$ciniki) {
         array('container'=>'objrefs', 'fname'=>'id', 'fields'=>array('id', 'uuid')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.194', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.246', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
     }
     $objrefs = isset($rc['objrefs']) ? $rc['objrefs'] : array();
 

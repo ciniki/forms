@@ -97,7 +97,7 @@ function ciniki_forms_templates_submissionsPDF(&$ciniki, $tnid, $args) {
         //
         $rc = ciniki_forms_submissionLoad($ciniki, $tnid, $sid);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.189', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.244', 'msg'=>'Unable to load submission', 'err'=>$rc['err']));
         }
         $form = $rc['form'];
         $submission = $rc['form']['submission'];

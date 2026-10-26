@@ -165,7 +165,7 @@ function ciniki_forms_fieldUpdate(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'fieldRefsAvailable');
         $rc = ciniki_forms_fieldRefsAvailable($ciniki, $args['tnid']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.101', 'msg'=>'Unable to load field references', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.233', 'msg'=>'Unable to load field references', 'err'=>$rc['err']));
         }
         $refs = $rc['refs'];
 

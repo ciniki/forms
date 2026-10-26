@@ -67,7 +67,7 @@ function ciniki_forms_wng_submissionValidate(&$ciniki, $tnid, $request, $form=nu
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.91', 'msg'=>'Unable to lookup submission', 'err'=>$rc['err']));
     }
     if( !isset($form['submission_id']) || $form['submission_id'] == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.92', 'msg'=>'No submission', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.232', 'msg'=>'No submission', 'err'=>$rc['err']));
     }
 
     //

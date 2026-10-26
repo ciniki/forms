@@ -36,7 +36,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
             'status' => 10,
             ), 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.71', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.226', 'msg'=>'Unable to add the submission', 'err'=>$rc['err']));
         }
         $form['submission_id'] = $rc['id'];
 
@@ -73,7 +73,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
                                     'data' => is_array($field['values'][$i]) ? $json_encode($field['values'][$i]) : $field['values'][$i],
                                     ), 0x04);
                                 if( $rc['stat'] != 'ok' ) {
-                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.74', 'msg'=>'Unable to update data', 'err'=>$rc['err']));
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.229', 'msg'=>'Unable to update data', 'err'=>$rc['err']));
                                 }
                                 if( $field['ftype'] == 'image' ) {
                                     $image_urls["{$field['id']}-{$i}"] = $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . '/' . $form['submission_id'] . '/' . $field['values'][$i];
@@ -90,7 +90,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
                                 'data' => is_array($field['values'][$i]) ? $json_encode($field['values'][$i]) : $field['values'][$i],
                                 ), 0x04);
                             if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.72', 'msg'=>'Unable to add the field', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.227', 'msg'=>'Unable to add the field', 'err'=>$rc['err']));
                             }
                             if( $field['ftype'] == 'image' ) {
                                 $image_urls["{$field['id']}-{$i}"] = $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . '/' . $form['submission_id'] . '/' . $field['values'][$i];
@@ -125,7 +125,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
                                 'data' => is_array($field['value']) ? json_encode($field['value']) : $field['value'],
                                 ), 0x04);
                             if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.75', 'msg'=>'Unable to update data', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.230', 'msg'=>'Unable to update data', 'err'=>$rc['err']));
                             }
                             if( $field['ftype'] == 'image' ) {
                                 $image_urls["{$field['id']}"] = $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . '/' . $form['submission_id'] . '/' . $field['value'];
@@ -143,7 +143,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
                             'data' => is_array($field['value']) ? json_encode($field['value']) : $field['value'],
                             ), 0x04);
                         if( $rc['stat'] != 'ok' ) {
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.73', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.228', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
                         }
                         if( $field['ftype'] == 'image' ) {
                             $image_urls["{$field['id']}"] = $request['api_url'] . "/ciniki/forms/submissionImage/" . $form['id'] . '/' . $form['submission_id'] . '/' . $field['value'];
@@ -158,7 +158,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.forms.submission', $form['submission_id'], $update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.84', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.231', 'msg'=>'Unable to update the submission', 'err'=>$rc['err']));
         }
     }
 
@@ -168,7 +168,7 @@ function ciniki_forms_wng_submissionSave(&$ciniki, $tnid, $request, &$form) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'private', 'submissionLabelUpdate');
     $rc = ciniki_forms_submissionLabelUpdate($ciniki, $tnid, $form['submission_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.175', 'msg'=>'Unable to update label', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.239', 'msg'=>'Unable to update label', 'err'=>$rc['err']));
     }
 
     $rsp = array('stat'=>'ok');

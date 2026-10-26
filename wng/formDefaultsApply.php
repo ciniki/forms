@@ -39,7 +39,7 @@ function ciniki_forms_wng_formDefaultsApply(&$ciniki, $tnid, &$request, $form) {
                                 'data' => isset($field['defaults'][$i]) ? (is_array($field['defaults'][$i]) ? json_encode($field['defaults'][$i]) : $field['defaults'][$i]) : '',
                                 ), 0x04);
                             if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.183', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.242', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
                             }
                         }
                     }
@@ -56,7 +56,7 @@ function ciniki_forms_wng_formDefaultsApply(&$ciniki, $tnid, &$request, $form) {
                                     'data' => is_array($field['default']) ? json_encode($field['default']) : $field['default'],
                                     ), 0x04);
                                 if( $rc['stat'] != 'ok' ) {
-                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.178', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.240', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
                                 }
                             }
                         } else {
@@ -67,7 +67,7 @@ function ciniki_forms_wng_formDefaultsApply(&$ciniki, $tnid, &$request, $form) {
                                 'data' => is_array($field['default']) ? json_encode($field['default']) : $field['default'],
                                 ), 0x04);
                             if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.179', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.241', 'msg'=>'Unable to add data', 'err'=>$rc['err']));
                             }
                         }
                     }

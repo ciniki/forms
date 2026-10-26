@@ -56,7 +56,7 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                         elseif( $field['ftype'] == 'document' && isset($_FILES["f-{$field['id']}-{$i}"]['name']) ) {
                             $file = $_FILES["f-{$field['id']}-{$i}"];
                             if( !isset($file['tmp_name']) || $file['tmp_name'] == '' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.214', 'problem'=>'other', 'msg'=>'There was an error uploading your file, please try again or contact us for help.'));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.247', 'problem'=>'other', 'msg'=>'There was an error uploading your file, please try again or contact us for help.'));
                             }
                             $storage_filename = $tenant_storage_dir . '/ciniki.forms/documents/' . $form['submission']['uuid'][0] . '/' . $form['submission']['uuid'] .'_' . $i . '_' . $field['uuid'];
                             //
@@ -70,11 +70,11 @@ function ciniki_forms_wng_formPOSTApply(&$ciniki, $tnid, $request, &$form) {
                             //
                             if( !is_dir(dirname($storage_filename)) ) {
                                 if( !mkdir(dirname($storage_filename), 0700, true) ) {
-                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.215', 'msg'=>'Unable to save file'));
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.248', 'msg'=>'Unable to save file'));
                                 }
                             }
                             if( !rename($file['tmp_name'], $storage_filename) ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.216', 'msg'=>'Unable to save file'));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.249', 'msg'=>'Unable to save file'));
                             }
                             $new_value = $file['name'];
                         }

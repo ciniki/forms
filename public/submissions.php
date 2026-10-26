@@ -276,7 +276,7 @@ function ciniki_forms_submissions($ciniki) {
             'terms' => isset($args['terms']) ? $args['terms'] : 'no',
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.190', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.245', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
         }
         if( isset($rc['pdf']) ) {
             $rc['pdf']->Output($filename . '.pdf', 'I');

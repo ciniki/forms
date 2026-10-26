@@ -38,7 +38,7 @@ function ciniki_forms_wng_accountMenuItems($ciniki, $tnid, $request, $args) {
         array('container'=>'forms', 'fname'=>'id', 'fields'=>array('title', 'permalink')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.151', 'msg'=>'Unable to load forms', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.237', 'msg'=>'Unable to load forms', 'err'=>$rc['err']));
     }
     $forms = isset($rc['forms']) ? $rc['forms'] : array();
     foreach($forms as $fid => $form) {
