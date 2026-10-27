@@ -350,7 +350,6 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
         } elseif( $submission['vote'] == 3 ) {
             $submission['vote'] = 'Yes';
         }
-            error_log(print_r($form['flags']&0x0200,true));
         $blocks[] = array(
             'type' => 'form',
             'fields' => array(
