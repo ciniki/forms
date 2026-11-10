@@ -127,6 +127,8 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
                     'content' => "Unable to add vote, please try again or contact us for help.",
                     );
                 return array('stat'=>'ok', 'blocks'=>$blocks);
+            } else {
+                $request['session']['account-forms-voting-thankyou'] = 'display';
             }
         
         } else {
@@ -145,6 +147,7 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.forms.157', 'msg'=>'Unable to update the vote', 'err'=>$rc['err']));
                 }
+                $request['session']['account-forms-voting-thankyou'] = 'display';
             }
         }
         
@@ -384,6 +387,14 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
     // No form show the list of submissions
     //
     else {
+        if( isset($request['session']['account-forms-voting-thankyou']) && $request['session']['account-forms-voting-thankyou'] == 'display' ) {
+            unset($request['session']['account-forms-voting-thankyou']);
+            $blocks[] = [
+                'type' => 'msg',
+                'level' => 'success',
+                'content' => 'Thank you for your vote.',
+                ];
+        }
         //
         // Add url to open submission and vote
         //
@@ -393,11 +404,16 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
         $blocks[] = array(
             'type' => 'table',
             'headers' => 'yes',
-            'class' => 'limit-width center limit-width-40',
+            'class' => 'limit-width center limit-width-60',
             'columns' => array(
                 array(
                     'label' => 'Submission #',
                     'field' => 'label',
+                    ),
+                array(
+                    'label' => 'Notes',
+                    'class' => '',
+                    'field' => 'notes',
                     ),
                 array(
                     'label' => 'Vote',
