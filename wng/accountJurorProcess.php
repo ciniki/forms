@@ -75,7 +75,7 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
     //
     // Check if vote was submitted
     //
-    if( isset($_POST['f-number']) && isset($_POST['f-vote']) ) {
+    if( isset($_POST['f-number']) && (isset($_POST['f-vote']) || isset($_POST['f-notes'])) ) {
         if( !isset($form['submissions'][$_POST['f-number']]) ) {
             $blocks[] = array(
                 'type' => 'msg', 
@@ -135,7 +135,7 @@ function ciniki_forms_wng_accountJurorProcess(&$ciniki, $tnid, &$request, $item)
                 $update_args['notes'] = $_POST['f-notes'];
             }
             if( isset($_POST['f-vote']) && $_POST['f-vote'] != $submission['vote'] 
-                && $_POST['f-vote'] == 1 || $_POST['f-vote'] == 2 || $_POST['f-vote'] == 3 
+                && ($_POST['f-vote'] == 1 || $_POST['f-vote'] == 2 || $_POST['f-vote'] == 3) 
                 ) {
                 $update_args['vote'] = $_POST['f-vote'];
             }
