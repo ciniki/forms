@@ -259,25 +259,25 @@ function ciniki_forms_main() {
             //'visible':function() { return M.ciniki_forms_main.form.selected == 'thankyou' ? 'yes' :'hidden'; },
             'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
             'fields':{
-                'thankyou':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'}
+                'thankyou':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'medium'}
             }},
         '_emailthankyou':{'label':'Email Thank You Message', 
             //'visible':function() { return M.ciniki_forms_main.form.selected == 'thankyou' ? 'yes' :'hidden'; },
             'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
             'fields':{
-                'emailthankyou':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'}
+                'emailthankyou':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'medium'}
             }},
         '_alreadysubmitted':{'label':'Existing Submission Message', 
             //'visible':function() { return M.ciniki_forms_main.form.selected == 'alreadysubmitted' ? 'yes' :'hidden'; },
             'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
             'fields':{
-                'alreadysubmitted':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'}
+                'alreadysubmitted':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'medium'}
             }},
         '_loginmsg':{'label':'Login Required Message', 
             //'visible':function() { return M.ciniki_forms_main.form.selected == 'loginmsg' ? 'yes' :'hidden'; },
             'visible':function() { return M.ciniki_forms_main.form.selected == 'options' ? 'yes' :'hidden'; },
             'fields':{
-                'loginmsg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'}
+                'loginmsg':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'medium'}
             }},
         '_guidelines':{'label':'Guidelines', 
             'visible':function() { return M.ciniki_forms_main.form.selected == 'guidelines' ? 'yes' :'hidden'; },

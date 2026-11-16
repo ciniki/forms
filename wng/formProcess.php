@@ -101,6 +101,12 @@ function ciniki_forms_wng_formProcess(&$ciniki, $tnid, &$request, $section) {
             'return-url' => $request['base_url'] . '/' . implode('/', $request['uri_split']),
             ));
         if( $rc['stat'] == 'ok' ) {
+            if( isset($s['display-guidelines']) && $s['display-guidelines'] == 'always' 
+                && isset($form['guidelines']) && $form['guidelines'] != '' 
+                ) {
+                $form['loginmsg'] = $form['guidelines']
+                    . (isset($form['loginmsg']) && $form['loginmsg'] != '' ? $form['loginmsg'] : '<p>You must login or sign up for an account</p>');
+            }
             array_unshift($rc['blocks'], array(
                 'sequence' => 1,
                 'type' => 'text',

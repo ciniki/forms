@@ -51,6 +51,12 @@ function ciniki_forms_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Forms',
         'settings' => array(
             'form-id' => array('label'=>'Form', 'type'=>'select', 'idnames'=>'yes', 'options'=>$forms),
+            'display-guidelines' => array('label'=>'Display Guidelines', 'type'=>'toggle', 'default'=>'auth', 
+                'toggles'=>array(
+                    'always' => 'Always',
+                    'auth' => 'Only After Login',
+                )),
+                
 //            'display-format' => array('label'=>'Display', 'type'=>'toggle', 'default'=>'sectioned', 
 //                'toggles'=>array(
 //                    'sectioned' => 'Sectioned Form',
