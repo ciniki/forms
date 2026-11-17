@@ -244,6 +244,15 @@ function ciniki_forms_wng_apiSubmissionSave(&$ciniki, $tnid, &$request) {
         $rsp['image_urls'] = $image_urls;
     }
 
+    if( isset($request['args']['validate']) && $request['args']['validate'] == 'yes' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'forms', 'wng', 'submissionValidate');
+        $rc = ciniki_forms_wng_submissionValidate($ciniki, $tnid, $request, $form);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rsp['form-id'] = $form['id'];
+    }
+
     return $rsp;
 }
 ?>
