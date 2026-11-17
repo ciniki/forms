@@ -45,7 +45,6 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
         $form = $rc['form'];
         $submission = $rc['form']['submission'];
 
-
         //
         // Add the headers
         //
@@ -63,7 +62,7 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
                 $cols = 0;
                 if( isset($section['fields']) ) {
                     foreach($section['fields'] as $field) {
-                        if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' || $field['ftype'] == 'image' ) {
+                        if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' || $field['ftype'] == 'image' || $field['ftype'] == 'content' ) {
                             continue;
                         }
                         if( $col > 51 ) {
@@ -75,7 +74,7 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
                         }
                         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $field['label'], false);
                         $objPHPExcelWorksheet->getStyle("$ltr$row:$ltr$row")->getFont()->setBold(true);
-                        $objPHPExcelWorksheet->getColumnDimension($ltr)->setAutoSize(true);
+//                        $objPHPExcelWorksheet->getColumnDimension($ltr)->setAutoSize(true);
                         $cols++;
                     }
                 }
@@ -88,6 +87,18 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
                     $objPHPExcelWorksheet->getStyle($ltr . ($row-1) . ":" . $ltr . ($row-1))->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
                 }
             }
+            // Add Date Submitted column at end
+            if( $col > 51 ) {
+                $ltr = chr(floor($col/26) + 64) . chr(($col-52) + 65);
+            } elseif( $col > 25 ) {
+                $ltr = chr(floor($col/26) + 64) . chr(($col-26) + 65);
+            } else {
+                $ltr = chr($col + 65);
+            }
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Date Submitted', false);
+            $objPHPExcelWorksheet->getStyle("$ltr$row:$ltr$row")->getFont()->setBold(true);
+//            $objPHPExcelWorksheet->getColumnDimension($ltr)->setAutoSize(true);
+
             $col=0;
             $row++;
             $form_id = $form['id'];
@@ -103,13 +114,15 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
             if( isset($section['fields']) ) {
                 $fill = 0;
                 foreach($section['fields'] as $field) { 
-                    if( $col > 25 ) {
+                    if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' || $field['ftype'] == 'image' || $field['ftype'] == 'content' ) {
+                        continue;
+                    }
+                    if( $col > 51 ) {
+                        $ltr = chr(floor($col/26) + 64) . chr(($col-52) + 65);
+                    } elseif( $col > 25 ) {
                         $ltr = chr(floor($col/26) + 64) . chr(($col-26) + 65);
                     } else {
                         $ltr = chr($col + 65);
-                    }
-                    if( $field['ftype'] == 'newline' || $field['ftype'] == 'break' || $field['ftype'] == 'image' ) {
-                        continue;
                     }
                     if( $field['ftype'] == 'address' ) {
                         $addr = '';
@@ -139,6 +152,7 @@ function ciniki_forms_templates_submissionsExcel(&$ciniki, $tnid, $args) {
                 $objPHPExcelWorksheet->getStyle("$ltr$row:$ltr$row")->getBorders()->getRight()->setBorderStyle(PHPExcel_Style_Border::BORDER_THIN);
             }
         }
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col, $row, $submission['dt_last_submitted_display'], false);
         $col=0;
         $row++;
     }
